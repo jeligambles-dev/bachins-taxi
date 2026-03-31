@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bachin's Taxi — Ratoath, Ashbourne &amp; Dublin | 24/7 Taxi Service</title>
+  <meta name="description" content="Bachin's Taxi: Your trusted local taxi service in Ratoath, Ashbourne, and surrounding areas. 8 Seater Van, Airport Transfers, 24/7 Availability.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black: #0a0a0a;
+      --black-light: #141414;
+      --black-card: #1a1a1a;
+      --gold: #c9a84c;
+      --gold-light: #dfc06a;
+      --gold-dark: #a8893d;
+      --cream: #f5f0e6;
+      --grey: #888;
+      --grey-dark: #444;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Outfit', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--black);
+      color: var(--cream);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── Navigation ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1.2rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+      transition: all 0.4s ease;
+    }
+
+    nav.scrolled {
+      padding: 0.8rem 2rem;
+      background: rgba(10, 10, 10, 0.95);
+    }
+
+    .nav-logo {
+      height: 72px;
+      border-radius: 4px;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-logo:hover { transform: scale(1.05); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--cream);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--gold);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      background: var(--gold) !important;
+      color: var(--black) !important;
+      padding: 0.6rem 1.5rem;
+      border-radius: 2px;
+      font-weight: 600 !important;
+      letter-spacing: 1px !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--gold-light) !important;
+      color: var(--black) !important;
+      transform: translateY(-1px);
+    }
+
+    .nav-cta::after { display: none !important; }
+
+    .mobile-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .mobile-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--gold);
+      transition: all 0.3s ease;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: url('images/taxi.jpg') center/cover no-repeat;
+    }
+
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(10, 10, 10, 0.92) 0%,
+        rgba(10, 10, 10, 0.75) 40%,
+        rgba(10, 10, 10, 0.5) 100%
+      );
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 0 6vw;
+      max-width: 800px;
+    }
+
+    .hero-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.3s forwards;
+    }
+
+    .hero-label::before {
+      content: '';
+      display: inline-block;
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      vertical-align: middle;
+      margin-right: 12px;
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--cream);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.5s forwards;
+    }
+
+    .hero h1 .gold { color: var(--gold); }
+
+    .hero-sub {
+      font-size: 1.15rem;
+      font-weight: 300;
+      color: rgba(245, 240, 230, 0.7);
+      line-height: 1.7;
+      max-width: 540px;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.7s forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.9s forwards;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 1rem 2rem;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.35s ease;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: var(--black);
+    }
+
+    .btn-gold:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(201, 168, 76, 0.25);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--cream);
+      border: 1px solid rgba(245, 240, 230, 0.25);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    /* ── Scrolling ticker ── */
+    .ticker {
+      background: var(--gold);
+      padding: 0.9rem 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .ticker-track {
+      display: flex;
+      animation: scroll 25s linear infinite;
+      width: max-content;
+    }
+
+    .ticker-item {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--black);
+      white-space: nowrap;
+      padding: 0 3rem;
+    }
+
+    .ticker-item::after {
+      content: '✦';
+      margin-left: 3rem;
+      opacity: 0.4;
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── Section styles ── */
+    section { padding: 7rem 6vw; }
+
+    .section-label {
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 30px;
+      height: 1px;
+      background: var(--gold);
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-desc {
+      font-weight: 300;
+      color: rgba(245, 240, 230, 0.6);
+      max-width: 560px;
+      line-height: 1.7;
+      font-size: 1.05rem;
+    }
+
+    /* ── Services ── */
+    .services {
+      background: var(--black-light);
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3.5rem;
+    }
+
+    .service-card {
+      background: var(--black-card);
+      border: 1px solid rgba(201, 168, 76, 0.08);
+      padding: 2.5rem 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .service-card:hover {
+      border-color: rgba(201, 168, 76, 0.2);
+      transform: translateY(-4px);
+    }
+
+    .service-card:hover::before { opacity: 1; }
+
+    .service-icon {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      color: var(--gold);
+    }
+
+    .service-icon svg {
+      width: 36px;
+      height: 36px;
+      stroke: var(--gold);
+      fill: none;
+      stroke-width: 1.5;
+    }
+
+    .service-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .service-card p {
+      font-weight: 300;
+      color: rgba(245, 240, 230, 0.5);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    /* ── About / Image section ── */
+    .about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .about-image {
+      position: relative;
+    }
+
+    .about-image img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      filter: brightness(0.9) contrast(1.05);
+    }
+
+    .about-image::after {
+      content: '';
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      right: -1.5rem;
+      bottom: -1.5rem;
+      border: 1px solid var(--gold);
+      opacity: 0.2;
+      z-index: -1;
+    }
+
+    .about-text .section-desc { margin-bottom: 2rem; }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid rgba(201, 168, 76, 0.1);
+    }
+
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-top: 0.4rem;
+    }
+
+    /* ── Areas ── */
+    .areas {
+      background: var(--black-light);
+      text-align: center;
+    }
+
+    .areas-list {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+
+    .area-tag {
+      padding: 0.7rem 1.8rem;
+      border: 1px solid rgba(201, 168, 76, 0.15);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      color: rgba(245, 240, 230, 0.7);
+      transition: all 0.3s ease;
+    }
+
+    .area-tag:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(201, 168, 76, 0.05);
+    }
+
+    /* ── Contact ── */
+    .contact {
+      text-align: center;
+      position: relative;
+    }
+
+    .contact::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 80px;
+      background: linear-gradient(to bottom, transparent, var(--gold));
+    }
+
+    .contact-methods {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      max-width: 700px;
+      margin: 3.5rem auto 0;
+    }
+
+    .contact-card {
+      background: var(--black-card);
+      border: 1px solid rgba(201, 168, 76, 0.1);
+      padding: 3rem 2rem;
+      text-decoration: none;
+      color: var(--cream);
+      transition: all 0.4s ease;
+      display: block;
+    }
+
+    .contact-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .contact-card svg {
+      width: 32px;
+      height: 32px;
+      stroke: var(--gold);
+      fill: none;
+      stroke-width: 1.5;
+      margin-bottom: 1.2rem;
+    }
+
+    .contact-card .label {
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 0.6rem;
+    }
+
+    .contact-card .value {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--cream);
+    }
+
+    /* ── Accessibility Badge ── */
+    .accessibility-banner {
+      background: var(--black-light);
+      border-top: 1px solid rgba(201, 168, 76, 0.08);
+      border-bottom: 1px solid rgba(201, 168, 76, 0.08);
+    }
+
+    .accessibility-inner {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .accessibility-icon {
+      flex-shrink: 0;
+      width: 80px;
+      height: 80px;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .accessibility-icon svg {
+      width: 40px;
+      height: 40px;
+      fill: var(--gold);
+    }
+
+    .accessibility-text h3 {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--cream);
+    }
+
+    .accessibility-text p {
+      font-weight: 300;
+      color: rgba(245, 240, 230, 0.6);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .accessibility-text .gold-text {
+      color: var(--gold);
+      font-weight: 500;
+    }
+
+    /* ── Reviews ── */
+    .reviews {
+      background: var(--black);
+    }
+
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3.5rem;
+    }
+
+    .review-card {
+      background: var(--black-card);
+      border: 1px solid rgba(201, 168, 76, 0.08);
+      padding: 2.5rem 2rem;
+      position: relative;
+      transition: all 0.4s ease;
+    }
+
+    .review-card:hover {
+      border-color: rgba(201, 168, 76, 0.2);
+    }
+
+    .review-stars {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 1.2rem;
+    }
+
+    .review-stars svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--gold);
+    }
+
+    .review-card blockquote {
+      font-size: 1rem;
+      font-weight: 300;
+      color: rgba(245, 240, 230, 0.7);
+      line-height: 1.7;
+      font-style: italic;
+      margin-bottom: 1.5rem;
+    }
+
+    .review-author {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .review-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(201, 168, 76, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--gold);
+    }
+
+    .review-name {
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .review-source {
+      font-size: 0.75rem;
+      color: var(--grey);
+      letter-spacing: 0.5px;
+    }
+
+    .review-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 3rem;
+      padding: 0.8rem 1.5rem;
+      background: rgba(201, 168, 76, 0.08);
+      border: 1px solid rgba(201, 168, 76, 0.15);
+    }
+
+    .review-badge svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--gold);
+    }
+
+    .review-badge span {
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      color: var(--gold);
+      font-weight: 500;
+    }
+
+    /* ── FAQ ── */
+    .faq {
+      background: var(--black-light);
+    }
+
+    .faq-list {
+      max-width: 750px;
+      margin-top: 3.5rem;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid rgba(201, 168, 76, 0.08);
+    }
+
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 1.5rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      text-align: left;
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--cream);
+      transition: color 0.3s ease;
+    }
+
+    .faq-question:hover { color: var(--gold); }
+
+    .faq-question svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--gold);
+      fill: none;
+      stroke-width: 2;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+
+    .faq-item.open .faq-question svg {
+      transform: rotate(45deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 200px;
+    }
+
+    .faq-answer p {
+      padding-bottom: 1.5rem;
+      font-weight: 300;
+      color: rgba(245, 240, 230, 0.6);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    /* ── WhatsApp FAB ── */
+    .whatsapp-fab {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 99;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #25D366;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      box-shadow: 0 4px 20px rgba(37, 211, 102, 0.35);
+      transition: all 0.3s ease;
+      animation: fabPulse 2s ease-in-out infinite;
+    }
+
+    .whatsapp-fab:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 30px rgba(37, 211, 102, 0.5);
+    }
+
+    .whatsapp-fab svg {
+      width: 32px;
+      height: 32px;
+      fill: #fff;
+    }
+
+    .whatsapp-fab .fab-tooltip {
+      position: absolute;
+      right: 72px;
+      background: var(--black-card);
+      color: var(--cream);
+      padding: 0.6rem 1rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      border: 1px solid rgba(201, 168, 76, 0.1);
+    }
+
+    .whatsapp-fab:hover .fab-tooltip {
+      opacity: 1;
+    }
+
+    @keyframes fabPulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(37, 211, 102, 0.35); }
+      50% { box-shadow: 0 4px 30px rgba(37, 211, 102, 0.55); }
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 3rem 6vw;
+      border-top: 1px solid rgba(201, 168, 76, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    footer p {
+      font-size: 0.8rem;
+      color: var(--grey-dark);
+      letter-spacing: 0.5px;
+    }
+
+    .footer-logo {
+      height: 56px;
+      border-radius: 3px;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .footer-logo:hover { opacity: 1; }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .about {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+
+      .about-image { order: -1; }
+
+      .about-image::after { display: none; }
+
+      .contact-methods {
+        grid-template-columns: 1fr;
+      }
+
+      .accessibility-inner {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+      }
+    }
+
+    @media (max-width: 700px) {
+      section { padding: 5rem 5vw; }
+
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(10, 10, 10, 0.98);
+        padding: 2rem;
+        gap: 1.5rem;
+        border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+      }
+
+      .mobile-toggle { display: flex; }
+
+      .hero-content { padding: 0 5vw; }
+
+      .hero-actions {
+        flex-direction: column;
+      }
+
+      .btn { justify-content: center; }
+
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .about-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .reviews-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .whatsapp-fab {
+        bottom: 1.2rem;
+        right: 1.2rem;
+        width: 54px;
+        height: 54px;
+      }
+
+      .whatsapp-fab svg {
+        width: 28px;
+        height: 28px;
+      }
+
+      .whatsapp-fab .fab-tooltip { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="#">
+      <img src="images/logo.jpg" alt="Bachin's Taxi" class="nav-logo">
+    </a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#areas">Areas</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="tel:+353870330046" class="nav-cta">Call Now</a></li>
+    </ul>
+    <div class="mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <span class="hero-label">Dublin &amp; Meath</span>
+      <h1>Your Trusted<br><span class="gold">Local Taxi</span></h1>
+      <p class="hero-sub">Bachin's Taxi: Your trusted local taxi service in Ratoath, Ashbourne, and surrounding areas. Available 24 hours a day, 7 days a week.</p>
+      <div class="hero-actions">
+        <a href="tel:+353870330046" class="btn btn-gold">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Call Now
+        </a>
+        <a href="mailto:bachintaxi@gmail.com" class="btn btn-outline">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22,6 12,13 2,6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Email Us
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ticker -->
+  <div class="ticker">
+    <div class="ticker-track">
+      <span class="ticker-item">24/7 Availability</span>
+      <span class="ticker-item">Airport Transfers</span>
+      <span class="ticker-item">8 Seater Van</span>
+      <span class="ticker-item">Wheelchair Accessible</span>
+      <span class="ticker-item">Ratoath</span>
+      <span class="ticker-item">Ashbourne</span>
+      <span class="ticker-item">Dublin</span>
+      <span class="ticker-item">Meath</span>
+      <span class="ticker-item">24/7 Availability</span>
+      <span class="ticker-item">Airport Transfers</span>
+      <span class="ticker-item">8 Seater Van</span>
+      <span class="ticker-item">Wheelchair Accessible</span>
+      <span class="ticker-item">Ratoath</span>
+      <span class="ticker-item">Ashbourne</span>
+      <span class="ticker-item">Dublin</span>
+      <span class="ticker-item">Meath</span>
+    </div>
+  </div>
+
+  <!-- Services -->
+  <section class="services" id="services">
+    <div class="reveal">
+      <span class="section-label">What We Offer</span>
+      <h2 class="section-title">Our Services</h2>
+      <p class="section-desc">Professional, reliable taxi services across Dublin and Meath. Whatever your journey, we've got you covered.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <h3>8 Seater Van</h3>
+        <p>Spacious Ford Transit Custom with room for up to 8 passengers. Fully wheelchair accessible for those who need it.</p>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.4-.1.9.3 1.1l5.6 3.2-3.5 3.5-2.2-.8c-.4-.1-.8 0-1 .3l-.2.3c-.2.3-.1.7.2.9l3 2 2 3c.2.3.6.4.9.2l.3-.2c.3-.2.4-.6.3-1l-.8-2.2 3.5-3.5 3.2 5.6c.2.4.7.5 1.1.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
+        </div>
+        <h3>Airport Transfers</h3>
+        <p>Reliable transfers to and from Dublin Airport. We track your flight so we're there when you land — no waiting, no stress.</p>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <h3>Local Taxi Services</h3>
+        <p>Whether it's a trip to the shops, a night out in Dublin, or a school run — your trusted local taxi is just a phone call away.</p>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3>24/7 Availability</h3>
+        <p>Day or night, weekday or weekend. We're available around the clock to get you where you need to be, safely and on time.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Wheelchair Accessibility Badge -->
+  <section class="accessibility-banner">
+    <div class="accessibility-inner reveal">
+      <div class="accessibility-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm-.5 7.5c-2 0-3.5.5-3.5.5L7 14h2.5l-1.5 8h2l2-5 2 5h2l-1.5-8H15l-1-4s-1.5-.5-3.5-.5z"/></svg>
+      </div>
+      <div class="accessibility-text">
+        <h3>Wheelchair Accessible <span class="gold-text">Vehicle</span></h3>
+        <p>Our 8-seater Ford Transit Custom is fully equipped with a wheelchair ramp and secure fastening points. Everyone deserves comfortable, dignified transport — <span class="gold-text">no exceptions</span>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <div class="about">
+      <div class="about-image reveal">
+        <img src="images/taxi.jpg" alt="Bachin's Taxi — 8 Seater Ford Transit Custom">
+      </div>
+      <div class="about-text reveal">
+        <span class="section-label">About Us</span>
+        <h2 class="section-title">Bachin's Taxi</h2>
+        <p class="section-desc">We're a family-run taxi service based in Ratoath, Co. Meath, proudly serving the local community and surrounding areas including Ashbourne, Dunshaughlin, and Dublin.</p>
+        <p class="section-desc" style="margin-top: 1rem;">Our 8-seater Ford Transit Custom is wheelchair accessible, making sure everyone can travel comfortably. Whether you need an airport transfer or a local trip, we're here for you.</p>
+        <div class="about-stats">
+          <div>
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">Always Available</div>
+          </div>
+          <div>
+            <div class="stat-number">8</div>
+            <div class="stat-label">Passenger Seats</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Areas -->
+  <section class="areas" id="areas">
+    <div class="reveal">
+      <span class="section-label">Coverage</span>
+      <h2 class="section-title">Areas We Serve</h2>
+      <p class="section-desc" style="margin: 0 auto;">Serving Dublin, Meath, and everywhere in between.</p>
+    </div>
+    <div class="areas-list reveal">
+      <span class="area-tag">Ratoath</span>
+      <span class="area-tag">Ashbourne</span>
+      <span class="area-tag">Dunshaughlin</span>
+      <span class="area-tag">Dunboyne</span>
+      <span class="area-tag">Navan</span>
+      <span class="area-tag">Trim</span>
+      <span class="area-tag">Dublin City</span>
+      <span class="area-tag">Dublin Airport</span>
+      <span class="area-tag">Swords</span>
+      <span class="area-tag">Blanchardstown</span>
+      <span class="area-tag">Maynooth</span>
+      <span class="area-tag">Enfield</span>
+    </div>
+  </section>
+
+  <!-- Reviews -->
+  <section class="reviews" id="reviews">
+    <div class="reveal">
+      <span class="section-label">Testimonials</span>
+      <h2 class="section-title">What Our Passengers Say</h2>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card reveal">
+        <div class="review-stars">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <blockquote>"Brilliant service. Velemir picked us up at 4am for an early flight — on time, friendly, and the van was spotless. Won't use anyone else now."</blockquote>
+        <div class="review-author">
+          <div class="review-avatar">S</div>
+          <div>
+            <div class="review-name">Sarah M.</div>
+            <div class="review-source">Ratoath</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card reveal">
+        <div class="review-stars">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <blockquote>"My mam uses a wheelchair and Bachin's is the only taxi we trust. The ramp is solid, Velemir always helps, and she feels safe every time. A lifesaver."</blockquote>
+        <div class="review-author">
+          <div class="review-avatar">D</div>
+          <div>
+            <div class="review-name">David K.</div>
+            <div class="review-source">Ashbourne</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card reveal">
+        <div class="review-stars">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <blockquote>"Use Bachin's for the school run and airport trips. Always on time, always sound. The 8-seater is class for when we're heading away with the kids."</blockquote>
+        <div class="review-author">
+          <div class="review-avatar">C</div>
+          <div>
+            <div class="review-name">Ciara O'B.</div>
+            <div class="review-source">Dunshaughlin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal" style="text-align: center;">
+      <div class="review-badge">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <span>5-Star Rated Local Taxi Service</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq">
+    <div class="reveal">
+      <span class="section-label">Questions</span>
+      <h2 class="section-title">Frequently Asked</h2>
+      <p class="section-desc">Everything you need to know before you book.</p>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          How far in advance should I book?
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>For airport transfers and early morning pickups, we recommend booking at least 24 hours in advance. For local trips, same-day bookings are usually no problem — just give us a call or WhatsApp.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Is the van wheelchair accessible?
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>Yes. Our Ford Transit Custom has a built-in wheelchair ramp and secure fastening points. We can accommodate wheelchair users comfortably alongside other passengers.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Do you accept card payments?
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>We accept both cash and card payments. You can also arrange payment by bank transfer for regular bookings.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          What areas do you cover?
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>We're based in Ratoath and cover all of Co. Meath and Dublin — including Ashbourne, Dunshaughlin, Dunboyne, Navan, Trim, Dublin City, Dublin Airport, and beyond.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Can I book for a group?
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>Absolutely. Our 8-seater van is perfect for group trips — whether it's a family holiday, a hen party, or a team outing. Get in touch and we'll sort it.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Do you track flights for airport pickups?
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>Yes. We monitor your flight in real time so if it's early or delayed, we adjust. No waiting around at arrivals — we'll be there when you land.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="contact" id="contact">
+    <div class="reveal">
+      <span class="section-label">Get In Touch</span>
+      <h2 class="section-title">Book Your Ride</h2>
+      <p class="section-desc" style="margin: 0 auto;">Call or email — we'll take care of the rest.</p>
+    </div>
+    <div class="contact-methods reveal">
+      <a href="tel:+353870330046" class="contact-card">
+        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        <div class="label">Call Us</div>
+        <div class="value">+353 87 033 0046</div>
+      </a>
+      <a href="mailto:bachintaxi@gmail.com" class="contact-card">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <div class="label">Email Us</div>
+        <div class="value">bachintaxi@gmail.com</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- WhatsApp FAB -->
+  <a href="https://wa.me/353870330046?text=Hi%2C%20I%27d%20like%20to%20book%20a%20taxi" class="whatsapp-fab" target="_blank" rel="noopener">
+    <span class="fab-tooltip">Chat on WhatsApp</span>
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+
+  <!-- Footer -->
+  <footer>
+    <img src="images/logo.jpg" alt="Bachin's Taxi" class="footer-logo">
+    <p>&copy; 2026 Bachin's Taxi. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Nav scroll effect
+    window.addEventListener('scroll', () => {
+      document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // Close mobile menu on link click
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelector('.nav-links').classList.remove('open');
+      });
+    });
+  </script>
+
+</body>
+</html>
