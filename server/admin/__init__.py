@@ -15,7 +15,7 @@ bp.add_app_template_global(auth.csrf_token, "csrf_token")
 
 @bp.after_request
 def _headers(resp):
-    resp.headers["Cache-Control"] = "no-store"
+    resp.headers.setdefault("Cache-Control", "no-store")
     resp.headers["X-Frame-Options"] = "DENY"
     resp.headers["Referrer-Policy"] = "same-origin"
     return resp
@@ -68,4 +68,4 @@ def dashboard():
 
 
 # Editor pages register their routes on `bp` when imported.
-from . import prices, settings, texts, tours  # noqa: E402,F401
+from . import photos, prices, settings, texts, tours  # noqa: E402,F401

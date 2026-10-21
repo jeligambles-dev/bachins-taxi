@@ -5,7 +5,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
-from flask import Flask, Response, redirect, request, send_file
+from flask import Flask, Response, redirect, render_template, request, send_file
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import safe_join
 
@@ -56,6 +56,16 @@ def create_app(store, site_root, *, admin_password, secret_key, testing=False):
     app.extensions["publisher"] = publisher
     app.extensions["admin_limiter"] = LoginLimiter()
     app.register_blueprint(admin_bp)
+
+    @app.errorhandler(413)
+    def too_big(_e):
+        if request.path.startswith("/admin"):
+            resp = Response(render_template(
+                "admin/error.html", message="Photo too big (max 25 MB)", back="/admin/photos"),
+                status=413, mimetype="text/html")
+            resp.headers["Cache-Control"] = "no-store"
+            return resp
+        return Response("Payload too large", status=413, mimetype="text/plain")
 
     @app.get("/health")
     def health():

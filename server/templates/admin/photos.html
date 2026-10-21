@@ -1,0 +1,41 @@
+{% extends "admin/base.html" %}
+{% block title %}Photos{% endblock %}
+{% block content %}
+<h1>Photos</h1>
+{% include "admin/_errors.html" %}
+<form method="post" action="/admin/photos" enctype="multipart/form-data" class="card">
+  <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+  <label for="files">Add photos</label>
+  <input id="files" type="file" name="files" accept="image/*" multiple>
+  <p class="hint">Straight from your camera roll is fine. Uploading doesn't change the website; assign a photo below or on a tour.</p>
+  <button type="submit" class="btn">Upload</button>
+</form>
+
+<h2>Where photos go</h2>
+<form method="post" action="/admin/photos/slots" class="card">
+  <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+  {% for slot, label, cur in slots %}
+  <input type="hidden" name="o__slot_{{ slot }}" value="{{ cur }}">
+  <label for="slot_{{ slot }}">{{ label }}</label>
+  <select id="slot_{{ slot }}" name="slot_{{ slot }}">
+    <option value="">None (use original)</option>
+    {% for p in photos %}<option value="{{ p.id }}"{% if cur == p.id %} selected{% endif %}>{{ p.original_name }} ({{ p.width }}x{{ p.height }})</option>{% endfor %}
+  </select>
+  {% endfor %}
+  <button type="submit" class="btn">Save and publish</button>
+</form>
+
+<h2>Your photos</h2>
+{% if photos %}
+<div class="grid2">
+  {% for p in photos %}
+  <div class="card thumb">
+    <img src="/admin/photos/{{ p.id }}/raw" alt="{{ p.original_name }}" loading="lazy" width="160" height="160">
+    <span class="hint">{{ p.original_name }}</span>
+    <span class="hint">{% if p.used %}Used by: {{ p.used | join(", ") }}{% else %}Not used{% endif %}</span>
+    <a class="btn dark" href="/admin/photos/{{ p.id }}/delete">Delete</a>
+  </div>
+  {% endfor %}
+</div>
+{% else %}<p class="hint">No photos yet.</p>{% endif %}
+{% endblock %}
