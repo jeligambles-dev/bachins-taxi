@@ -1030,8 +1030,12 @@ def check_links(out_dir, files):
     return bad
 
 
-def build_site(content, out_dir):
-    """Render the site for `content` into `out_dir` (emptied first)."""
+def build_site(content, out_dir, extra_files=None):
+    """Render the site for `content` into `out_dir` (emptied first).
+
+    `extra_files` maps relative paths (e.g. "uploads/abc.jpg") to bytes; they
+    are written after out_dir is emptied and before the link check.
+    """
     out_dir = Path(out_dir).resolve()
     in_repo = out_dir == ROOT_DIR or ROOT_DIR in out_dir.parents
     in_dist = out_dir == ROOT_DIR / "dist" or (ROOT_DIR / "dist") in out_dir.parents
@@ -1047,6 +1051,12 @@ def build_site(content, out_dir):
     out_dir.mkdir(parents=True, exist_ok=True)
     for d in ("css", "js", "images"):
         shutil.copytree(ROOT_DIR / d, out_dir / d)
+    for rel, data in (extra_files or {}).items():
+        target = (out_dir / rel).resolve()
+        if out_dir not in target.parents:
+            raise ValueError(f"extra file outside out_dir: {rel}")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
 
     pages = {}
     for builder in (build_tour_pages, build_tours_hub, build_pub_tours, build_golf_trips, build_multi_day, build_calculator, build_destinations, build_blog):

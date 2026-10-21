@@ -5,28 +5,9 @@ import build
 from content import default_content, merge
 
 
-def _make(out, rel):
-    p = Path(out) / rel
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_bytes(b"\xff\xd8\xff")
-
-
-# build_site empties out_dir, so (like the Task 8 publisher) put the upload
-# files in place at the point the site skeleton is copied, before link check.
 def _build_with_uploads(tmp_path, content, files):
-    import shutil
-    real = shutil.copytree
-
-    def fake(src, dst, *a, **k):
-        r = real(src, dst, *a, **k)
-        for rel in files:
-            _make(Path(dst).parent, rel)
-        return r
-    build.shutil.copytree = fake
-    try:
-        build.build_site(content, tmp_path)
-    finally:
-        build.shutil.copytree = real
+    build.build_site(content, tmp_path,
+                     extra_files={rel: b"\xff\xd8\xff" for rel in files})
     return tmp_path
 
 
