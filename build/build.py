@@ -237,9 +237,19 @@ def nav(root, is_index=False, active=""):
   </nav>"""
 
 
+FOOTER_FALLBACK = ("glendalough-wicklow", "connemara-galway", "dingle-peninsula")
+
+
 def footer(root, is_index=False):
     favs = [t for t in published() if t["fav"]]
-    popular = (favs + [t for t in published("day") if t not in favs])[:6]
+    popular = list(favs)
+    # then the long-standing defaults, skipping any that are missing or hidden
+    for slug in FOOTER_FALLBACK:
+        t = TOUR_BY_SLUG.get(slug)
+        if t and t["published"] and t not in popular:
+            popular.append(t)
+    popular += [t for t in published("day") if t not in popular]
+    popular = popular[:6]
     tour_links = "\n".join(f'          <li><a href="{root}tours/{t["slug"]}.html">{E(t["name"])}</a></li>' for t in popular)
     return f"""  <footer class="site-footer">
     <div class="footer-grid">
@@ -1082,11 +1092,13 @@ def build_site(content, out_dir, extra_files=None):
             f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{xml}\n</urlset>\n')
         (out_dir / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {base}/sitemap.xml\n")
 
-    leftover = [f"{p.relative_to(out_dir)}: {m.group(0)}"
-                for p in sorted(out_dir.rglob("*")) if p.suffix in (".html", ".js")
-                for m in _TOKEN_RE.finditer(p.read_text())]
+    leftover = sorted({m.group(0)
+                       for p in out_dir.rglob("*") if p.suffix in (".html", ".js")
+                       for m in _TOKEN_RE.finditer(p.read_text())})
     if leftover:
-        raise BuildError(leftover, "Unfilled {{tokens}}")
+        raise BuildError([f"Unknown placeholder {tok} in page text" for tok in leftover[:3]]
+                         + ([f"and {len(leftover) - 3} more"] if len(leftover) > 3 else []),
+                         "Unfilled {{tokens}}")
     bad = check_links(out_dir, ["index.html"] + list(pages))
     if bad:
         raise BuildError(bad)
