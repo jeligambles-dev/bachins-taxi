@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="64" fill="#0a0a0a"/>
+  <rect x="56" y="56" width="400" height="400" rx="36" fill="#c9a84c"/>
+  <text x="256" y="292" font-family="Georgia, 'Times New Roman', serif" font-size="150" font-weight="700" fill="#0a0a0a" text-anchor="middle" letter-spacing="-4">BCH</text>
+  <text x="256" y="372" font-family="Helvetica, Arial, sans-serif" font-size="46" font-weight="700" fill="#0a0a0a" text-anchor="middle" letter-spacing="22">TAXI</text>
+  <g fill="#0a0a0a">
+    <rect x="96" y="150" width="40" height="20"/><rect x="176" y="150" width="40" height="20"/><rect x="256" y="150" width="40" height="20"/><rect x="336" y="150" width="40" height="20"/>
+    <rect x="136" y="130" width="40" height="20"/><rect x="216" y="130" width="40" height="20"/><rect x="296" y="130" width="40" height="20"/><rect x="376" y="130" width="40" height="20"/>
+  </g>
+</svg>

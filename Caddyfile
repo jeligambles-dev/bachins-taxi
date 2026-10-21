@@ -1,0 +1,25 @@
+# Static file server for Railway. Railway injects PORT.
+{
+	admin off
+}
+
+:{$PORT:8080} {
+	root * /srv
+	encode zstd gzip
+
+	# Long cache for images, short for pages/css/js so updates show quickly
+	@images path /images/*
+	header @images Cache-Control "public, max-age=604800"
+	@assets path /css/* /js/*
+	header @assets Cache-Control "public, max-age=3600"
+
+	# Pretty URLs: /tours/cliffs-of-moher also serves cliffs-of-moher.html
+	try_files {path} {path}.html {path}/index.html
+	file_server
+
+	# Unknown URLs: show the home page, keeping the 404 status
+	handle_errors {
+		rewrite * /index.html
+		file_server
+	}
+}

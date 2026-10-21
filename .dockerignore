@@ -1,0 +1,4 @@
+.git
+.playwright-mcp
+.DS_Store
+build/__pycache__
