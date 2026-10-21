@@ -104,6 +104,9 @@ def test_rate_limit_uses_forwarded_client_ip(client):
     ("/tours", "/admin/"),
     ("/adminx", "/admin/"),
     ("/admin/\\evil", "/admin/"),
+    ("/admin/../", "/admin/"),
+    ("/admin/..//evil.com", "/admin/"),
+    ("/admin//evil.com", "/admin/"),
 ])
 def test_next_only_same_site_admin(client, nxt, expected):
     r = login(client, next=nxt)
@@ -115,7 +118,8 @@ def test_login_required_preserves_next(client):
     assert r.headers["Location"] == "/admin/login?next=/admin/%3Fx%3D1"
 
 
-def test_cookie_flags(store, tmp_path):
+def test_cookie_flags(store, tmp_path, monkeypatch):
+    monkeypatch.delenv("FLASK_DEBUG", raising=False)
     app = create_app(store, tmp_path / "site", admin_password=ADMIN_PASSWORD,
                      secret_key="k", testing=False)
     r = app.test_client().get("/admin/login")
@@ -147,3 +151,34 @@ def test_dashboard_email_banner(app, logged_in):
         return c
     pub.content = content
     assert b"email-unconfirmed" in logged_in.get("/admin/").data
+
+
+def test_limiter_atomic_under_parallel_burst(app):
+    import threading
+    lim = app.extensions["admin_limiter"]
+    results = []
+    barrier = threading.Barrier(40)
+
+    def hit():
+        barrier.wait()
+        results.append(lim.attempt("1.2.3.4"))
+    ts = [threading.Thread(target=hit) for _ in range(40)]
+    [t.start() for t in ts]
+    [t.join() for t in ts]
+    assert results.count(False) == 5
+
+
+def test_password_change_revokes_session(app, logged_in):
+    assert logged_in.get("/admin/").status_code == 200
+    app.config["ADMIN_PASSWORD"] = "a-different-password"
+    r = logged_in.get("/admin/")
+    assert r.status_code == 302 and r.headers["Location"].startswith("/admin/login")
+
+
+def test_forwarded_for_spoof_does_not_evade_limit(client):
+    def post(pw, xff):
+        return client.post("/admin/login", data={"password": pw, "csrf": csrf_of(client)},
+                           headers={"X-Forwarded-For": xff})
+    for _ in range(5):
+        post("bad", "9.9.9.9, 1.1.1.1")
+    assert post(ADMIN_PASSWORD, "8.8.8.8, 1.1.1.1").status_code == 429

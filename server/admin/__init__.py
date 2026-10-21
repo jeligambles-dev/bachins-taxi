@@ -34,17 +34,17 @@ def login():
     limiter = current_app.extensions["admin_limiter"]
     ip = request.remote_addr or "?"
     nxt = auth.safe_next(request.form.get("next"))
-    if limiter.blocked(ip):
+    if limiter.attempt(ip):
         return render_template("admin/login.html", next=nxt,
                                error="Too many attempts. Try again in 15 minutes."), 429
     if not auth.password_ok(request.form.get("password", ""),
                             current_app.config["ADMIN_PASSWORD"]):
-        limiter.fail(ip)
         return render_template("admin/login.html", next=nxt,
                                error="Wrong password."), 200
     limiter.clear(ip)
     session.clear()  # new session: prevents fixation
     session["admin"] = True
+    session["pw"] = auth.pw_fingerprint(current_app.config["ADMIN_PASSWORD"])
     session.permanent = True
     auth.new_csrf()
     return redirect(nxt)

@@ -7,7 +7,7 @@ import time
 from functools import wraps
 from urllib.parse import quote
 
-from flask import abort, flash, g, redirect, request, session, url_for
+from flask import abort, current_app, flash, g, redirect, request, session, url_for
 
 MAX_FAILURES = 5
 WINDOW_SECONDS = 15 * 60
@@ -31,15 +31,16 @@ class LoginLimiter:
             self._fails.pop(key, None)
         return recent
 
-    def blocked(self, key):
-        with self._lock:
-            return len(self._recent(key)) >= MAX_FAILURES
-
-    def fail(self, key):
+    def attempt(self, key):
+        """Atomically: True if `key` is blocked, else record an attempt and
+        return False. Success should call clear()."""
         with self._lock:
             recent = self._recent(key)
+            if len(recent) >= MAX_FAILURES:
+                return True
             recent.append(self.clock())
             self._fails[key] = recent
+            return False
 
     def clear(self, key):
         with self._lock:
@@ -48,6 +49,10 @@ class LoginLimiter:
     def reset(self):
         with self._lock:
             self._fails.clear()
+
+
+def pw_fingerprint(password):
+    return hashlib.sha256(password.encode()).hexdigest()[:16]
 
 
 def password_ok(given, expected):
@@ -78,7 +83,8 @@ def check_csrf():
 def safe_next(value):
     """Only same-site /admin paths; anything else falls back to the dashboard."""
     if (value and (value == "/admin" or value.startswith("/admin/"))
-            and "\\" not in value and not value.startswith("//")
+            and "\\" not in value and "//" not in value
+            and ".." not in value.split("?")[0].split("/")
             and all(ch >= " " and ch != "\x7f" for ch in value)):
         return value
     return "/admin/"
@@ -87,6 +93,9 @@ def safe_next(value):
 def login_required(view):
     @wraps(view)
     def wrapped(*args, **kwargs):
+        if session.get("admin") and session.get("pw") != pw_fingerprint(
+                current_app.config["ADMIN_PASSWORD"]):
+            session.clear()  # password changed: revoke old sessions
         if not session.get("admin"):
             target = request.full_path if request.query_string else request.path
             return redirect("/admin/login?next=" + quote(target, safe="/"))
