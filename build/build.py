@@ -22,7 +22,8 @@ from urllib.parse import quote
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from data import AREAS      # noqa: E402
-from content import default_content, merge  # noqa: E402
+from content import (KINDS, default_content, merge, price_label,  # noqa: E402
+                     price_unit)
 from posts import POSTS     # noqa: E402
 
 E = html.escape
@@ -36,7 +37,7 @@ TEMPLATE_INDEX = Path(__file__).resolve().parent / "templates" / "index.html"
 # builder below reads these names.
 PHONE = PHONE_DISPLAY = EMAIL = WHATSAPP = SITE_URL = ""
 MULTI_DAY_RATE = EXTRA_HOUR_RATE = MAX_PASSENGERS = 0
-TOURS = []
+TOURS = []          # every tour, published or hidden
 TOUR_BY_SLUG = {}
 MULTI_DAY = []
 AIRPORT_FARES = []
@@ -44,9 +45,26 @@ LONG_TRANSFERS = []
 
 
 class BuildError(Exception):
-    def __init__(self, broken):
+    def __init__(self, broken, message="Broken links"):
         self.broken = list(broken)
-        super().__init__("Broken links: " + "; ".join(self.broken))
+        super().__init__(message + ": " + "; ".join(self.broken))
+
+
+KIND_ORDER = ("day", "pub", "golf")
+# Page that lists each kind, with its breadcrumb name and nav key.
+KIND_PAGE = {
+    "day": ("tours.html", "Tours", "tours"),
+    "pub": ("pub-tours.html", "Pub Tours", "pub"),
+    "golf": ("golf-trips.html", "Golf Trips", "golf"),
+}
+KIND_SUFFIX = {"day": "Private Tour", "pub": "Rural Pub Tour", "golf": "Golf Trip"}
+KIND_NOUN = {"day": "day tour", "pub": "rural pub tour", "golf": "golf trip"}
+
+
+def published(kind=None):
+    """Published tours (optionally of one kind), day first, then pub, then golf."""
+    kinds = KIND_ORDER if kind is None else (kind,)
+    return [t for k in kinds for t in TOURS if t["kind"] == k and t["published"]]
 
 
 def _configure(content):
@@ -62,8 +80,7 @@ def _configure(content):
     MULTI_DAY_RATE = st["multi_day_rate"]
     EXTRA_HOUR_RATE = st["extra_hour_rate"]
     MAX_PASSENGERS = st["max_passengers"]
-    # TEMPORARY (Task 3 removes this line): starter tours have no price yet.
-    TOURS = [t for t in content["tours"] if t["kind"] == "day"]
+    TOURS = list(content["tours"])
     TOUR_BY_SLUG = {t["slug"]: t for t in TOURS}
     MULTI_DAY = content["multi_day"]
     AIRPORT_FARES = [(f["area"], f["distance"], f["to"], f["from"]) for f in content["airport_fares"]]
@@ -92,6 +109,8 @@ BRAND = ('<span class="brand-mark" aria-hidden="true">BCH</span>'
 def nav(root, is_index=False, active=""):
     items = [
         ("Tours", f"{root}tours.html", "tours"),
+        ("Pub Tours", f"{root}pub-tours.html", "pub"),
+        ("Golf", f"{root}golf-trips.html", "golf"),
         ("Multi-Day", f"{root}multi-day-tours.html", "multi"),
         ("Prices", f"{root}price-calculator.html", "prices"),
         ("Airport", idx(root, "airport", is_index), "airport"),
@@ -120,7 +139,8 @@ def nav(root, is_index=False, active=""):
 
 
 def footer(root, is_index=False):
-    popular = [t for t in TOURS if t["fav"]] + [TOUR_BY_SLUG[s] for s in ("glendalough-wicklow", "connemara-galway", "dingle-peninsula")]
+    favs = [t for t in published() if t["fav"]]
+    popular = (favs + [t for t in published("day") if t not in favs])[:6]
     tour_links = "\n".join(f'          <li><a href="{root}tours/{t["slug"]}.html">{E(t["name"])}</a></li>' for t in popular)
     return f"""  <footer class="site-footer">
     <div class="footer-grid">
@@ -140,6 +160,8 @@ def footer(root, is_index=False):
         <ul>
           <li><a href="{'#' if is_index else root + 'index.html'}">Home</a></li>
           <li><a href="{root}tours.html">Day Tours</a></li>
+          <li><a href="{root}pub-tours.html">Pub Tours</a></li>
+          <li><a href="{root}golf-trips.html">Golf Trips</a></li>
           <li><a href="{root}multi-day-tours.html">Multi-Day Tours</a></li>
           <li><a href="{root}destinations.html">Destinations</a></li>
           <li><a href="{root}blog.html">Blog &amp; Travel Guides</a></li>
@@ -181,7 +203,7 @@ def fix_root(fragment, root):
     return fragment.replace('href="index.html', f'href="{root}index.html')
 
 
-def page(*, root, title, description, body, active="", path="", jsonld=None, extra_js=""):
+def page(*, root, title, description, body, active="", path="", jsonld=None, extra_js="", noindex=False):
     canonical = ""
     if SITE_URL:
         canonical = f'\n  <link rel="canonical" href="{SITE_URL.rstrip("/")}/{path}">'
@@ -195,7 +217,7 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{E(title)}</title>
   <meta name="description" content="{E(description)}">
-  <meta name="robots" content="index, follow">
+  <meta name="robots" content="{'noindex' if noindex else 'index, follow'}">
   <meta name="theme-color" content="#062a1f">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="BCH Taxi">
@@ -256,6 +278,18 @@ def breadcrumb_ld(crumbs):
 
 # ── Components ───────────────────────────────────────────────────────────────
 
+def price_attr(t):
+    """Value for data-price: whole euros, or empty when the price is unset."""
+    return "" if t["price"] is None else str(t["price"])
+
+
+def price_html(t, note=""):
+    """Price block contents: 'From €X per vehicle', or just 'Price on request'."""
+    if t["price"] is None:
+        return price_label(t) + (f"<span>{note}</span>" if note else "")
+    return f"<small>From</small>{price_label(t)}<span>{price_unit(t)}{' · ' + note if note else ''}</span>"
+
+
 def tour_card(t, root, detail_link=True):
     li = "".join(f"<li>{E(x)}</li>" for x in t["highlights"][:4])
     extra = t["highlights"][4:]
@@ -273,8 +307,8 @@ def tour_card(t, root, detail_link=True):
         {more}
         {details}
         <div class="tour-foot">
-          <div class="tour-price"><small>From</small>{eur(t['price'])}<span>per vehicle</span></div>
-          <button type="button" class="btn btn-gold tour-book" data-price="{t['price']}" data-tour="{E(t['name'])}">Book</button>
+          <div class="tour-price">{price_html(t)}</div>
+          <button type="button" class="btn btn-gold tour-book" data-price="{price_attr(t)}" data-unit="{price_unit(t)}" data-tour="{E(t['name'])}">Book</button>
         </div>
       </article>"""
 
@@ -337,14 +371,52 @@ def group_band(root, is_index=False):
   </section>"""
 
 
-INCLUDED = [
-    "Private vehicle for your group only",
-    "Up to 8 passengers, one price for the vehicle",
-    "Bigger group? We can arrange extra vehicles",
-    "Pickup and drop-off anywhere in Dublin or Meath",
-    "Wheelchair-accessible van with ramp",
-    "Flexible stops and pace on the day",
-]
+# Per-kind copy for "What's included" and "Good to know". Task 4 moves these
+# into the editable texts registry.
+INCLUDED_BY_KIND = {
+    "day": [
+        "Private vehicle for your group only",
+        "Up to 8 passengers, one price for the vehicle",
+        "Bigger group? We can arrange extra vehicles",
+        "Pickup and drop-off anywhere in Dublin or Meath",
+        "Wheelchair-accessible van with ramp",
+        "Flexible stops and pace on the day",
+    ],
+    "pub": [
+        "Private vehicle for your group only",
+        "Your driver gets everyone home safely, so no designated driver needed",
+        "Up to 8 passengers, one price for the vehicle",
+        "Pickup and drop-off anywhere in Dublin or Meath",
+        "Your driver waits at each pub while you enjoy yourselves",
+        "Flexible stops and pace on the day",
+    ],
+    "golf": [
+        "Private vehicle for your group only",
+        "Room for clubs and bags for the whole group",
+        "One fixed price for the whole trip",
+        "Pickup and drop-off anywhere in Dublin or Meath",
+        "Your driver waits at the course or returns for pickup",
+        "Flexible timings around your tee times",
+    ],
+}
+GOOD_TO_KNOW_BY_KIND = {
+    "day": "Every tour is private and fully flexible. Tell us where you're staying and anything you'd love to see, and we'll shape the day around you. Admission tickets for attractions are not included in the tour price.",
+    "pub": "Every pub tour is private and fully flexible. Your driver gets everyone home safely, so nobody has to stay sober behind the wheel. Tell us what you like to drink and how long you want at each stop, and we'll shape the day around you. Food and drinks are not included in the price.",
+    "golf": "Room for clubs and bags is built in, and every golf trip is private and flexible. Your driver can wait at the course or return for pickup, whichever suits your group. Green fees, caddies and food are not included in the price.",
+}
+
+
+def count_word(n):
+    words = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight",
+             "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen",
+             "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty"]
+    return words[n] if n < len(words) else str(n)
+
+
+def sample_names(tours, n=4):
+    """Names of up to n tours (favourites first) for meta descriptions."""
+    ordered = [t for t in tours if t["fav"]] + [t for t in tours if not t["fav"]]
+    return [t["name"] for t in ordered[:n]]
 
 
 # ── Pages ────────────────────────────────────────────────────────────────────
@@ -353,17 +425,39 @@ def build_tour_pages():
     out = {}
     for t in TOURS:
         root = "../"
-        crumbs = [("Home", "index.html"), ("Tours", "tours.html"), (t["name"], None)]
-        others = [o for o in TOURS if o["area"] == t["area"] and o["slug"] != t["slug"]]
-        others += [o for o in TOURS if o["fav"] and o["slug"] != t["slug"] and o not in others]
+        kind = t["kind"]
+        listing, list_name, active = KIND_PAGE[kind]
+        suffix = KIND_SUFFIX[kind]
+        unit = price_unit(t)
+        crumbs = [("Home", "index.html"), (list_name, listing), (t["name"], None)]
+        same_kind = [o for o in published(kind) if o["slug"] != t["slug"]]
+        if kind == "day":
+            others = [o for o in same_kind if o["area"] == t["area"]]
+            others += [o for o in same_kind if o["fav"] and o not in others]
+        else:
+            others = same_kind
         hl = "".join(f"<li>{E(x)}</li>" for x in t["highlights"])
-        inc = "".join(f"<li>{E(x)}</li>" for x in INCLUDED)
+        inc = "".join(f"<li>{E(x)}</li>" for x in INCLUDED_BY_KIND[kind])
+        calc_link = (f'\n          <a class="book-alt" href="{root}price-calculator.html?tour={t["slug"]}">Add extras in the price calculator →</a>'
+                     if kind == "day" and t["price"] is not None else "")
+        also = "\n".join(tour_card(o, root) for o in others[:3])
+        more = f"""
+    <section class="theme-mint">
+      <div class="reveal">
+        <span class="section-label">More tours</span>
+        <h2 class="section-title">You might also like</h2>
+      </div>
+      <div class="tours-grid">
+{also}
+      </div>
+    </section>
+""" if also else ""
         body = page_hero(root, [(n, (root + h) if h else None) for n, h in crumbs], t["region"],
-                         E(t["name"]) + " Private Tour",
+                         E(t["name"]) + " " + suffix,
                          E(t["desc"]),
                          f"""
       <div class="hero-meta">
-        <span>{E(t['duration'])}</span><span>Private tour</span><span>Up to 8 passengers</span><span>From Dublin: {E(t['drive'])}</span>
+        <span>{E(t['duration'])}</span><span>{"Private tour" if kind == "day" else KINDS[kind]}</span><span>Up to 8 passengers</span><span>From Dublin: {E(t['drive'])}</span>
       </div>""") + f"""
 
     <section class="theme-light tour-detail">
@@ -376,64 +470,116 @@ def build_tour_pages():
           <h2>What's included</h2>
           <ul class="check-list">{inc}</ul>
           <h2>Good to know</h2>
-          <p>Every tour is private and fully flexible. Tell us where you're staying and anything you'd love to see, and we'll shape the day around you. Admission tickets for attractions are not included in the tour price.</p>
+          <p>{E(GOOD_TO_KNOW_BY_KIND[kind])}</p>
         </div>
         <aside class="book-card">
-          <span class="tour-region">Private tour</span>
-          <div class="tour-price"><small>From</small>{eur(t['price'])}<span>per vehicle · up to 8 people</span></div>
+          <span class="tour-region">{KINDS[kind] if kind != "day" else "Private tour"}</span>
+          <div class="tour-price">{price_html(t, "up to 8 people")}</div>
           <ul class="book-facts">
             <li><span>Duration</span>{E(t['duration'])}</li>
             <li><span>Drive from Dublin</span>{E(t['drive'])}</li>
             <li><span>Pickup</span>Dublin or Meath</li>
           </ul>
-          <button type="button" class="btn btn-gold tour-book" data-price="{t['price']}" data-tour="{E(t['name'])}">Book This Tour</button>
-          <a class="btn btn-whatsapp" href="{WHATSAPP}?text={quote(f"Hi BCH Taxi, I'd like to ask about the {t['name']} tour.")}" target="_blank" rel="noopener">Ask on WhatsApp</a>
-          <a class="book-alt" href="{root}price-calculator.html?tour={t['slug']}">Add extras in the price calculator →</a>
+          <button type="button" class="btn btn-gold tour-book" data-price="{price_attr(t)}" data-unit="{unit}" data-tour="{E(t['name'])}">Book This Tour</button>
+          <a class="btn btn-whatsapp" href="{WHATSAPP}?text={quote(f"Hi BCH Taxi, I'd like to ask about the {t['name']} tour.")}" target="_blank" rel="noopener">Ask on WhatsApp</a>{calc_link}
           <p class="book-group">More than 8 people? <a href="{root}index.html?service=Group%20transport%20(9%2B)#booking">We can arrange extra vehicles.</a></p>
         </aside>
       </div>
     </section>
-
-    <section class="theme-mint">
-      <div class="reveal">
-        <span class="section-label">More tours</span>
-        <h2 class="section-title">You might also like</h2>
-      </div>
-      <div class="tours-grid">
-{chr(10).join(tour_card(o, root) for o in others[:3])}
-      </div>
-    </section>
-
+{more}
 {group_band(root)}
 
 {cta_band(root)}"""
-        ld = [{
+        tour_ld = {
             "@context": "https://schema.org", "@type": "TouristTrip",
-            "name": f"{t['name']} Private Tour", "description": t["desc"],
+            "name": f"{t['name']} {suffix}", "description": t["desc"],
             "touristType": "Private group",
             "itinerary": {"@type": "ItemList", "itemListElement": [
                 {"@type": "ListItem", "position": i, "name": h} for i, h in enumerate(t["highlights"], 1)]},
             "provider": {"@type": "TaxiService", "name": "BCH Taxi", "telephone": PHONE},
-            "offers": {"@type": "Offer", "price": t["price"], "priceCurrency": "EUR",
-                       "description": "Per vehicle, up to 8 passengers"},
-        }, breadcrumb_ld([("Home", ""), ("Tours", "tours.html"), (t["name"], f"tours/{t['slug']}.html")])]
+        }
+        if t["price"] is not None:
+            tour_ld["offers"] = {"@type": "Offer", "price": t["price"], "priceCurrency": "EUR",
+                                 "description": f"{unit.capitalize()}, up to 8 passengers"}
+        ld = [tour_ld, breadcrumb_ld([("Home", ""), (list_name, listing), (t["name"], f"tours/{t['slug']}.html")])]
+        unit_title = "per " + unit[4:].capitalize()
+        origin = " from Dublin" if kind == "day" else ""
+        title = f"{t['name']} {suffix}{origin}"
+        if t["price"] is not None:
+            title += f" | {price_label(t)} {unit_title}"
+        title += " | BCH Taxi"
+        if kind == "day":
+            desc = f"Private {t['name']} day tour from Dublin or Meath in a wheelchair-accessible 8-seater. {t['duration']}"
+        else:
+            desc = f"Private {t['name']} {KIND_NOUN[kind]} in a wheelchair-accessible 8-seater. {t['duration']}"
+        desc += (f", from {price_label(t)} {unit} for up to 8 people." if t["price"] is not None
+                 else ", for up to 8 people.")
         out[f"tours/{t['slug']}.html"] = page(
-            root=root, active="tours", path=f"tours/{t['slug']}.html", jsonld=ld,
-            title=f"{t['name']} Private Tour from Dublin | {eur(t['price'])} per Vehicle | BCH Taxi",
-            description=f"Private {t['name']} day tour from Dublin or Meath in a wheelchair-accessible 8-seater. {t['duration']}, from {eur(t['price'])} per vehicle for up to 8 people.",
-            body=body)
+            root=root, active=active, path=f"tours/{t['slug']}.html", jsonld=ld,
+            title=title, description=desc, body=body, noindex=not t["published"])
     return out
+
+
+def build_kind_listing(kind, label, h1, lead, title, description, cta_title, cta_text):
+    """Pub Tours / Golf Trips listing page."""
+    root = ""
+    listing, list_name, active = KIND_PAGE[kind]
+    tours = published(kind)
+    cards = "\n".join(tour_card(t, root) for t in tours) if tours else \
+        '      <p class="tours-note">New trips are on the way. Tell us what you have in mind and we will plan it for you.</p>'
+    inc = "".join(f"<li>{E(x)}</li>" for x in INCLUDED_BY_KIND[kind])
+    body = page_hero(root, [("Home", "index.html"), (list_name, None)], label, h1, lead) + f"""
+
+    <section class="theme-mint">
+      <div class="tours-grid">
+{cards}
+      </div>
+    </section>
+
+    <section class="theme-light">
+      <div class="note-box reveal">
+        <h3>What's included</h3>
+        <ul class="check-list">{inc}</ul>
+      </div>
+    </section>
+
+{cta_band(root, cta_title, cta_text)}"""
+    return {listing: page(
+        root=root, active=active, path=listing,
+        jsonld=[breadcrumb_ld([("Home", ""), (list_name, listing)])],
+        title=title, description=description, body=body)}
+
+
+def build_pub_tours():
+    return build_kind_listing(
+        "pub", "Rural Pub Tours", "Rural Pub Tours from Dublin &amp; Meath",
+        "Country pubs, great pints and no one drawing the short straw. Your driver gets everyone home safely, in our wheelchair-accessible 8-seater.",
+        "Rural Pub Tours from Dublin & Meath | BCH Taxi",
+        "Private rural pub tours from Dublin and Meath for up to 8 people. Your driver gets everyone home safely, so no designated driver needed.",
+        "Plan your pub tour", "Tell us your dates, group size and the kind of pubs you like, and we'll put together a route and a price.")
+
+
+def build_golf_trips():
+    return build_kind_listing(
+        "golf", "Golf Trips", "Golf Trips from Dublin &amp; Meath",
+        "Links courses and parkland favourites with a private driver and room for clubs and bags. One fixed price per trip, for up to 8 golfers.",
+        "Golf Trips from Dublin & Meath | BCH Taxi",
+        "Private golf trips from Dublin and Meath for up to 8 golfers, with room for clubs and bags and one fixed price per trip.",
+        "Plan your golf trip", "Tell us your dates, group size and the courses you have in mind, and we'll confirm a fixed price.")
 
 
 def build_tours_hub():
     root = ""
     crumbs = [("Home", "index.html"), ("Tours", None)]
+    day = published("day")
+    n = len(day)
+    lead_count = f"{count_word(n)} full-day private tours" if n else "Full-day private tours"
     body = page_hero(root, crumbs, "Private Day Tours", "Private Tours of Ireland",
-                     "Twelve full-day private tours from Dublin and Meath in our 8-seater. One price covers the whole vehicle, so the more of you there are, the better the value.") + f"""
+                     f"{lead_count} from Dublin and Meath in our 8-seater. One price covers the whole vehicle, so the more of you there are, the better the value.") + f"""
 
     <section class="theme-mint">
       <div class="tours-grid">
-{chr(10).join(tour_card(t, root) for t in TOURS)}
+{chr(10).join(tour_card(t, root) for t in day)}
       </div>
     </section>
 
@@ -457,7 +603,9 @@ def build_tours_hub():
     return {"tours.html": page(
         root=root, active="tours", path="tours.html", jsonld=[breadcrumb_ld([("Home", ""), ("Tours", "tours.html")])],
         title="Private Day Tours of Ireland from Dublin | BCH Taxi",
-        description="12 private day tours from Dublin and Meath: Cliffs of Moher, Giant's Causeway, Ring of Kerry, Glendalough and more. Per-vehicle prices for up to 8 people.",
+        description=(f"{n} private day tours from Dublin and Meath: " if n else "Private day tours from Dublin and Meath: ")
+        + (", ".join(sample_names(day)) + " and more. " if n else "")
+        + "Per-vehicle prices for up to 8 people.",
         body=body)}
 
 
@@ -495,14 +643,15 @@ def build_multi_day():
 def build_calculator():
     root = ""
     crumbs = [("Home", "index.html"), ("Price Calculator", None)]
+    calc_tours = [t for t in published("day") if t["price"] is not None]
     data = {
-        "tours": [{"slug": t["slug"], "name": t["name"], "price": t["price"]} for t in TOURS],
+        "tours": [{"slug": t["slug"], "name": t["name"], "price": t["price"]} for t in calc_tours],
         "multi": [{"slug": m["slug"], "name": m["name"], "days": m["days"]} for m in MULTI_DAY],
         "dayRate": MULTI_DAY_RATE, "hourRate": EXTRA_HOUR_RATE, "maxPax": MAX_PASSENGERS,
         "airport": [{"area": a, "to": to, "from": fr} for a, _, to, fr in AIRPORT_FARES]
                    + [{"area": a, "to": p, "from": p} for a, p in LONG_TRANSFERS],
     }
-    tour_opts = "".join(f'<option value="{t["slug"]}">{E(t["name"])} · {eur(t["price"])}</option>' for t in TOURS)
+    tour_opts = "".join(f'<option value="{t["slug"]}">{E(t["name"])} · {eur(t["price"])}</option>' for t in calc_tours)
     multi_opts = "".join(f'<option value="{m["slug"]}">{E(m["name"])} · {m["days"]} days</option>' for m in MULTI_DAY)
     air_opts = "".join(f'<option value="{i}">{E(a["area"])}</option>' for i, a in enumerate(data["airport"]))
     dial = re.search(r'<select name="dial".*?</select>', MODAL, re.S).group(0)
@@ -562,7 +711,7 @@ def build_calculator():
         <aside class="calc-quote">
           <h3>Your estimated quote</h3>
           <ul class="calc-lines" id="calc-lines"><li class="calc-empty">Choose a tour, trip or transfer to see your price.</li></ul>
-          <div class="calc-total"><span>Total</span><strong id="calc-total">€0</strong></div>
+          <div class="calc-total"><span>Total</span><strong id="calc-total">–</strong></div>
           <p class="calc-pp" id="calc-pp"></p>
           <div class="calc-request">
             <h4>Send me this quote</h4>
@@ -607,14 +756,14 @@ def build_destinations():
     crumbs = [("Home", "index.html"), ("Destinations", None)]
     groups = []
     for area in AREAS:
-        items = [t for t in TOURS if t["area"] == area]
+        items = [t for t in published("day") if t["area"] == area]
         if not items:
             continue
         cards = "\n".join(f"""        <a class="dest-card reveal" href="tours/{t['slug']}.html">
           <span class="tour-region">{E(t['region'])}</span>
           <h3>{E(t['name'])}</h3>
           <p>{E(t['desc'])}</p>
-          <span class="dest-meta"><span>From Dublin: {E(t['drive'])}</span><strong>{eur(t['price'])}</strong></span>
+          <span class="dest-meta"><span>From Dublin: {E(t['drive'])}</span><strong>{price_label(t)}</strong></span>
         </a>""" for t in items)
         groups.append(f"""      <div class="dest-group">
         <h2 class="dest-area">{E(area)}</h2>
@@ -635,7 +784,8 @@ def build_destinations():
         root=root, active="tours", path="destinations.html",
         jsonld=[breadcrumb_ld([("Home", ""), ("Destinations", "destinations.html")])],
         title="Ireland Destination Guide: Day Trips & Driving Times from Dublin | BCH Taxi",
-        description="Where to go in Ireland and how far it is from Dublin: Cliffs of Moher, Giant's Causeway, Ring of Kerry, Connemara, Glendalough and more, with private tour prices.",
+        description="Where to go in Ireland and how far it is from Dublin: "
+        + ", ".join(sample_names(published("day"), 5)) + " and more, with private tour prices.",
         body=body)}
 
 
@@ -711,7 +861,7 @@ def build_blog():
 def replace_region(s, name, content):
     pat = re.compile(r"(<!-- @%s -->)(.*?)(\s*<!-- /@%s -->)" % (name, name), re.S)
     if not pat.search(s):
-        raise SystemExit(f"index.html is missing the @{name} marker")
+        raise BuildError([f"missing the @{name} marker"], "index.html template")
     return pat.sub(lambda m: m.group(1) + "\n" + content + m.group(3), s, count=1)
 
 
@@ -719,7 +869,7 @@ def replace_inline(s, name, value):
     """Replace a value wrapped in inline markers: <!-- @name -->value<!-- /@name -->."""
     pat = re.compile(r"(<!-- @%s -->).*?(<!-- /@%s -->)" % (name, name), re.S)
     if not pat.search(s):
-        raise SystemExit(f"index.html is missing the @{name} marker")
+        raise BuildError([f"missing the @{name} marker"], "index.html template")
     return pat.sub(lambda m: m.group(1) + value + m.group(2), s)
 
 
@@ -730,16 +880,20 @@ def build_index(out_dir):
         f'<span class="fare-price"><small>To airport</small>{eur(to)}</span><span class="fare-price"><small>From airport</small>{eur(fr)}</span></div>'
         for a, km, to, fr in AIRPORT_FARES)
     s = replace_region(s, "nav", nav("", is_index=True))
-    s = replace_region(s, "tours-grid", "\n".join(tour_card(t, "") for t in TOURS))
+    s = replace_region(s, "tours-grid", "\n".join(tour_card(t, "") for t in published()))
     s = replace_region(s, "fares", fares)
     s = replace_region(s, "group-band", group_band("", is_index=True))
     s = replace_region(s, "fare-long", "\n".join(
         f'      <div class="fare-long-card"><span>Dublin Airport ⇄ {E(a)}</span><strong>{eur(p)}</strong></div>'
         for a, p in LONG_TRANSFERS))
     s = replace_inline(s, "min-fare", eur(min(to for _, _, to, _ in AIRPORT_FARES)) + "+")
-    s, n = re.subn(r"day tours from €\d+(?:,\d{3})*", "day tours from " + eur(min(t["price"] for t in TOURS)), s)
-    if not n:
-        raise SystemExit("index.html meta description no longer mentions 'day tours from €…'")
+    priced = [t["price"] for t in published("day") if t["price"] is not None]
+    pattern = r"day tours from €\d+(?:,\d{3})*"
+    if not re.search(pattern, s):
+        raise BuildError(["meta description no longer mentions 'day tours from €…'"],
+                         "index.html template")
+    if priced:
+        s = re.sub(pattern, "day tours from " + eur(min(priced)), s)
     if SITE_URL:
         base = SITE_URL.rstrip("/")
         s = s.replace('<meta property="og:image" content="images/hero.jpg">',
@@ -780,7 +934,9 @@ def check_links(out_dir, files):
 def build_site(content, out_dir):
     """Render the site for `content` into `out_dir` (emptied first)."""
     out_dir = Path(out_dir).resolve()
-    if out_dir in (ROOT_DIR, *ROOT_DIR.parents) or out_dir == Path(out_dir.anchor):
+    in_repo = out_dir == ROOT_DIR or ROOT_DIR in out_dir.parents
+    in_dist = out_dir == ROOT_DIR / "dist" or (ROOT_DIR / "dist") in out_dir.parents
+    if out_dir in ROOT_DIR.parents or out_dir == Path(out_dir.anchor) or (in_repo and not in_dist):
         raise ValueError(f"refusing to build into {out_dir}")
     _configure(content)
     if out_dir.exists():
@@ -794,7 +950,7 @@ def build_site(content, out_dir):
         shutil.copytree(ROOT_DIR / d, out_dir / d)
 
     pages = {}
-    for builder in (build_tour_pages, build_tours_hub, build_multi_day, build_calculator, build_destinations, build_blog):
+    for builder in (build_tour_pages, build_tours_hub, build_pub_tours, build_golf_trips, build_multi_day, build_calculator, build_destinations, build_blog):
         pages.update(builder())
     for rel, text in pages.items():
         target = out_dir / rel
@@ -803,7 +959,8 @@ def build_site(content, out_dir):
     build_index(out_dir)
 
     if SITE_URL:
-        urls = [""] + sorted(pages)
+        hidden = {f"tours/{t['slug']}.html" for t in TOURS if not t["published"]}
+        urls = [""] + sorted(u for u in pages if u not in hidden)
         base = SITE_URL.rstrip("/")
         xml = "\n".join(f"  <url><loc>{base}/{u}</loc></url>" for u in urls)
         (out_dir / "sitemap.xml").write_text(
@@ -824,7 +981,7 @@ def main(argv=None):
     try:
         build_site(merge(default_content(), {}), out)
     except BuildError as e:
-        print("Broken links:")
+        print(f"Build failed ({e.args[0].split(':')[0]}):")
         for b in e.broken:
             print("  " + b)
         sys.exit(1)

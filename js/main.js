@@ -203,19 +203,24 @@ if (modal) {
   const tmStatus = document.getElementById('tm-status');
   let currentTour = null;
 
+  function priceText(tour) {
+    return tour.price === null ? 'Price on request' : '€' + tour.price;
+  }
+
   function updateSummary() {
     if (!currentTour) return;
     const pax = Number(tourForm.adults.value) + Number(tourForm.children.value);
-    document.getElementById('tm-sub').textContent = `${currentTour.name} · €${currentTour.price} · ${pax} ${pax === 1 ? 'guest' : 'guests'}`;
+    document.getElementById('tm-sub').textContent = `${currentTour.name} · ${priceText(currentTour)} · ${pax} ${pax === 1 ? 'guest' : 'guests'}`;
     document.getElementById('tm-sum-tour').textContent = currentTour.name;
     document.getElementById('tm-sum-pax').textContent = pax;
-    document.getElementById('tm-sum-total').textContent = '€' + currentTour.price;
+    document.getElementById('tm-sum-total').textContent = priceText(currentTour);
+    document.getElementById('tm-sum-label').textContent = currentTour.price === null ? 'Total' : `Total (${currentTour.unit})`;
   }
   tourForm.addEventListener('paxchange', updateSummary);
 
   document.querySelectorAll('.tour-book').forEach(btn => {
     btn.addEventListener('click', () => {
-      currentTour = { name: btn.dataset.tour, price: Number(btn.dataset.price) };
+      currentTour = { name: btn.dataset.tour, price: btn.dataset.price === '' ? null : Number(btn.dataset.price), unit: btn.dataset.unit || 'per vehicle' };
       setStatus(tmStatus, '');
       tourForm.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
       updateSummary();
@@ -229,7 +234,7 @@ if (modal) {
   modal.querySelector('[data-close]').addEventListener('click', () => modal.close());
   modal.addEventListener('click', (e) => { if (e.target === modal) modal.close(); });
 
-  const tourExtra = () => [['Tour', currentTour.name], ['Price', '€' + currentTour.price + ' per vehicle']];
+  const tourExtra = () => [['Tour', currentTour.name], ['Price', currentTour.price === null ? 'Price on request' : '€' + currentTour.price + ' ' + currentTour.unit]];
   tourForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const ok = await sendEmail(tourForm, tmStatus, document.getElementById('tm-send'),

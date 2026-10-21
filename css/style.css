@@ -151,7 +151,7 @@ nav.scrolled {
 
 .nav-links {
   display: flex;
-  gap: 2rem;
+  gap: 1.4rem;
   list-style: none;
   align-items: center;
 }
@@ -163,6 +163,7 @@ nav.scrolled {
   font-weight: 400;
   letter-spacing: 1.5px;
   text-transform: uppercase;
+  white-space: nowrap;
   position: relative;
   transition: color 0.3s ease;
 }
