@@ -22,8 +22,10 @@ document.querySelectorAll('.nav-links a').forEach(link => {
 });
 
 // ── Booking forms ──
-const FORM_ENDPOINT = 'https://formsubmit.co/ajax/bachintaxi@gmail.com';
-const WHATSAPP = 'https://wa.me/353870330046?text=';
+// Contact details come from js/config.js (generated per build); tolerate it missing.
+const CFG = window.BCH || {};
+const FORM_ENDPOINT = 'https://formsubmit.co/ajax/' + (CFG.email || '');
+const WHATSAPP = 'https://wa.me/' + (CFG.waNumber || '') + '?text=';
 const MAX_PAX = 8;
 const form = document.getElementById('contact-form');
 const today = new Date().toISOString().slice(0, 10);
@@ -89,7 +91,7 @@ async function sendEmail(f, statusEl, btn, subject, extra) {
     setStatus(statusEl, "Thanks! Your request has been sent. We'll be in touch shortly.", 'ok');
     return true;
   } catch (err) {
-    setStatus(statusEl, "Sorry, that didn't send. Please call +353 87 033 0046 or use WhatsApp.", 'err');
+    setStatus(statusEl, "Sorry, that didn't send. Please " + (CFG.phoneDisplay ? 'call ' + CFG.phoneDisplay : 'call us') + ' or use WhatsApp.', 'err');
   } finally {
     btn.disabled = false;
     label.textContent = original;

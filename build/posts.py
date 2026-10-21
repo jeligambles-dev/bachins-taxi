@@ -51,7 +51,7 @@ POSTS = [
 <p>For flights within Europe, aim to be at the airport about 2 hours before departure, or 3 hours for flights to the US (US pre-clearance takes extra time). Check your airline's advice too. We'll work back from that to agree a pickup time, and we run 24/7, so a 4am pickup is no problem.</p>
 
 <h2>Arrivals</h2>
-<p>Once you've landed and collected your bags, give us a call or WhatsApp on <a href="tel:+353870330046">+353 87 033 0046</a> and we'll meet you as arranged. If your flight is delayed, don't worry: let us know and we'll adjust.</p>
+<p>Once you've landed and collected your bags, give us a call or WhatsApp on <a href="tel:{{PHONE}}">{{PHONE_DISPLAY}}</a> and we'll meet you as arranged. If your flight is delayed, don't worry: let us know and we'll adjust.</p>
 
 <h2>Why a fixed fare helps</h2>
 <p>With a fixed price agreed before you travel, there are no meter surprises in traffic. See our <a href="{ROOT}index.html#airport">airport fares</a>, or ask for a quote if your area isn't listed.</p>

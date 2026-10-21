@@ -10,6 +10,7 @@ build_site(content, out_dir) renders the whole site into out_dir:
 - copies css/, js/ and images/
 - checks every local link and asset exists (raises BuildError otherwise)
 """
+import hashlib
 import html
 import json
 import os
@@ -25,11 +26,14 @@ from data import AREAS      # noqa: E402
 from content import (KINDS, default_content, merge, price_label,  # noqa: E402
                      price_unit)
 from posts import POSTS     # noqa: E402
+import texts                # noqa: E402
+from texts import T, T_lines  # noqa: E402
 
 E = html.escape
 PARTIALS = Path(__file__).resolve().parent / "partials"
-MODAL = (PARTIALS / "modal.html").read_text().strip()
-FAB = (PARTIALS / "fab.html").read_text().strip()
+_MODAL_RAW = (PARTIALS / "modal.html").read_text().strip()
+_FAB_RAW = (PARTIALS / "fab.html").read_text().strip()
+MODAL = FAB = ""    # the partials with contact tokens filled, set by _configure()
 
 TEMPLATE_INDEX = Path(__file__).resolve().parent / "templates" / "index.html"
 
@@ -37,6 +41,7 @@ TEMPLATE_INDEX = Path(__file__).resolve().parent / "templates" / "index.html"
 # builder below reads these names.
 PHONE = PHONE_DISPLAY = EMAIL = WHATSAPP = SITE_URL = ""
 MULTI_DAY_RATE = EXTRA_HOUR_RATE = MAX_PASSENGERS = 0
+CONFIG_JS = CONFIG_VER = ""   # js/config.js text and its cache-busting hash
 TOURS = []          # every tour, published or hidden
 TOUR_BY_SLUG = {}
 MULTI_DAY = []
@@ -71,7 +76,9 @@ def _configure(content):
     global PHONE, PHONE_DISPLAY, EMAIL, WHATSAPP, SITE_URL
     global MULTI_DAY_RATE, EXTRA_HOUR_RATE, MAX_PASSENGERS
     global TOURS, TOUR_BY_SLUG, MULTI_DAY, AIRPORT_FARES, LONG_TRANSFERS
+    global MODAL, FAB, CONFIG_JS, CONFIG_VER
     st = content["settings"]
+    texts.configure(content.get("texts"))
     PHONE = st["phone"]
     PHONE_DISPLAY = st["phone_display"]
     EMAIL = st["email"]
@@ -85,6 +92,57 @@ def _configure(content):
     MULTI_DAY = content["multi_day"]
     AIRPORT_FARES = [(f["area"], f["distance"], f["to"], f["from"]) for f in content["airport_fares"]]
     LONG_TRANSFERS = [(f["area"], f["price"]) for f in content["long_transfers"]]
+    MODAL = fill_tokens(_MODAL_RAW)
+    FAB = fill_tokens(_FAB_RAW)
+    CONFIG_JS = ("window.BCH = " + _json_inline({
+        "email": EMAIL, "waNumber": st["whatsapp_number"],
+        "phoneDisplay": PHONE_DISPLAY}) + ";\n")
+    CONFIG_VER = hashlib.sha256(CONFIG_JS.encode()).hexdigest()[:8]
+
+
+# ── Contact tokens ───────────────────────────────────────────────────────────
+
+_TOKEN_RE = re.compile(r"\{\{[A-Z_]+\}\}")
+_LD_RE = re.compile(r'(<script type="application/ld\+json">)(.*?)(</script>)', re.S)
+
+
+def _json_inline(obj):
+    """JSON that is safe inside a <script> element."""
+    return json.dumps(obj, ensure_ascii=False).replace("<", "\\u003c")
+
+
+def _token_values():
+    return {"{{PHONE}}": PHONE, "{{PHONE_DISPLAY}}": PHONE_DISPLAY,
+            "{{EMAIL}}": EMAIL, "{{WA_NUMBER}}": WHATSAPP.rsplit("/", 1)[-1]}
+
+
+def fill_tokens(s):
+    """Fill {{PHONE}}, {{PHONE_DISPLAY}}, {{EMAIL}}, {{WA_NUMBER}}.
+
+    HTML-escaped everywhere except inside JSON-LD blocks, where the values are
+    JSON-escaped.
+    """
+    values = _token_values()
+
+    def fill(text, conv):
+        for tok, val in values.items():
+            text = text.replace(tok, conv(val))
+        return text
+
+    def json_conv(v):
+        return _json_inline(v)[1:-1]
+
+    out, pos = [], 0
+    for m in _LD_RE.finditer(s):
+        out.append(fill(s[pos:m.start()], E))
+        out.append(m.group(1) + fill(m.group(2), json_conv) + m.group(3))
+        pos = m.end()
+    out.append(fill(s[pos:], E))
+    return "".join(out)
+
+
+def config_script(root):
+    return f'<script src="{root}js/config.js?v={CONFIG_VER}"></script>'
 
 
 def eur(n):
@@ -129,7 +187,7 @@ def nav(root, is_index=False, active=""):
     </a>
     <ul class="nav-links">
 {lis}
-      <li class="nav-call"><a href="tel:{PHONE}">Call {PHONE_DISPLAY}</a></li>
+      <li class="nav-call"><a href="tel:{E(PHONE)}">Call {E(PHONE_DISPLAY)}</a></li>
       <li><a href="{idx(root, 'booking', is_index)}" class="nav-cta">Book Taxi</a></li>
     </ul>
     <div class="mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">
@@ -148,11 +206,11 @@ def footer(root, is_index=False):
         <a href="{'#' if is_index else root + 'index.html'}" class="brand" aria-label="BCH Taxi home">
           {BRAND}
         </a>
-        <p>Taxis, Dublin Airport transfers and private tours of Ireland in our wheelchair-accessible 8-seater. Available 24/7.</p>
+        <p>{T("footer.about")}</p>
         <ul class="footer-contact">
-          <li><a href="tel:{PHONE}"><span>Call</span>{PHONE_DISPLAY}</a></li>
-          <li><a href="{WHATSAPP}" target="_blank" rel="noopener"><span>WhatsApp</span>Message us</a></li>
-          <li><a href="mailto:{EMAIL}"><span>Email</span>{EMAIL}</a></li>
+          <li><a href="tel:{E(PHONE)}"><span>Call</span>{E(PHONE_DISPLAY)}</a></li>
+          <li><a href="{E(WHATSAPP)}" target="_blank" rel="noopener"><span>WhatsApp</span>Message us</a></li>
+          <li><a href="mailto:{E(EMAIL)}"><span>Email</span>{E(EMAIL)}</a></li>
         </ul>
       </div>
       <div>
@@ -185,15 +243,15 @@ def footer(root, is_index=False):
         </ul>
       </div>
       <div class="footer-cta">
-        <h4>Plan a Trip</h4>
-        <p>Tell us your dates and where you'd like to go. We'll reply quickly with a fixed price.</p>
+        <h4>{T("footer.plan_title")}</h4>
+        <p>{T("footer.plan_text")}</p>
         <a href="{idx(root, 'booking', is_index)}" class="btn btn-gold">Book a Taxi</a>
         <a href="{root}price-calculator.html" class="btn btn-outline">Get a Quote</a>
       </div>
     </div>
     <div class="footer-bottom">
       <p>&copy; 2026 BCH Taxi. All rights reserved.</p>
-      <p>Wheelchair-accessible 8-seater · Dublin, Meath &amp; all of Ireland</p>
+      <p>{T("footer.tagline")}</p>
     </div>
   </footer>"""
 
@@ -248,6 +306,7 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
 
 {footer(root)}
 
+  {config_script(root)}
   <script src="{root}js/main.js"></script>{extra_js}
 </body>
 </html>
@@ -260,7 +319,7 @@ def page_hero(root, crumbs, label, h1, lead, extra=""):
         for name, href in crumbs)
     return f"""    <section class="page-hero">
       <nav class="crumbs" aria-label="Breadcrumb">{trail}</nav>
-      <span class="hero-label">{E(label)}</span>
+      <span class="hero-label">{label}</span>
       <h1>{h1}</h1>
       <p class="page-lead">{lead}</p>{extra}
     </section>"""
@@ -329,16 +388,16 @@ def multi_card(m, root):
       </article>"""
 
 
-def cta_band(root, title="Ready to book?", text="Send us your dates and we'll confirm availability and a fixed price, usually within the hour."):
+def cta_band(root, title_key="cta.title", text_key="cta.text"):
     return f"""    <section class="cta-band theme-dark">
       <div class="reveal">
-        <h2>{title}</h2>
-        <p>{text}</p>
+        <h2>{T(title_key)}</h2>
+        <p>{T(text_key)}</p>
       </div>
       <div class="cta-actions reveal">
         <a href="{root}index.html#booking" class="btn btn-gold">Book a Taxi</a>
-        <a href="{WHATSAPP}" class="btn btn-whatsapp" target="_blank" rel="noopener">WhatsApp Us</a>
-        <a href="tel:{PHONE}" class="btn btn-outline">Call {PHONE_DISPLAY}</a>
+        <a href="{E(WHATSAPP)}" class="btn btn-whatsapp" target="_blank" rel="noopener">WhatsApp Us</a>
+        <a href="tel:{E(PHONE)}" class="btn btn-outline">Call {E(PHONE_DISPLAY)}</a>
       </div>
     </section>"""
 
@@ -348,62 +407,26 @@ def group_band(root, is_index=False):
     book = (f'<button type="button" class="btn btn-gold" data-service="Group transport (9+)">Get a Group Quote</button>'
             if is_index else
             f'<a href="{root}index.html?service=Group%20transport%20(9%2B)#booking" class="btn btn-gold">Get a Group Quote</a>')
+    points = "\n".join(f"          <li>{x}</li>" for x in T_lines("group.points"))
     return f"""  <section class="group-band theme-teal">
     <div class="group-inner reveal">
       <div class="group-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>
       </div>
       <div class="group-text">
-        <span class="section-label">Large groups</span>
-        <h2>More than {MAX_PASSENGERS} passengers? We've got you covered.</h2>
-        <p>Weddings, school trips, sports teams, corporate events or a big family holiday: we can source extra vehicles, from a second van to a minibus or coach, so your whole group travels together. One booking, one point of contact.</p>
+        <span class="section-label">{T("group.label")}</span>
+        <h2>More than {MAX_PASSENGERS} {T("group.title_rest")}</h2>
+        <p>{T("group.text")}</p>
         <ul class="group-points">
-          <li>Extra vans, minibuses or coaches</li>
-          <li>Airport runs, tours and events</li>
-          <li>One quote for the whole group</li>
+{points}
         </ul>
       </div>
       <div class="group-actions">
         {book}
-        <a href="{WHATSAPP}?text={quote("Hi BCH Taxi, I'd like a quote for a group of more than 8 people.")}" class="btn btn-whatsapp" target="_blank" rel="noopener">Ask on WhatsApp</a>
+        <a href="{E(WHATSAPP)}?text={quote("Hi BCH Taxi, I'd like a quote for a group of more than 8 people.")}" class="btn btn-whatsapp" target="_blank" rel="noopener">Ask on WhatsApp</a>
       </div>
     </div>
   </section>"""
-
-
-# Per-kind copy for "What's included" and "Good to know". Task 4 moves these
-# into the editable texts registry.
-INCLUDED_BY_KIND = {
-    "day": [
-        "Private vehicle for your group only",
-        "Up to 8 passengers, one price for the vehicle",
-        "Bigger group? We can arrange extra vehicles",
-        "Pickup and drop-off anywhere in Dublin or Meath",
-        "Wheelchair-accessible van with ramp",
-        "Flexible stops and pace on the day",
-    ],
-    "pub": [
-        "Private vehicle for your group only",
-        "Your driver gets everyone home safely, so no designated driver needed",
-        "Up to 8 passengers, one price for the vehicle",
-        "Pickup and drop-off anywhere in Dublin or Meath",
-        "Your driver waits at each pub while you enjoy yourselves",
-        "Flexible stops and pace on the day",
-    ],
-    "golf": [
-        "Private vehicle for your group only",
-        "Room for clubs and bags for the whole group",
-        "One fixed price for the whole trip",
-        "Pickup and drop-off anywhere in Dublin or Meath",
-        "Your driver waits at the course or returns for pickup",
-        "Flexible timings around your tee times",
-    ],
-}
-GOOD_TO_KNOW_BY_KIND = {
-    "day": "Every tour is private and fully flexible. Tell us where you're staying and anything you'd love to see, and we'll shape the day around you. Admission tickets for attractions are not included in the tour price.",
-    "pub": "Every pub tour is private and fully flexible. Your driver gets everyone home safely, so nobody has to stay sober behind the wheel. Tell us what you like to drink and how long you want at each stop, and we'll shape the day around you. Food and drinks are not included in the price.",
-    "golf": "Room for clubs and bags is built in, and every golf trip is private and flexible. Your driver can wait at the course or return for pickup, whichever suits your group. Green fees, caddies and food are not included in the price.",
-}
 
 
 def count_word(n):
@@ -437,22 +460,22 @@ def build_tour_pages():
         else:
             others = same_kind
         hl = "".join(f"<li>{E(x)}</li>" for x in t["highlights"])
-        inc = "".join(f"<li>{E(x)}</li>" for x in INCLUDED_BY_KIND[kind])
+        inc = "".join(f"<li>{x}</li>" for x in T_lines(f"included.{kind}"))
         calc_link = (f'\n          <a class="book-alt" href="{root}price-calculator.html?tour={t["slug"]}">Add extras in the price calculator →</a>'
                      if kind == "day" and t["price"] is not None else "")
         also = "\n".join(tour_card(o, root) for o in others[:3])
         more = f"""
     <section class="theme-mint">
       <div class="reveal">
-        <span class="section-label">More tours</span>
-        <h2 class="section-title">You might also like</h2>
+        <span class="section-label">{T("tour.more_label")}</span>
+        <h2 class="section-title">{T("tour.more_title")}</h2>
       </div>
       <div class="tours-grid">
 {also}
       </div>
     </section>
 """ if also else ""
-        body = page_hero(root, [(n, (root + h) if h else None) for n, h in crumbs], t["region"],
+        body = page_hero(root, [(n, (root + h) if h else None) for n, h in crumbs], E(t["region"]),
                          E(t["name"]) + " " + suffix,
                          E(t["desc"]),
                          f"""
@@ -463,14 +486,14 @@ def build_tour_pages():
     <section class="theme-light tour-detail">
       <div class="detail-grid">
         <div class="detail-main">
-          <h2>About this tour</h2>
+          <h2>{T("tour.about_title")}</h2>
           <p>{E(t['intro'])}</p>
-          <h2>Highlights</h2>
+          <h2>{T("tour.highlights_title")}</h2>
           <ul class="check-list">{hl}</ul>
-          <h2>What's included</h2>
+          <h2>{T("tour.included_title")}</h2>
           <ul class="check-list">{inc}</ul>
-          <h2>Good to know</h2>
-          <p>{E(GOOD_TO_KNOW_BY_KIND[kind])}</p>
+          <h2>{T("tour.good_title")}</h2>
+          <p>{T(f"good_to_know.{kind}")}</p>
         </div>
         <aside class="book-card">
           <span class="tour-region">{KINDS[kind] if kind != "day" else "Private tour"}</span>
@@ -481,7 +504,7 @@ def build_tour_pages():
             <li><span>Pickup</span>Dublin or Meath</li>
           </ul>
           <button type="button" class="btn btn-gold tour-book" data-price="{price_attr(t)}" data-unit="{unit}" data-tour="{E(t['name'])}">Book This Tour</button>
-          <a class="btn btn-whatsapp" href="{WHATSAPP}?text={quote(f"Hi BCH Taxi, I'd like to ask about the {t['name']} tour.")}" target="_blank" rel="noopener">Ask on WhatsApp</a>{calc_link}
+          <a class="btn btn-whatsapp" href="{E(WHATSAPP)}?text={quote(f"Hi BCH Taxi, I'd like to ask about the {t['name']} tour.")}" target="_blank" rel="noopener">Ask on WhatsApp</a>{calc_link}
           <p class="book-group">More than 8 people? <a href="{root}index.html?service=Group%20transport%20(9%2B)#booking">We can arrange extra vehicles.</a></p>
         </aside>
       </div>
@@ -520,15 +543,16 @@ def build_tour_pages():
     return out
 
 
-def build_kind_listing(kind, label, h1, lead, title, description, cta_title, cta_text):
+def build_kind_listing(kind, title):
     """Pub Tours / Golf Trips listing page."""
     root = ""
     listing, list_name, active = KIND_PAGE[kind]
     tours = published(kind)
     cards = "\n".join(tour_card(t, root) for t in tours) if tours else \
-        '      <p class="tours-note">New trips are on the way. Tell us what you have in mind and we will plan it for you.</p>'
-    inc = "".join(f"<li>{E(x)}</li>" for x in INCLUDED_BY_KIND[kind])
-    body = page_hero(root, [("Home", "index.html"), (list_name, None)], label, h1, lead) + f"""
+        f'      <p class="tours-note">{T(kind + ".empty")}</p>'
+    inc = "".join(f"<li>{x}</li>" for x in T_lines(f"included.{kind}"))
+    body = page_hero(root, [("Home", "index.html"), (list_name, None)], T(kind + ".label"),
+                     T(kind + ".title"), T(kind + ".lead")) + f"""
 
     <section class="theme-mint">
       <div class="tours-grid">
@@ -538,34 +562,24 @@ def build_kind_listing(kind, label, h1, lead, title, description, cta_title, cta
 
     <section class="theme-light">
       <div class="note-box reveal">
-        <h3>What's included</h3>
+        <h3>{T("tour.included_title")}</h3>
         <ul class="check-list">{inc}</ul>
       </div>
     </section>
 
-{cta_band(root, cta_title, cta_text)}"""
+{cta_band(root, kind + ".cta_title", kind + ".cta_text")}"""
     return {listing: page(
         root=root, active=active, path=listing,
         jsonld=[breadcrumb_ld([("Home", ""), (list_name, listing)])],
-        title=title, description=description, body=body)}
+        title=title, description=texts.raw(kind + ".description"), body=body)}
 
 
 def build_pub_tours():
-    return build_kind_listing(
-        "pub", "Rural Pub Tours", "Rural Pub Tours from Dublin &amp; Meath",
-        "Country pubs, great pints and no one drawing the short straw. Your driver gets everyone home safely, in our wheelchair-accessible 8-seater.",
-        "Rural Pub Tours from Dublin & Meath | BCH Taxi",
-        "Private rural pub tours from Dublin and Meath for up to 8 people. Your driver gets everyone home safely, so no designated driver needed.",
-        "Plan your pub tour", "Tell us your dates, group size and the kind of pubs you like, and we'll put together a route and a price.")
+    return build_kind_listing("pub", "Rural Pub Tours from Dublin & Meath | BCH Taxi")
 
 
 def build_golf_trips():
-    return build_kind_listing(
-        "golf", "Golf Trips", "Golf Trips from Dublin &amp; Meath",
-        "Links courses and parkland favourites with a private driver and room for clubs and bags. One fixed price per trip, for up to 8 golfers.",
-        "Golf Trips from Dublin & Meath | BCH Taxi",
-        "Private golf trips from Dublin and Meath for up to 8 golfers, with room for clubs and bags and one fixed price per trip.",
-        "Plan your golf trip", "Tell us your dates, group size and the courses you have in mind, and we'll confirm a fixed price.")
+    return build_kind_listing("golf", "Golf Trips from Dublin & Meath | BCH Taxi")
 
 
 def build_tours_hub():
@@ -574,8 +588,8 @@ def build_tours_hub():
     day = published("day")
     n = len(day)
     lead_count = f"{count_word(n)} full-day private tours" if n else "Full-day private tours"
-    body = page_hero(root, crumbs, "Private Day Tours", "Private Tours of Ireland",
-                     f"{lead_count} from Dublin and Meath in our 8-seater. One price covers the whole vehicle, so the more of you there are, the better the value.") + f"""
+    body = page_hero(root, crumbs, T("tours.label"), T("tours.title"),
+                     f"{lead_count} {T('tours.lead')}") + f"""
 
     <section class="theme-mint">
       <div class="tours-grid">
@@ -586,9 +600,9 @@ def build_tours_hub():
     <section class="theme-light">
       <div class="split-promo reveal">
         <div>
-          <span class="section-label">Longer trips</span>
-          <h2 class="section-title">Multi-Day Tours</h2>
-          <p class="section-desc">Keep the same driver and van for your whole trip, from {eur(MULTI_DAY_RATE)} per day. See our sample routes or plan your own.</p>
+          <span class="section-label">{T("tours.longer_label")}</span>
+          <h2 class="section-title">{T("tours.multi_title")}</h2>
+          <p class="section-desc">{T("tours.multi_before")} {eur(MULTI_DAY_RATE)} {T("tours.multi_after")}</p>
         </div>
         <div class="promo-actions">
           <a href="multi-day-tours.html" class="btn btn-gold">See Multi-Day Tours</a>
@@ -612,26 +626,24 @@ def build_tours_hub():
 def build_multi_day():
     root = ""
     crumbs = [("Home", "index.html"), ("Multi-Day Tours", None)]
-    body = page_hero(root, crumbs, "Multi-Day Tours", "Multi-Day Private Tours of Ireland",
-                     f"Your own driver and wheelchair-accessible 8-seater for the whole trip, from {eur(MULTI_DAY_RATE)} per day. Pick a sample route below or tell us what you'd like to see.") + f"""
+    notes = "".join(f"\n          <li>{x}</li>" for x in T_lines("multi.notes"))
+    body = page_hero(root, crumbs, T("multi.label"), T("multi.title"),
+                     f"{T('multi.lead_before')} {eur(MULTI_DAY_RATE)} {T('multi.lead_after')}") + f"""
 
     <section class="theme-mint">
       <div class="multi-grid">
 {chr(10).join(multi_card(m, root) for m in MULTI_DAY)}
       </div>
       <div class="note-box reveal">
-        <h3>How multi-day pricing works</h3>
+        <h3>{T("multi.notes_title")}</h3>
         <ul class="check-list">
-          <li>{eur(MULTI_DAY_RATE)} per day for the vehicle and driver, for up to 8 passengers.</li>
-          <li>Accommodation, meals and attraction tickets are not included. We can suggest places to stay along the route.</li>
-          <li>Routes are samples. We'll adjust the days, stops and pace to suit you.</li>
-          <li>More than 8 travelling? We can arrange extra vehicles so the whole group tours together.</li>
+          <li>{eur(MULTI_DAY_RATE)} {T("multi.note_rate")}</li>{notes}
         </ul>
         <a href="price-calculator.html" class="btn btn-gold">Price a Custom Trip</a>
       </div>
     </section>
 
-{cta_band(root, "Plan your Ireland road trip", "Tell us your dates, group size and the places on your list, and we'll put together a route and a fixed price.")}"""
+{cta_band(root, "multi.cta_title", "multi.cta_text")}"""
     return {"multi-day-tours.html": page(
         root=root, active="multi", path="multi-day-tours.html",
         jsonld=[breadcrumb_ld([("Home", ""), ("Multi-Day Tours", "multi-day-tours.html")])],
@@ -655,18 +667,17 @@ def build_calculator():
     multi_opts = "".join(f'<option value="{m["slug"]}">{E(m["name"])} · {m["days"]} days</option>' for m in MULTI_DAY)
     air_opts = "".join(f'<option value="{i}">{E(a["area"])}</option>' for i, a in enumerate(data["airport"]))
     dial = re.search(r'<select name="dial".*?</select>', MODAL, re.S).group(0)
-    body = page_hero(root, crumbs, "Instant Quote", "Tour &amp; Taxi Price Calculator",
-                     "Pick a tour, a transfer or a multi-day trip and see your price instantly. Every price is for the whole vehicle, the same for 1 passenger or 8.") + f"""
+    body = page_hero(root, crumbs, T("calc.label"), T("calc.title"), T("calc.lead")) + f"""
 
     <section class="theme-light calc-section">
       <form class="calc" id="calc-form" novalidate>
         <div class="calc-main">
           <div class="calc-row">
-            <div class="calc-row-head"><span class="calc-num">1</span><div><h3>Day tour</h3><p>A full-day private tour from Dublin or Meath.</p></div></div>
+            <div class="calc-row-head"><span class="calc-num">1</span><div><h3>Day tour</h3><p>{T("calc.row1_desc")}</p></div></div>
             <select id="calc-tour" name="tour" aria-label="Day tour"><option value="">No day tour</option>{tour_opts}</select>
           </div>
           <div class="calc-row">
-            <div class="calc-row-head"><span class="calc-num">2</span><div><h3>Multi-day tour</h3><p>Same driver and van for the whole trip, {eur(MULTI_DAY_RATE)} per day.</p></div></div>
+            <div class="calc-row-head"><span class="calc-num">2</span><div><h3>Multi-day tour</h3><p>{T("calc.row2_before")} {eur(MULTI_DAY_RATE)} {T("calc.row2_after")}</p></div></div>
             <div class="calc-inline">
               <select id="calc-multi" name="multi" aria-label="Multi-day tour"><option value="">No multi-day tour</option>{multi_opts}<option value="custom">Custom route</option></select>
               <div class="stepper calc-days" hidden>
@@ -678,7 +689,7 @@ def build_calculator():
             </div>
           </div>
           <div class="calc-row">
-            <div class="calc-row-head"><span class="calc-num">3</span><div><h3>Airport transfer</h3><p>Fixed fares to and from Dublin Airport.</p></div></div>
+            <div class="calc-row-head"><span class="calc-num">3</span><div><h3>Airport transfer</h3><p>{T("calc.row3_desc")}</p></div></div>
             <div class="calc-inline">
               <select id="calc-air" name="air" aria-label="Airport transfer area"><option value="">No airport transfer</option>{air_opts}</select>
               <select id="calc-dir" name="dir" aria-label="Direction" hidden>
@@ -689,7 +700,7 @@ def build_calculator():
             </div>
           </div>
           <div class="calc-row">
-            <div class="calc-row-head"><span class="calc-num">4</span><div><h3>Extra hours</h3><p>More time on any tour, {eur(EXTRA_HOUR_RATE)} per hour.</p></div></div>
+            <div class="calc-row-head"><span class="calc-num">4</span><div><h3>Extra hours</h3><p>{T("calc.row4_before")} {eur(EXTRA_HOUR_RATE)} {T("calc.row4_after")}</p></div></div>
             <div class="stepper">
               <button type="button" data-step="-1" aria-label="Fewer hours">−</button>
               <input id="calc-hours" name="hours" type="number" value="0" min="0" max="12" readonly aria-label="Extra hours">
@@ -698,7 +709,7 @@ def build_calculator():
             </div>
           </div>
           <div class="calc-row">
-            <div class="calc-row-head"><span class="calc-num">5</span><div><h3>Passengers</h3><p>Up to {MAX_PASSENGERS} in our van. It doesn't change the price.</p><p class="pax-more" hidden>More than {MAX_PASSENGERS}? We can arrange extra vehicles. Add your group size in the notes for a group quote.</p></div></div>
+            <div class="calc-row-head"><span class="calc-num">5</span><div><h3>Passengers</h3><p>{T("calc.row5_before")} {MAX_PASSENGERS} {T("calc.row5_after")}</p><p class="pax-more" hidden>More than {MAX_PASSENGERS}? We can arrange extra vehicles. Add your group size in the notes for a group quote.</p></div></div>
             <div class="stepper">
               <button type="button" data-step="-1" aria-label="Fewer passengers">−</button>
               <input id="calc-pax" name="passengers" type="number" value="2" min="1" max="{MAX_PASSENGERS}" readonly aria-label="Passengers">
@@ -724,7 +735,7 @@ def build_calculator():
             <button type="submit" class="btn btn-gold btn-wide" id="calc-send"><span class="send-label">Request Fixed Quote</span></button>
             <button type="button" class="btn btn-whatsapp btn-wide" id="calc-wa">Send on WhatsApp</button>
             <p class="form-status" id="calc-status" role="status" aria-live="polite"></p>
-            <p class="form-legal">This is an estimate. We'll confirm a fixed price before anything is booked. Parking, tolls and attraction tickets may be extra.</p>
+            <p class="form-legal">{T("calc.legal")}</p>
           </div>
         </aside>
       </form>
@@ -733,14 +744,14 @@ def build_calculator():
 
     <section class="theme-mint">
       <div class="reveal">
-        <span class="section-label">How it works</span>
-        <h2 class="section-title">From estimate to fixed price</h2>
+        <span class="section-label">{T("calc.how_label")}</span>
+        <h2 class="section-title">{T("calc.how_title")}</h2>
       </div>
       <div class="steps-grid">
-        <div class="step-card reveal"><span class="calc-num">1</span><h3>Build your trip</h3><p>Combine a day tour, a multi-day trip, airport transfers and extra hours.</p></div>
-        <div class="step-card reveal"><span class="calc-num">2</span><h3>See the price live</h3><p>The total updates as you choose. Prices are for the whole vehicle.</p></div>
-        <div class="step-card reveal"><span class="calc-num">3</span><h3>Send it to us</h3><p>Send the quote by email or WhatsApp with your dates and pickup.</p></div>
-        <div class="step-card reveal"><span class="calc-num">4</span><h3>Get a fixed price</h3><p>We confirm availability and a final fixed price. You pay on the day.</p></div>
+        <div class="step-card reveal"><span class="calc-num">1</span><h3>{T("calc.step1_title")}</h3><p>{T("calc.step1_text")}</p></div>
+        <div class="step-card reveal"><span class="calc-num">2</span><h3>{T("calc.step2_title")}</h3><p>{T("calc.step2_text")}</p></div>
+        <div class="step-card reveal"><span class="calc-num">3</span><h3>{T("calc.step3_title")}</h3><p>{T("calc.step3_text")}</p></div>
+        <div class="step-card reveal"><span class="calc-num">4</span><h3>{T("calc.step4_title")}</h3><p>{T("calc.step4_text")}</p></div>
       </div>
     </section>"""
     return {"price-calculator.html": page(
@@ -771,12 +782,11 @@ def build_destinations():
 {cards}
         </div>
       </div>""")
-    body = page_hero(root, crumbs, "Destination Guide", "Where Can We Take You?",
-                     "Ireland's best-loved places, grouped by region, with approximate driving times from Dublin. Tap any place to see the full tour.") + f"""
+    body = page_hero(root, crumbs, T("dest.label"), T("dest.title"), T("dest.lead")) + f"""
 
     <section class="theme-light">
 {chr(10).join(groups)}
-      <p class="tours-note">Driving times are approximate and depend on traffic and stops. Don't see your destination? <a href="index.html#booking">Ask us</a>, we go anywhere in Ireland.</p>
+      <p class="tours-note">{T("dest.note_before")} <a href="index.html#booking">Ask us</a>{T("dest.note_after")}</p>
     </section>
 
 {cta_band(root)}"""
@@ -803,8 +813,7 @@ def build_blog():
           <p>{E(p['summary'])}</p>
           <span class="post-meta">{fmt_date(p['date'])} · Read article →</span>
         </a>""" for p in POSTS)
-    body = page_hero(root, [("Home", "index.html"), ("Blog", None)], "Travel Guides", "Ireland Travel Guides &amp; Tips",
-                     "Day trip ideas, airport advice and practical tips for getting around Ireland.") + f"""
+    body = page_hero(root, [("Home", "index.html"), ("Blog", None)], T("blog.label"), T("blog.title"), T("blog.lead")) + f"""
 
     <section class="theme-light">
       <div class="post-grid">
@@ -828,7 +837,7 @@ def build_blog():
           <p>{E(o['summary'])}</p>
         </a>""" for o in others)
         body = page_hero(root, [("Home", root + "index.html"), ("Blog", root + "blog.html"), (p["title"], None)],
-                         p["topic"], E(p["title"]), E(p["summary"]),
+                         E(p["topic"]), E(p["title"]), E(p["summary"]),
                          f'\n      <div class="hero-meta"><span>{fmt_date(p["date"])}</span><span>BCH Taxi</span></div>') + f"""
 
     <section class="theme-light">
@@ -873,12 +882,25 @@ def replace_inline(s, name, value):
     return pat.sub(lambda m: m.group(1) + value + m.group(2), s)
 
 
+def sync_faq_jsonld(s):
+    """Keep the FAQ structured data in step with edited FAQ questions/answers."""
+    for key, default in texts.template_texts(s).items():
+        if key.startswith("home.faq_") and texts.raw(key) != default:
+            old = _json_inline(default)[1:-1]
+            if old not in s:
+                raise BuildError([f"FAQ structured data no longer contains {key}"],
+                                 "index.html template")
+            s = s.replace(old, _json_inline(texts.raw(key))[1:-1], 1)
+    return s
+
+
 def build_index(out_dir):
     s = TEMPLATE_INDEX.read_text()
     fares = "\n".join(
         f'        <div class="fare-row"><span class="fare-place">{E(a)}</span><span class="fare-km">{km}</span>'
         f'<span class="fare-price"><small>To airport</small>{eur(to)}</span><span class="fare-price"><small>From airport</small>{eur(fr)}</span></div>'
         for a, km, to, fr in AIRPORT_FARES)
+    s = sync_faq_jsonld(s)
     s = replace_region(s, "nav", nav("", is_index=True))
     s = replace_region(s, "tours-grid", "\n".join(tour_card(t, "") for t in published()))
     s = replace_region(s, "fares", fares)
@@ -907,7 +929,9 @@ def build_index(out_dir):
     if 'css/pages.css' not in s:
         s = s.replace('<link rel="stylesheet" href="css/style.css">',
                       '<link rel="stylesheet" href="css/style.css">\n  <link rel="stylesheet" href="css/pages.css">')
-    (out_dir / "index.html").write_text(s)
+    s = s.replace('<script src="js/main.js"></script>',
+                  config_script("") + '\n  <script src="js/main.js"></script>')
+    (out_dir / "index.html").write_text(texts.replace_markers(s))
 
 
 # ── Link check ───────────────────────────────────────────────────────────────
@@ -957,6 +981,12 @@ def build_site(content, out_dir):
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(text)
     build_index(out_dir)
+    (out_dir / "js" / "config.js").write_text(CONFIG_JS)
+    # Contact tokens live in the template, partials and blog posts; fill them
+    # in every generated page in one place.
+    for rel in ["index.html"] + list(pages):
+        path = out_dir / rel
+        path.write_text(fill_tokens(path.read_text()))
 
     if SITE_URL:
         hidden = {f"tours/{t['slug']}.html" for t in TOURS if not t["published"]}
@@ -967,6 +997,11 @@ def build_site(content, out_dir):
             f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{xml}\n</urlset>\n')
         (out_dir / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {base}/sitemap.xml\n")
 
+    leftover = [f"{p.relative_to(out_dir)}: {m.group(0)}"
+                for p in sorted(out_dir.rglob("*")) if p.suffix in (".html", ".js")
+                for m in _TOKEN_RE.finditer(p.read_text())]
+    if leftover:
+        raise BuildError(leftover, "Unfilled {{tokens}}")
     bad = check_links(out_dir, ["index.html"] + list(pages))
     if bad:
         raise BuildError(bad)
