@@ -37,3 +37,40 @@ def store():
         s.close()
         with psycopg.connect(dsn, autocommit=True) as c:
             c.execute(f'DROP SCHEMA "{schema}" CASCADE')
+
+
+ADMIN_PASSWORD = "correct-horse-battery"
+
+
+@pytest.fixture
+def app(store, tmp_path):
+    from server.app import create_app
+
+    return create_app(store, tmp_path / "site", admin_password=ADMIN_PASSWORD,
+                      secret_key="k", testing=True)
+
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
+
+
+def csrf_of(client):
+    """The CSRF token in this client's session (GETs the login page if none)."""
+    with client.session_transaction() as s:
+        tok = s.get("csrf")
+    if tok is None:
+        client.get("/admin/login")
+        with client.session_transaction() as s:
+            tok = s["csrf"]
+    return tok
+
+
+@pytest.fixture
+def logged_in(client):
+    """A test client with a valid admin session. Use csrf_of(logged_in) for
+    the token to put in POST forms."""
+    r = client.post("/admin/login", data={"password": ADMIN_PASSWORD,
+                                          "csrf": csrf_of(client)})
+    assert r.status_code == 302
+    return client

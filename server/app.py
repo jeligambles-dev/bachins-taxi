@@ -2,6 +2,7 @@
 release. Admin routes are added in later tasks."""
 import logging
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from flask import Flask, Response, redirect, request, send_file
@@ -9,6 +10,8 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import safe_join
 
 from content import resolve_redirect
+from server.admin import bp as admin_bp
+from server.admin.auth import LoginLimiter
 from server.publish import Publisher
 from server.store import Store
 
@@ -29,10 +32,17 @@ def _cache_control(rel: str, is_html: bool) -> str:
 
 
 def create_app(store, site_root, *, admin_password, secret_key, testing=False):
-    # Admin static assets (server/static/) are wired up in the admin task.
+    # No app-wide static route; the admin blueprint serves server/static/
+    # at /admin/static/.
     app = Flask(__name__, static_folder=None)
     app.config.update(SECRET_KEY=secret_key, TESTING=testing,
-                      ADMIN_PASSWORD=admin_password)
+                      ADMIN_PASSWORD=admin_password,
+                      SESSION_COOKIE_HTTPONLY=True,
+                      SESSION_COOKIE_SAMESITE="Lax",
+                      SESSION_COOKIE_SECURE=not (
+                          testing or os.environ.get("FLASK_DEBUG") == "1"),
+                      PERMANENT_SESSION_LIFETIME=timedelta(days=30),
+                      MAX_CONTENT_LENGTH=25 * 1024 * 1024)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
     store.migrate()
@@ -44,6 +54,8 @@ def create_app(store, site_root, *, admin_password, secret_key, testing=False):
         log.exception("boot rebuild failed; serving previous release if any")
     app.extensions["store"] = store
     app.extensions["publisher"] = publisher
+    app.extensions["admin_limiter"] = LoginLimiter()
+    app.register_blueprint(admin_bp)
 
     @app.get("/health")
     def health():

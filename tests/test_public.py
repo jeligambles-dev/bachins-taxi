@@ -4,17 +4,6 @@ import build
 from server.app import create_app, create_app_from_env
 
 
-@pytest.fixture
-def app(store, tmp_path):
-    return create_app(store, tmp_path / "site", admin_password="x" * 12,
-                      secret_key="k", testing=True)
-
-
-@pytest.fixture
-def client(app):
-    return app.test_client()
-
-
 def test_home_and_pretty_urls(client):
     for p in ("/", "/tours/ring-of-kerry", "/tours/ring-of-kerry.html", "/tours.html"):
         assert client.get(p).status_code == 200, p
@@ -113,8 +102,8 @@ def test_boot_failure_keeps_serving_previous_release(store, tmp_path, monkeypatc
 
 
 def test_admin_paths_not_public(client):
-    assert client.get("/admin").status_code == 404
     assert client.get("/admin/x").status_code == 404
+    assert client.get("/admin/static/nope.css").status_code == 404
 
 
 def test_env_guard(monkeypatch):
