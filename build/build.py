@@ -186,6 +186,11 @@ def config_script(root):
     return f'<script src="{root}js/config.js?v={CONFIG_VER}"></script>'
 
 
+def asset(rel):
+    """css/js path with a content hash, so a deploy busts the browser cache."""
+    return f"{rel}?v={hashlib.sha256((ROOT_DIR / rel).read_bytes()).hexdigest()[:8]}"
+
+
 def eur(n):
     return f"€{n:,}"
 
@@ -340,8 +345,8 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{root}css/style.css">
-  <link rel="stylesheet" href="{root}css/pages.css">{ld}
+  <link rel="stylesheet" href="{root}{asset("css/style.css")}">
+  <link rel="stylesheet" href="{root}{asset("css/pages.css")}">{ld}
 </head>
 <body class="subpage">
 
@@ -358,7 +363,7 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
 {footer(root)}
 
   {config_script(root)}
-  <script src="{root}js/main.js"></script>{extra_js}
+  <script src="{root}{asset("js/main.js")}"></script>{extra_js}
 </body>
 </html>
 """
@@ -813,7 +818,7 @@ def build_calculator():
         jsonld=[breadcrumb_ld([("Home", ""), ("Price Calculator", "price-calculator.html")])],
         title="Tour & Taxi Price Calculator | Instant Quote | BCH Taxi",
         description="Work out the price of your Ireland day tour, multi-day trip or Dublin Airport transfer instantly. Per-vehicle prices for up to 8 passengers.",
-        body=body, extra_js=f'\n  <script src="{root}js/calculator.js"></script>')}
+        body=body, extra_js=f'\n  <script src="{root}{asset("js/calculator.js")}"></script>')}
 
 
 def build_destinations():
@@ -1014,8 +1019,10 @@ def build_index(out_dir):
     if 'css/pages.css' not in s:
         s = s.replace('<link rel="stylesheet" href="css/style.css">',
                       '<link rel="stylesheet" href="css/style.css">\n  <link rel="stylesheet" href="css/pages.css">')
+    for rel in ("css/style.css", "css/pages.css"):
+        s = s.replace(f'href="{rel}">', f'href="{asset(rel)}">')
     s = s.replace('<script src="js/main.js"></script>',
-                  config_script("") + '\n  <script src="js/main.js"></script>')
+                  config_script("") + f'\n  <script src="{asset("js/main.js")}"></script>')
     (out_dir / "index.html").write_text(texts.replace_markers(s))
 
 
