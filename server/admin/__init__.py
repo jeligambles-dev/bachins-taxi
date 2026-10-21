@@ -62,6 +62,10 @@ def logout():
 @bp.get("/")
 @login_required
 def dashboard():
-    flags = current_app.extensions["publisher"].content().get("flags", {})
-    return render_template("admin/dashboard.html",
-                           email_unconfirmed=bool(flags.get("email_unconfirmed")))
+    from .settings import banner_email
+    c = current_app.extensions["publisher"].content()
+    return render_template("admin/dashboard.html", email_unconfirmed=banner_email(c))
+
+
+# Editor pages register their routes on `bp` when imported.
+from . import prices, settings, texts  # noqa: E402,F401

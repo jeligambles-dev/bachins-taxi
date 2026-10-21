@@ -2,9 +2,7 @@
 {% block title %}Dashboard{% endblock %}
 {% block content %}
 <h1>Dashboard</h1>
-{% if email_unconfirmed %}
-<p class="banner" id="email-unconfirmed">The booking email address has not been confirmed yet. Booking requests will not arrive until it is.</p>
-{% endif %}
+{% include "admin/_email_banner.html" %}
 <ul class="tiles">
   <li><a href="/admin/prices">Prices</a></li>
   <li><a href="/admin/tours">Tours</a></li>

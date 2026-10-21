@@ -1,0 +1,9 @@
+{% if email_unconfirmed %}
+<div class="banner" id="email-unconfirmed">
+  <p>Booking forms now send to {{ email_unconfirmed }}. <strong>Bookings will not arrive until you confirm it:</strong> send a test booking from the website, then click the activation link FormSubmit emails to {{ email_unconfirmed }}.</p>
+  <form method="post" action="/admin/contact/confirm">
+    <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+    <button type="submit" class="btn dark">I've confirmed it</button>
+  </form>
+</div>
+{% endif %}
