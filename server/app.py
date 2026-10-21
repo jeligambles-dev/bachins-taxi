@@ -85,7 +85,7 @@ def create_app(store, site_root, *, admin_password, secret_key, testing=False):
             if slug.endswith(".html"):
                 slug = slug[:-5]
             new = resolve_redirect(slug, publisher.content().get("redirects", {}))
-            if new != slug:
+            if new != slug and (root / "tours" / f"{new}.html").is_file():
                 return redirect(f"/tours/{new}.html", code=301)
         index = root / "index.html"
         return _send(root, str(index), status=404)

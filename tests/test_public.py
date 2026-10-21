@@ -31,11 +31,18 @@ def test_directory_without_index_is_404(client):
     assert client.get("/css/").status_code == 404
 
 
-def test_traversal_blocked(client):
-    for p in ("/../build/data.py", "/%2e%2e/build/data.py", "/build/data.py"):
+def test_traversal_blocked(client, app):
+    root = app.extensions["publisher"].site_root
+    (root / "secret.txt").write_text("SENTINEL-XYZ")
+    (root / "releases" / "secret.txt").write_text("SENTINEL-XYZ")
+    for p in ("/../secret.txt", "/%2e%2e/secret.txt", "/..%2fsecret.txt",
+              "/../releases/secret.txt", "/%2e%2e/%2e%2e/secret.txt",
+              "/releases/secret.txt", "/current/../secret.txt"):
         r = client.get(p)
         assert r.status_code == 404, p
-        assert b"PHONE =" not in r.data
+        assert b"SENTINEL-XYZ" not in r.data, p
+    r = client.get("//etc/passwd")
+    assert r.status_code == 404 and b"root:" not in r.data
 
 
 def test_cache_headers(client, app):
@@ -122,6 +129,21 @@ def test_env_guard(monkeypatch):
         create_app_from_env()
 
 
-def test_weird_paths_do_not_500(client):
+def test_weird_paths(client):
+    home = client.get("/").data
     for p in ("/%00", "//etc/passwd", "/tours/%2e%2e/x", "/index.html/x"):
-        assert client.get(p).status_code in (404, 301, 200), p
+        r = client.get(p)
+        assert r.status_code == 404, p
+        assert r.data == home, p
+
+
+def test_redirect_cycle_no_loop(client, app):
+    app.extensions["publisher"].apply(lambda v: {"redirects": {"a": "b", "b": "a"}})
+    r = client.get("/tours/a.html")
+    assert r.status_code == 404
+    assert "Location" not in r.headers
+
+
+def test_redirect_to_missing_target_is_404(client, app):
+    app.extensions["publisher"].apply(lambda v: {"redirects": {"old": "gone"}})
+    assert client.get("/tours/old.html").status_code == 404
