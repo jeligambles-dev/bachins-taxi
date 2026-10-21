@@ -65,7 +65,7 @@ def photos_upload():
 @login_required
 def photo_raw(photo_id):
     row = publisher().store.get_photo(photo_id)
-    if row is None:
+    if row is None or row["mime"] not in ("image/jpeg", "image/png"):
         abort(404)
     resp = Response(row["data"], mimetype=row["mime"])
     resp.headers["Cache-Control"] = "private, max-age=3600"
@@ -116,6 +116,10 @@ def photo_delete(photo_id):
     store = publisher().store
     errors = []
     if request.method == "POST":
+        if not any(p["id"] == photo_id for p in store.list_photos()):
+            flash_err(GONE)
+            return redirect("/admin/photos")
+
         def mutate(view):
             if not any(p["id"] == photo_id for p in store.list_photos()):
                 raise ValidationError([GONE])

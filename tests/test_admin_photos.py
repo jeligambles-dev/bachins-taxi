@@ -159,3 +159,20 @@ def test_delete_unused_confirms_then_removes_from_release(logged_in, app):
 def test_photos_requires_login(client):
     assert client.get("/admin/photos").status_code == 302
     assert client.post("/admin/photos/slots").status_code in (302, 400)
+
+
+def test_raw_refuses_non_image_mime(logged_in, app):
+    p = pub(app).store.add_photo(b"<svg onload=alert(1)>", "image/svg+xml", 1, 1, "x.svg")
+    assert logged_in.get(f"/admin/photos/{p['id']}/raw").status_code == 404
+    q = pub(app).store.add_photo(b"<html>", "text/html", 1, 1, "y.html")
+    assert logged_in.get(f"/admin/photos/{q['id']}/raw").status_code == 404
+
+
+def test_delete_already_deleted_redirects_with_flash(logged_in, app):
+    upload(logged_in, [("a.jpg", img())])
+    pid = photos(app)[0]["id"]
+    tok = csrf_of(logged_in)
+    assert logged_in.post(f"/admin/photos/{pid}/delete", data={"csrf": tok}).status_code == 302
+    r = logged_in.post(f"/admin/photos/{pid}/delete", data={"csrf": csrf_of(logged_in)})
+    assert r.status_code == 302 and r.headers["Location"].endswith("/admin/photos")
+    assert "already deleted" in logged_in.get("/admin/photos").get_data(as_text=True)

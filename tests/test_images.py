@@ -79,3 +79,76 @@ def test_decompression_bomb_rejected():
     Image.new("1", (8000, 8000)).save(buf, "PNG")       # 64 MP: warning zone
     with pytest.raises(ImageError):
         process_upload(buf.getvalue())
+
+
+def _p3_jpeg():
+    from PIL import ImageCms
+    prof = ImageCms.ImageCmsProfile(ImageCms.createProfile("sRGB")).tobytes()
+    # a different-gamut profile: use a real wide-ish profile if available, else sRGB tag
+    buf = io.BytesIO()
+    Image.new("RGB", (40, 40), (200, 60, 60)).save(buf, "JPEG", icc_profile=prof)
+    return buf.getvalue()
+
+
+def test_icc_profile_converted_to_srgb(monkeypatch):
+    from PIL import ImageCms
+    calls = []
+    real = ImageCms.profileToProfile
+
+    def spy(*a, **k):
+        calls.append(1)
+        return real(*a, **k)
+    monkeypatch.setattr(ImageCms, "profileToProfile", spy)
+    data, mime, w, h = process_upload(_p3_jpeg())
+    assert calls and mime == "image/jpeg"
+    assert "icc_profile" not in Image.open(io.BytesIO(data)).info
+
+
+def test_bad_icc_profile_falls_back_silently():
+    buf = io.BytesIO()
+    Image.new("RGB", (30, 30), (10, 200, 10)).save(buf, "JPEG", icc_profile=b"not a profile")
+    data, mime, w, h = process_upload(buf.getvalue())
+    assert mime == "image/jpeg" and (w, h) == (30, 30)
+
+
+def test_opaque_rgba_becomes_jpeg():
+    buf = io.BytesIO()
+    Image.new("RGBA", (50, 30), (10, 20, 30, 255)).save(buf, "PNG")
+    data, mime, w, h = process_upload(buf.getvalue())
+    assert mime == "image/jpeg" and Image.open(io.BytesIO(data)).format == "JPEG"
+
+
+def test_transparent_rgba_stays_png():
+    buf = io.BytesIO()
+    Image.new("RGBA", (50, 30), (10, 20, 30, 100)).save(buf, "PNG")
+    assert process_upload(buf.getvalue())[1] == "image/png"
+
+
+def test_jpeg_draft_path_calls_draft_and_sizes_right(monkeypatch):
+    from PIL import JpegImagePlugin
+    seen = []
+    real = JpegImagePlugin.JpegImageFile.draft
+
+    def spy(self, mode, size):
+        seen.append((mode, size))
+        return real(self, mode, size)
+    monkeypatch.setattr(JpegImagePlugin.JpegImageFile, "draft", spy)
+    data, mime, w, h = process_upload(jpeg((8000, 4000)))
+    assert seen == [("RGB", (2000, 2000))]
+    assert max(w, h) == 2000 and (w, h) == (2000, 1000)
+
+
+def test_display_p3_keeps_saturation():
+    import os
+    path = "/System/Library/ColorSync/Profiles/Display P3.icc"
+    if not os.path.exists(path):
+        pytest.skip("no Display P3 profile on this machine")
+    icc = open(path, "rb").read()
+    buf = io.BytesIO()
+    Image.new("RGB", (40, 40), (230, 60, 60)).save(buf, "JPEG", quality=95, icc_profile=icc)
+    data, *_ = process_upload(buf.getvalue())
+    converted = Image.open(io.BytesIO(data)).convert("RGB").getpixel((20, 20))
+    plain = Image.open(io.BytesIO(buf.getvalue())).convert("RGB").getpixel((20, 20))
+    # P3 red (230,60,60) is more saturated than the same numbers in sRGB: after conversion
+    # the red/green gap must be larger than a plain profile drop would give.
+    assert converted[0] - converted[1] > plain[0] - plain[1] + 3
