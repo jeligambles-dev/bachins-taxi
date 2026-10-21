@@ -44,6 +44,7 @@
     <legend>Photo</legend>
     <div class="photos">
       <label class="pick"><input type="radio" name="photo" value=""{% if not v.photo %} checked{% endif %}> <span>No photo</span></label>
+      {% if missing_photo %}<label class="pick"><input type="radio" name="photo" value="{{ missing_photo }}" checked> <span>(missing photo)</span></label>{% endif %}
       {% for p in photos %}
       <label class="pick"><input type="radio" name="photo" value="{{ p.id }}"{% if v.photo == p.id %} checked{% endif %}>
         <img src="/admin/photos/{{ p.id }}/raw" alt="{{ p.original_name }}" loading="lazy" width="96" height="96"></label>

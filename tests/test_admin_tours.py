@@ -246,3 +246,51 @@ def test_tour_photo_pick(logged_in, app):
 def test_requires_login(client):
     assert client.get("/admin/tours").status_code == 302
     assert client.get("/admin/multi-day").status_code == 302
+
+
+def test_edit_renamed_tour_in_stale_tab(logged_in, app):
+    d = full(app, "giants-causeway")      # old tab loaded before the rename
+    d2 = dict(d, slug="giants-new", **{"o__slug": d["slug"]})
+    assert post(logged_in, "/admin/tours/giants-causeway", **d2).status_code == 302
+    # GET on the old URL goes to the new edit URL
+    r = logged_in.get("/admin/tours/giants-causeway")
+    assert r.status_code == 302 and r.headers["Location"].endswith("/admin/tours/giants-new")
+    # POST from the stale tab saves nothing and says why
+    before = tour(app, "giants-new")["name"]
+    r = post(logged_in, "/admin/tours/giants-causeway", **dict(d, name="Changed"))
+    h = r.get_data(as_text=True)
+    assert r.status_code == 200
+    assert "was renamed to" in h and "in another tab or device. Reload and try again." in h
+    assert tour(app, "giants-new")["name"] == before
+
+
+def test_new_tour_named_new_gets_suffix(logged_in, app):
+    r = post(logged_in, "/admin/tours/new", kind="day", name="New", slug="", published="1")
+    assert r.status_code == 302
+    assert tour(app, "new-2") is not None and tour(app, "new") is None
+
+
+def test_missing_photo_field_keeps_photo(logged_in, app):
+    from PIL import Image
+    buf = io.BytesIO()
+    Image.new("RGB", (8, 8), (1, 2, 3)).save(buf, "JPEG")
+    p = app.extensions["publisher"].store.add_photo(buf.getvalue(), "image/jpeg", 8, 8, "t.jpg")
+    assert post(logged_in, "/admin/tours/giants-causeway",
+                **full(app, "giants-causeway", photo=p["id"])).status_code == 302
+    d = full(app, "giants-causeway", name="Renamed GC")
+    d.pop("photo", None)
+    d.pop("o__photo", None)
+    assert post(logged_in, "/admin/tours/giants-causeway", **d).status_code == 302
+    assert tour(app, "giants-causeway")["photo"] == p["id"]
+    # explicit empty clears
+    d = full(app, "giants-causeway", photo="")
+    assert post(logged_in, "/admin/tours/giants-causeway", **d).status_code == 302
+    assert tour(app, "giants-causeway")["photo"] is None
+
+
+def test_missing_photo_radio_roundtrips(logged_in, app):
+    app.extensions["publisher"].apply(lambda v: {"tours": [
+        dict(t, photo="gone123") if t["slug"] == "giants-causeway" else t
+        for t in v["tours"]]})
+    h = logged_in.get("/admin/tours/giants-causeway").get_data(as_text=True)
+    assert "(missing photo)" in h and 'value="gone123" checked' in h

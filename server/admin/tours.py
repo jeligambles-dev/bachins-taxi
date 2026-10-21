@@ -4,7 +4,7 @@ import re
 from flask import abort, redirect, render_template, request
 
 from content import (KINDS, ValidationError, blog_links_to, price_label, rename_slug,
-                     validate_tour, _SLUG_RE)
+                     resolve_redirect, validate_tour, _SLUG_RE)
 
 from . import bp
 from .auth import flash_err, flash_ok, login_required
@@ -34,6 +34,7 @@ def slugify(name):
 
 
 def _unique(base, taken):
+    taken = set(taken) | RESERVED
     if base not in taken:
         return base
     n = 2
@@ -78,6 +79,14 @@ def _touched(form, field, value):
     return o is None or o != _orig_of(field, value)
 
 
+def _renamed_to(tours, redirects, slug):
+    """The existing tour that `slug` was renamed to, or None."""
+    new = resolve_redirect(slug, redirects)
+    if new == slug:
+        return None
+    return next((t for t in tours if t["slug"] == new), None)
+
+
 def _tour_mutator(form, orig_slug):
     sub = _form_values(form)
 
@@ -85,6 +94,8 @@ def _tour_mutator(form, orig_slug):
         errors = []
         new = orig_slug is None
         touched = {f: new or _touched(form, f, sub[f]) for f in sub}
+        if "photo" not in form:       # missing field = untouched; only photo="" clears
+            touched["photo"] = False
         # field-level checks on what the user changed
         for f, cap in SINGLE.items():
             if touched[f]:
@@ -132,6 +143,11 @@ def _tour_mutator(form, orig_slug):
             cur = slug
         else:
             if not any(t["slug"] == orig_slug for t in tours):
+                moved = _renamed_to(tours, view["redirects"], orig_slug)
+                if moved:
+                    raise ValidationError([
+                        f"This tour was renamed to {moved['name']} in another tab or "
+                        "device. Reload and try again."])
                 raise ValidationError([GONE])
             cur = orig_slug
             if touched["slug"]:
@@ -190,8 +206,11 @@ def tours_list():
 
 def _edit_page(orig_slug, values, orig, errors, kind):
     photos = publisher().store.list_photos()
+    cur = (values.get("photo") or "").strip()
+    missing = cur if cur and cur not in {p["id"] for p in photos} else None
     return render_template("admin/tour_edit.html", orig_slug=orig_slug, v=values, o=orig,
-                           errors=errors, kinds=KINDS, photos=photos, kind=kind)
+                           errors=errors, kinds=KINDS, photos=photos, kind=kind,
+                           missing_photo=missing)
 
 
 @bp.route("/tours/new", methods=["GET", "POST"])
@@ -228,6 +247,9 @@ def tour_edit(slug):
         orig = {k: f.get("o__" + k, orig_values(sv).get(k, "")) for k in _form_values(f)}
         return _edit_page(slug, _form_values(f), orig, errors, f.get("kind"))
     if t is None:
+        moved = _renamed_to(c["tours"], c["redirects"], slug)
+        if moved:
+            return redirect(f"/admin/tours/{moved['slug']}")
         abort(404)
     v = shown_values(t)
     return _edit_page(slug, v, orig_values(v), [], t["kind"])
