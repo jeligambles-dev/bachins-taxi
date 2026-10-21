@@ -13,7 +13,8 @@
     <div class="row">
       <label for="tp-{{ loop.index }}">{{ t.name }}
         <span class="badge">{{ kinds[t.kind] }}</span>{% if not t.published %} <span class="badge off">hidden</span>{% endif %}</label>
-      <input id="tp-{{ loop.index }}" name="tour_price__{{ t.slug }}" inputmode="numeric" autocomplete="off" value="{{ values[t.slug] }}" placeholder="Price on request">
+      <input id="tp-{{ loop.index }}" name="tour_price__{{ t.slug }}" inputmode="numeric" autocomplete="off" value="{{ values[t.slug] }}" placeholder="Price on request" maxlength="{{ short_max }}">
+      <input type="hidden" name="o__tour_price__{{ t.slug }}" value="{{ orig['tour_price__' ~ t.slug] }}">
     </div>
     {% endfor %}
   </fieldset>
@@ -21,26 +22,30 @@
   <fieldset class="card">
     <legend>Rates</legend>
     <label for="multi_day_rate">Multi-day rate (per day)</label>
-    <input id="multi_day_rate" name="multi_day_rate" inputmode="numeric" value="{{ sv.multi_day_rate }}">
+    <input id="multi_day_rate" name="multi_day_rate" inputmode="numeric" value="{{ sv.multi_day_rate }}" maxlength="{{ short_max }}">
+    <input type="hidden" name="o__multi_day_rate" value="{{ orig.multi_day_rate }}">
     <label for="extra_hour_rate">Extra hour rate</label>
-    <input id="extra_hour_rate" name="extra_hour_rate" inputmode="numeric" value="{{ sv.extra_hour_rate }}">
+    <input id="extra_hour_rate" name="extra_hour_rate" inputmode="numeric" value="{{ sv.extra_hour_rate }}" maxlength="{{ short_max }}">
+    <input type="hidden" name="o__extra_hour_rate" value="{{ orig.extra_hour_rate }}">
     <label for="max_passengers">Max passengers</label>
-    <input id="max_passengers" name="max_passengers" inputmode="numeric" value="{{ sv.max_passengers }}">
+    <input id="max_passengers" name="max_passengers" inputmode="numeric" value="{{ sv.max_passengers }}" maxlength="{{ short_max }}">
+    <input type="hidden" name="o__max_passengers" value="{{ orig.max_passengers }}">
   </fieldset>
 
   <fieldset class="card">
     <legend>Airport fares</legend>
+    <input type="hidden" name="fares_v" value="{{ fares_v }}">
     <p class="hint">Fill in the empty rows to add one. Tick "Remove" to delete a row.</p>
     {% for f in fares %}
     <div class="subcard">
       <label for="fare-{{ loop.index0 }}-area">Area</label>
-      <input id="fare-{{ loop.index0 }}-area" name="fare-{{ loop.index0 }}-area" value="{{ f.area }}">
+      <input id="fare-{{ loop.index0 }}-area" name="fare-{{ loop.index0 }}-area" value="{{ f.area }}" maxlength="{{ short_max }}">
       <label for="fare-{{ loop.index0 }}-distance">Distance (optional)</label>
-      <input id="fare-{{ loop.index0 }}-distance" name="fare-{{ loop.index0 }}-distance" value="{{ f.distance }}">
+      <input id="fare-{{ loop.index0 }}-distance" name="fare-{{ loop.index0 }}-distance" value="{{ f.distance }}" maxlength="{{ short_max }}">
       <label for="fare-{{ loop.index0 }}-to">To airport</label>
-      <input id="fare-{{ loop.index0 }}-to" name="fare-{{ loop.index0 }}-to" inputmode="numeric" value="{{ f.to }}">
+      <input id="fare-{{ loop.index0 }}-to" name="fare-{{ loop.index0 }}-to" inputmode="numeric" value="{{ f.to }}" maxlength="{{ short_max }}">
       <label for="fare-{{ loop.index0 }}-from">From airport</label>
-      <input id="fare-{{ loop.index0 }}-from" name="fare-{{ loop.index0 }}-from" inputmode="numeric" value="{{ f['from'] }}">
+      <input id="fare-{{ loop.index0 }}-from" name="fare-{{ loop.index0 }}-from" inputmode="numeric" value="{{ f['from'] }}" maxlength="{{ short_max }}">
       <label class="check"><input type="checkbox" name="fare-{{ loop.index0 }}-remove"{% if f.remove %} checked{% endif %}> Remove</label>
     </div>
     {% endfor %}
@@ -48,12 +53,13 @@
 
   <fieldset class="card">
     <legend>Long transfers</legend>
+    <input type="hidden" name="longs_v" value="{{ longs_v }}">
     {% for f in longs %}
     <div class="subcard">
       <label for="long-{{ loop.index0 }}-area">Destination</label>
-      <input id="long-{{ loop.index0 }}-area" name="long-{{ loop.index0 }}-area" value="{{ f.area }}">
+      <input id="long-{{ loop.index0 }}-area" name="long-{{ loop.index0 }}-area" value="{{ f.area }}" maxlength="{{ short_max }}">
       <label for="long-{{ loop.index0 }}-price">Price</label>
-      <input id="long-{{ loop.index0 }}-price" name="long-{{ loop.index0 }}-price" inputmode="numeric" value="{{ f.price }}">
+      <input id="long-{{ loop.index0 }}-price" name="long-{{ loop.index0 }}-price" inputmode="numeric" value="{{ f.price }}" maxlength="{{ short_max }}">
       <label class="check"><input type="checkbox" name="long-{{ loop.index0 }}-remove"{% if f.remove %} checked{% endif %}> Remove</label>
     </div>
     {% endfor %}

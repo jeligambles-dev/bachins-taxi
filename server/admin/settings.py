@@ -7,7 +7,7 @@ from content import ValidationError
 
 from . import bp
 from .auth import flash_err, flash_ok, login_required
-from .forms import publish, publisher
+from .forms import publish, publisher, too_long
 
 _EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 _PHONE = re.compile(r"^\+?[0-9 ]{7,20}$")
@@ -19,7 +19,7 @@ def _mutator(form):
     vals = {k: form.get(k, "").strip() for k in FIELDS}
 
     def mutate(view):
-        errors = []
+        errors = [e for k in FIELDS if (e := too_long(vals[k], k.replace("_", " ").capitalize()))]
         if not _PHONE.match(vals["phone"]):
             errors.append("Phone number must be 7 to 20 digits or spaces, optionally "
                           "starting with + (e.g. +353 87 033 0046)")
@@ -33,7 +33,7 @@ def _mutator(form):
         if errors:
             raise ValidationError(errors)
         out = {"settings": {**view["settings"], **vals}}
-        if vals["email"] != view["settings"].get("email"):
+        if vals["email"].lower() != (view["settings"].get("email") or "").lower():
             out["flags"] = {**view.get("flags", {}), "email_unconfirmed": vals["email"]}
         return out
     return mutate

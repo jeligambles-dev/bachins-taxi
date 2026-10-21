@@ -11,8 +11,9 @@
     {% for f in fields %}
     <div class="field">
       <label for="t-{{ f.key }}">{{ f.label }}</label>
-      {% if f.area %}<textarea id="t-{{ f.key }}" name="t__{{ f.key }}" rows="4">{{ f.value }}</textarea>
-      {% else %}<input id="t-{{ f.key }}" name="t__{{ f.key }}" value="{{ f.value }}">{% endif %}
+      {% if f.area %}<textarea id="t-{{ f.key }}" name="t__{{ f.key }}" rows="4" maxlength="2000">{{ f.value }}</textarea>
+      {% else %}<input id="t-{{ f.key }}" name="t__{{ f.key }}" value="{{ f.value }}" maxlength="2000">{% endif %}
+      <input type="hidden" name="o__{{ f.key }}" value="{{ f.orig }}">
       <p class="hint">Original: {{ f.default }}</p>
       <label class="check"><input type="checkbox" name="reset__{{ f.key }}"{% if f.reset %} checked{% endif %}> Reset to original</label>
     </div>

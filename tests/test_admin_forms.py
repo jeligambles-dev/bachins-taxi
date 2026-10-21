@@ -131,9 +131,22 @@ def test_email_change_sets_banner_and_config(app, logged_in):
 
 
 def test_unchanged_email_sets_no_banner(app, logged_in):
-    cur = app.extensions["publisher"].content()["settings"]
-    post(logged_in, "/admin/contact", contact_form(email=cur["email"]))
-    assert "email_unconfirmed" not in app.extensions["publisher"].content()["flags"]
+    pub = app.extensions["publisher"]
+    cur = pub.content()["settings"]
+    # phone-only edit: no flag
+    post(logged_in, "/admin/contact", contact_form(email=cur["email"], phone_display="087 111 2222"))
+    assert "email_unconfirmed" not in pub.content()["flags"]
+    # case-only change is not a change
+    post(logged_in, "/admin/contact", contact_form(email=cur["email"].upper()))
+    assert "email_unconfirmed" not in pub.content()["flags"]
+    # a real change sets it, and confirming clears it again
+    post(logged_in, "/admin/contact", contact_form(email="other@example.com"))
+    assert pub.content()["flags"]["email_unconfirmed"] == "other@example.com"
+    post(logged_in, "/admin/contact/confirm", {})
+    assert "email_unconfirmed" not in pub.content()["flags"]
+    # saving other fields with the (now current) email keeps it clear
+    post(logged_in, "/admin/contact", contact_form(email="other@example.com", phone_display="1 2 3 4 5 6 7"))
+    assert "email_unconfirmed" not in pub.content()["flags"]
 
 
 def test_confirm_clears_banner(app, logged_in):
@@ -193,3 +206,91 @@ def test_text_unknown_key_ignored_and_page_fast(app, logged_in):
     r = logged_in.get("/admin/text")
     assert r.status_code == 200 and time.time() - t < 1.0
     assert b"<details" in r.data and b"open>" not in r.data
+
+
+def test_huge_and_unicode_numbers_rejected(app, logged_in):
+    for raw in ("9" * 5000, "٤٥٠", "1" * 10):
+        r = post(logged_in, "/admin/prices", base_prices(app, multi_day_rate=raw))
+        assert r.status_code == 200 and b"flash err" in r.data, raw[:10]
+    r = post(logged_in, "/admin/prices", base_prices(app, **{"tour_price__ring-of-kerry": "9" * 5000}))
+    assert r.status_code == 200 and b"too long" in r.data
+    r = post(logged_in, "/admin/prices", base_prices(app, **{"tour_price__ring-of-kerry": "9" * 150}))
+    assert r.status_code == 200 and b"between" in r.data
+
+
+def test_length_caps(app, logged_in):
+    r = post(logged_in, "/admin/contact", contact_form(phone_display="x" * 201))
+    assert r.status_code == 200 and b"too long" in r.data
+    r = post(logged_in, "/admin/text", {"t__home.hero_title": "x" * 2001})
+    assert r.status_code == 200 and b"too long" in r.data
+    assert b'maxlength="2000"' in logged_in.get("/admin/text").data
+
+
+def _form_of(client, url):
+    """Parse a rendered admin form into a dict, as a browser would submit it."""
+    import re
+    from html import unescape
+    html = client.get(url).get_data(as_text=True)
+    out = {}
+    for m in re.finditer(r'<input[^>]*name="([^"]+)"[^>]*?(?:value="([^"]*)")?[^>]*>', html):
+        tag = m.group(0)
+        if 'type="checkbox"' in tag or 'name="csrf"' in tag:
+            continue
+        v = re.search(r'value="([^"]*)"', tag)
+        out[m.group(1)] = unescape(v.group(1)) if v else ""
+    for m in re.finditer(r'<textarea[^>]*name="([^"]+)"[^>]*>(.*?)</textarea>', html, re.S):
+        out[m.group(1)] = unescape(m.group(2)).lstrip("\n")
+    return out
+
+
+def test_text_stale_tab_keeps_newer_edit(app, logged_in):
+    stale = _form_of(logged_in, "/admin/text")
+    assert post(logged_in, "/admin/text", {"t__home.hero_title": "Newer title"}).status_code == 302
+    stale["t__home.hero_title_gold"] = "Gold from the stale tab"
+    assert post(logged_in, "/admin/text", stale).status_code == 302
+    assert app.extensions["publisher"].content()["texts"] == {
+        "home.hero_title": "Newer title", "home.hero_title_gold": "Gold from the stale tab"}
+
+
+def test_prices_stale_tab_keeps_newer_price(app, logged_in):
+    stale = _form_of(logged_in, "/admin/prices")
+    assert post(logged_in, "/admin/prices", base_prices(app, **{"tour_price__ring-of-kerry": "777"})).status_code == 302
+    stale["extra_hour_rate"] = "55"
+    assert post(logged_in, "/admin/prices", stale).status_code == 302
+    c = app.extensions["publisher"].content()
+    assert {t["slug"]: t["price"] for t in c["tours"]}["ring-of-kerry"] == 777
+    assert c["settings"]["extra_hour_rate"] == 55
+
+
+def test_fares_stale_tab_rejected(app, store, logged_in):
+    stale = _form_of(logged_in, "/admin/prices")
+    n = len(app.extensions["publisher"].content()["airport_fares"])
+    other = base_prices(app, **{f"fare-{n}-area": "Swords", f"fare-{n}-to": "30", f"fare-{n}-from": "35"})
+    assert post(logged_in, "/admin/prices", other).status_code == 302
+    # untouched lists + unrelated edit: newer fare survives
+    stale["multi_day_rate"] = "700"
+    assert post(logged_in, "/admin/prices", stale).status_code == 302
+    c = app.extensions["publisher"].content()
+    assert c["settings"]["multi_day_rate"] == 700 and c["airport_fares"][-1]["area"] == "Swords"
+    # touching the list from a stale form is rejected
+    stale2 = _form_of(logged_in, "/admin/prices")
+    assert post(logged_in, "/admin/prices", base_prices(app, **{"fare-0-remove": "on"})).status_code == 302
+    before = store.load()
+    stale2["fare-1-to"] = "99"
+    r = post(logged_in, "/admin/prices", stale2)
+    assert r.status_code == 200 and b"changed in another tab" in r.data
+    assert store.load() == before
+
+
+def test_prices_error_rerender_offers_blank_rows(app, logged_in):
+    n = len(app.extensions["publisher"].content()["airport_fares"])
+    r = post(logged_in, "/admin/prices", base_prices(app, multi_day_rate="abc"))
+    assert f'name="fare-{n + 1}-area"' in r.get_data(as_text=True)
+    assert f'name="fare-{n + 2}-area"' not in r.get_data(as_text=True)
+
+
+def test_script_in_text_value_escaped_on_admin_page(app, logged_in):
+    payload = "<script>alert(1)</script>"
+    post(logged_in, "/admin/text", {"t__home.hero_title": payload})
+    html = logged_in.get("/admin/text").get_data(as_text=True)
+    assert payload not in html and "&lt;script&gt;alert(1)&lt;/script&gt;" in html

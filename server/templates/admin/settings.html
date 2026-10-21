@@ -7,13 +7,13 @@
 <form method="post" action="/admin/contact" class="card">
   <input type="hidden" name="csrf" value="{{ csrf_token() }}">
   <label for="phone">Phone number</label>
-  <input id="phone" name="phone" type="tel" value="{{ vals.phone }}">
+  <input id="phone" name="phone" type="tel" value="{{ vals.phone }}" maxlength="200">
   <label for="phone_display">Phone number as shown on the site</label>
-  <input id="phone_display" name="phone_display" value="{{ vals.phone_display }}">
+  <input id="phone_display" name="phone_display" value="{{ vals.phone_display }}" maxlength="200">
   <label for="email">Booking email</label>
-  <input id="email" name="email" type="email" value="{{ vals.email }}">
+  <input id="email" name="email" type="email" value="{{ vals.email }}" maxlength="200">
   <label for="whatsapp_number">WhatsApp number</label>
-  <input id="whatsapp_number" name="whatsapp_number" inputmode="numeric" value="{{ vals.whatsapp_number }}">
+  <input id="whatsapp_number" name="whatsapp_number" inputmode="numeric" value="{{ vals.whatsapp_number }}" maxlength="200">
   <p class="hint">Digits only: country code, no + or spaces, e.g. 353870330046</p>
   <button type="submit" class="btn">Save contact details</button>
 </form>

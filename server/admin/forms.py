@@ -6,7 +6,10 @@ from flask import current_app
 from build import BuildError
 from content import ValidationError
 
-_MONEY_RE = re.compile(r"^\d+$")
+_MONEY_RE = re.compile(r"^[0-9]+$", re.ASCII)
+SHORT_MAX = 200
+TEXT_MAX = 2000
+
 
 
 def publisher():
@@ -42,7 +45,7 @@ def parse_int(raw, label, lo, hi, *, blank_ok=False, money=True):
     if not _MONEY_RE.match(t):
         return None, (f"{label}: \"{s}\" isn't a whole number"
                       + (" of euros (digits only, e.g. 450)" if money else ""))
-    v = int(t)
+    v = int(t) if len(t.lstrip("0")) <= 9 else hi + 1   # never int() a huge string
     if not lo <= v <= hi:
         return None, f"{label} must be between {lo:,} and {hi:,}"
     return v, None
@@ -51,3 +54,18 @@ def parse_int(raw, label, lo, hi, *, blank_ok=False, money=True):
 def indices(form, prefix):
     pat = re.compile(rf"^{re.escape(prefix)}-(\d+)-")
     return sorted({int(m.group(1)) for k in form if (m := pat.match(k))})
+
+
+def too_long(value, label, limit=SHORT_MAX):
+    if len(value) > limit:
+        return f"{label} is too long (max {limit:,} characters)"
+    return None
+
+
+def digest(value):
+    """Short stable fingerprint of a string or JSON-able value."""
+    import hashlib
+    import json
+    raw = value if isinstance(value, str) else json.dumps(value, sort_keys=True,
+                                                          ensure_ascii=True)
+    return hashlib.sha256(raw.encode()).hexdigest()[:16]
