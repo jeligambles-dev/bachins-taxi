@@ -525,3 +525,7 @@
 @media (max-width: 700px) {
   .group-band { padding: 3.5rem 5vw; }
 }
+
+/* Owner-uploaded tour photos (only rendered when a photo is set) */
+.tour-photo { display: block; width: 100%; aspect-ratio: 3/2; object-fit: cover; border-radius: 10px; margin: 0 0 1rem; }
+.tour-photo-lg { aspect-ratio: 16/9; margin-bottom: 1.5rem; }

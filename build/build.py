@@ -29,7 +29,21 @@ from posts import POSTS     # noqa: E402
 import texts                # noqa: E402
 from texts import T, T_lines  # noqa: E402
 
-E = html.escape
+_BRACE_RE = re.compile(r"\{(?=\{)")
+
+
+def E(value, quote=True):
+    """html.escape plus: owner text can never contain a literal "{{", so it
+    can neither break the leftover-token check nor forge a contact token."""
+    return _BRACE_RE.sub("&#123;", html.escape(value, quote=quote))
+
+
+def _ld_dumps(obj, **kw):
+    """JSON-LD / inline JSON for owner data, with "{{" neutralised."""
+    return _BRACE_RE.sub(lambda m: "\\u007b", json.dumps(obj, ensure_ascii=False, **kw))
+
+
+_PHOTO_RE = re.compile(r"^uploads/[a-z0-9]+\.(jpg|png)$")
 PARTIALS = Path(__file__).resolve().parent / "partials"
 _MODAL_RAW = (PARTIALS / "modal.html").read_text().strip()
 _FAB_RAW = (PARTIALS / "fab.html").read_text().strip()
@@ -47,6 +61,9 @@ TOUR_BY_SLUG = {}
 MULTI_DAY = []
 AIRPORT_FARES = []
 LONG_TRANSFERS = []
+REDIRECTS = {}      # old tour slug -> new slug
+SLOT_PHOTO = {}     # "hero" / "taxi" / "logo" -> site-relative path, if set
+TOUR_PHOTO = {}     # tour slug -> site-relative path, if set
 
 
 class BuildError(Exception):
@@ -76,7 +93,7 @@ def _configure(content):
     global PHONE, PHONE_DISPLAY, EMAIL, WHATSAPP, SITE_URL
     global MULTI_DAY_RATE, EXTRA_HOUR_RATE, MAX_PASSENGERS
     global TOURS, TOUR_BY_SLUG, MULTI_DAY, AIRPORT_FARES, LONG_TRANSFERS
-    global MODAL, FAB, CONFIG_JS, CONFIG_VER
+    global MODAL, FAB, CONFIG_JS, CONFIG_VER, REDIRECTS, SLOT_PHOTO, TOUR_PHOTO
     st = content["settings"]
     texts.configure(content.get("texts"))
     PHONE = st["phone"]
@@ -92,6 +109,12 @@ def _configure(content):
     MULTI_DAY = content["multi_day"]
     AIRPORT_FARES = [(f["area"], f["distance"], f["to"], f["from"]) for f in content["airport_fares"]]
     LONG_TRANSFERS = [(f["area"], f["price"]) for f in content["long_transfers"]]
+    REDIRECTS = dict(content.get("redirects") or {})
+    paths = {pid: p for pid, p in (content.get("_photos") or {}).items()
+             if isinstance(p, str) and _PHOTO_RE.match(p)}
+    SLOT_PHOTO = {slot: paths[pid] for slot, pid in (content.get("photo_slots") or {}).items()
+                  if pid in paths}
+    TOUR_PHOTO = {t["slug"]: paths[t["photo"]] for t in TOURS if t.get("photo") in paths}
     MODAL = fill_tokens(_MODAL_RAW)
     FAB = fill_tokens(_FAB_RAW)
     CONFIG_JS = ("window.BCH = " + _json_inline({
@@ -134,11 +157,28 @@ def fill_tokens(s):
 
     out, pos = [], 0
     for m in _LD_RE.finditer(s):
-        out.append(fill(s[pos:m.start()], E))
+        out.append(fill(s[pos:m.start()], html.escape))
         out.append(m.group(1) + fill(m.group(2), json_conv) + m.group(3))
         pos = m.end()
-    out.append(fill(s[pos:], E))
+    out.append(fill(s[pos:], html.escape))
     return "".join(out)
+
+
+def photo_url(slot, root, default, absolute=True):
+    """URL for a photo slot (or the default image), as seen from a page at `root`.
+    Absolute when SITE_URL is set and `absolute`, else relative to `root`."""
+    path = SLOT_PHOTO.get(slot, default)
+    if absolute and SITE_URL:
+        return E(SITE_URL.rstrip("/") + "/" + path)
+    return E(root + path)
+
+
+def tour_photo(t, root, cls="tour-photo", lazy=True):
+    path = TOUR_PHOTO.get(t["slug"])
+    if not path:
+        return ""
+    return (f'<img class="{cls}" src="{E(root + path)}" alt="{E(t["name"])}"'
+            + (' loading="lazy"' if lazy else "") + ">")
 
 
 def config_script(root):
@@ -267,7 +307,7 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
         canonical = f'\n  <link rel="canonical" href="{SITE_URL.rstrip("/")}/{path}">'
     ld = ""
     for block in (jsonld or []):
-        ld += '\n  <script type="application/ld+json">\n' + json.dumps(block, ensure_ascii=False, indent=2) + "\n  </script>"
+        ld += '\n  <script type="application/ld+json">\n' + _ld_dumps(block, indent=2) + "\n  </script>"
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -282,10 +322,10 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
   <meta property="og:locale" content="en_IE">
   <meta property="og:title" content="{E(title)}">
   <meta property="og:description" content="{E(description)}">
-  <meta property="og:image" content="{(SITE_URL.rstrip("/") + "/") if SITE_URL else root}images/hero.jpg">
+  <meta property="og:image" content="{photo_url('hero', root, 'images/hero.jpg')}">
   <meta name="twitter:card" content="summary_large_image">{canonical}
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a0a0a'/%3E%3Ctext x='32' y='42' font-family='Georgia,serif' font-size='26' font-weight='700' fill='%23c9a84c' text-anchor='middle'%3EBCH%3C/text%3E%3C/svg%3E">
-  <link rel="apple-touch-icon" href="{root}images/logo.svg">
+  <link rel="apple-touch-icon" href="{photo_url('logo', root, 'images/logo.svg', absolute=False)}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -355,9 +395,10 @@ def tour_card(t, root, detail_link=True):
     more = (f'<details class="tour-more"><summary>+{len(extra)} more</summary><ul class="tour-list">'
             + "".join(f"<li>{E(x)}</li>" for x in extra) + "</ul></details>") if extra else ""
     badge = '<span class="tour-badge">Most Popular</span>' if t["fav"] else ""
+    photo = tour_photo(t, root) + "\n        " if t["slug"] in TOUR_PHOTO else ""
     details = f'<a class="tour-details" href="{root}tours/{t["slug"]}.html">View tour details →</a>' if detail_link else ""
     return f"""      <article class="tour-card reveal{' fav' if t['fav'] else ''}">
-        {badge}
+        {photo}{badge}
         <span class="tour-region">{E(t['region'])}</span>
         <h3><a href="{root}tours/{t['slug']}.html">{E(t['name'])}</a></h3>
         <div class="tour-chips"><span>{E(t['duration'])}</span><span>Private</span><span>Up to 8</span></div>
@@ -459,6 +500,8 @@ def build_tour_pages():
             others += [o for o in same_kind if o["fav"] and o not in others]
         else:
             others = same_kind
+        detail_photo = (tour_photo(t, root, "tour-photo tour-photo-lg", lazy=False) + "\n          "
+                        if t["slug"] in TOUR_PHOTO else "")
         hl = "".join(f"<li>{E(x)}</li>" for x in t["highlights"])
         inc = "".join(f"<li>{x}</li>" for x in T_lines(f"included.{kind}"))
         calc_link = (f'\n          <a class="book-alt" href="{root}price-calculator.html?tour={t["slug"]}">Add extras in the price calculator →</a>'
@@ -486,7 +529,7 @@ def build_tour_pages():
     <section class="theme-light tour-detail">
       <div class="detail-grid">
         <div class="detail-main">
-          <h2>{T("tour.about_title")}</h2>
+          {detail_photo}<h2>{T("tour.about_title")}</h2>
           <p>{E(t['intro'])}</p>
           <h2>{T("tour.highlights_title")}</h2>
           <ul class="check-list">{hl}</ul>
@@ -739,7 +782,7 @@ def build_calculator():
           </div>
         </aside>
       </form>
-      <script id="calc-data" type="application/json">{json.dumps(data, ensure_ascii=False)}</script>
+      <script id="calc-data" type="application/json">{_ld_dumps(data)}</script>
     </section>
 
     <section class="theme-mint">
@@ -894,6 +937,28 @@ def sync_faq_jsonld(s):
     return s
 
 
+def apply_index_photos(s):
+    """Swap in uploaded hero / taxi / logo photos on index.html (no-op if unset)."""
+    hero, taxi, logo = (SLOT_PHOTO.get(k) for k in ("hero", "taxi", "logo"))
+    if hero:
+        url = photo_url("hero", "", "")
+        s = re.sub(r'<meta property="og:image" content="[^"]*">',
+                   lambda m: f'<meta property="og:image" content="{url}">', s, count=1)
+        s = re.sub(r'"image": "[^"]*"', lambda m: f'"image": "{url}"', s, count=1)
+        s = s.replace('<link rel="preload" as="image" href="images/hero.jpg">',
+                      f'<link rel="preload" as="image" href="{E(hero)}">')
+        s = s.replace("</head>", f"  <style>.hero-bg{{background-image:url('{E(hero)}')}}</style>\n</head>", 1)
+    if taxi:
+        s = re.sub(r'<img src="images/taxi\.jpg"([^>]*?) width="899" height="658">',
+                   lambda m: f'<img src="{E(taxi)}"{m.group(1)}>', s, count=1)
+    if logo:
+        url = photo_url("logo", "", "")
+        s = s.replace('<link rel="apple-touch-icon" href="images/logo.svg">',
+                      f'<link rel="apple-touch-icon" href="{E(logo)}">')
+        s = re.sub(r'"logo": "[^"]*"', lambda m: f'"logo": "{url}"', s, count=1)
+    return s
+
+
 def build_index(out_dir):
     s = TEMPLATE_INDEX.read_text()
     fares = "\n".join(
@@ -916,6 +981,7 @@ def build_index(out_dir):
                          "index.html template")
     if priced:
         s = re.sub(pattern, "day tours from " + eur(min(priced)), s)
+    s = apply_index_photos(s)
     if SITE_URL:
         base = SITE_URL.rstrip("/")
         s = s.replace('<meta property="og:image" content="images/hero.jpg">',
