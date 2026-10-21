@@ -19,6 +19,12 @@ def _mutator(form):
     vals = {k: form.get(k, "").strip() for k in FIELDS}
 
     def mutate(view):
+        # fields this tab didn't change keep their fresh value (another tab
+        # or device may have changed them since the form was rendered)
+        for k in FIELDS:
+            orig = form.get("o__" + k)
+            if orig is not None and orig.strip() == vals[k]:
+                vals[k] = (view["settings"].get(k) or "").strip()
         errors = [e for k in FIELDS if (e := too_long(vals[k], k.replace("_", " ").capitalize()))]
         if not _PHONE.match(vals["phone"]):
             errors.append("Phone number must be 7 to 20 digits or spaces, optionally "
@@ -59,7 +65,10 @@ def contact():
     c = publisher().content()
     src = request.form if request.method == "POST" else c["settings"]
     vals = {k: src.get(k, "") for k in FIELDS}
-    return render_template("admin/settings.html", vals=vals, errors=errors,
+    orig = {k: (request.form.get("o__" + k, c["settings"].get(k, ""))
+                if request.method == "POST" else c["settings"].get(k, ""))
+            for k in FIELDS}
+    return render_template("admin/settings.html", vals=vals, orig=orig, errors=errors,
                            email_unconfirmed=banner_email(c))
 
 

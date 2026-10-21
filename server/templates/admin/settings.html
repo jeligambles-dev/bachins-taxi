@@ -6,7 +6,8 @@
 {% include "admin/_errors.html" %}
 <form method="post" action="/admin/contact" class="card">
   <input type="hidden" name="csrf" value="{{ csrf_token() }}">
-  <label for="phone">Phone number</label>
+  {% for k in ("phone", "phone_display", "email", "whatsapp_number") %}<input type="hidden" name="o__{{ k }}" value="{{ orig[k] }}">
+  {% endfor %}  <label for="phone">Phone number</label>
   <input id="phone" name="phone" type="tel" value="{{ vals.phone }}" maxlength="200">
   <label for="phone_display">Phone number as shown on the site</label>
   <input id="phone_display" name="phone_display" value="{{ vals.phone_display }}" maxlength="200">
