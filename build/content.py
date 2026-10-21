@@ -98,3 +98,48 @@ def validate_tour(t, others):
         errors.append("The price must be a whole number of euros from 0 to "
                       "100,000, or left blank.")
     return errors
+
+
+def resolve_redirect(slug, redirects):
+    """Follow `redirects` from `slug` to its current target (loop-safe)."""
+    seen = set()
+    while slug in redirects and slug not in seen:
+        seen.add(slug)
+        slug = redirects[slug]
+    return slug
+
+
+def rename_slug(content_sections, old, new):
+    """Rename a tour's slug. Returns {"tours": [...], "redirects": {...}}.
+
+    The old address redirects to the new one; earlier redirects to `old` are
+    repointed; a redirect from `new` is dropped (the slug is live again).
+    """
+    tours = copy.deepcopy(content_sections["tours"])
+    redirects = dict(content_sections.get("redirects") or {})
+    tour = next((t for t in tours if t.get("slug") == old), None)
+    if tour is None:
+        raise ValidationError([f"There is no tour with the web address \"{old}\"."])
+    if new == old:
+        return {"tours": tours, "redirects": redirects}
+    errors = validate_tour(dict(tour, slug=new), [t for t in tours if t is not tour])
+    if errors:
+        raise ValidationError(errors)
+    tour["slug"] = new
+    redirects.pop(new, None)
+    redirects = {k: (new if v == old else v) for k, v in redirects.items()}
+    redirects[old] = new
+    return {"tours": tours,
+            "redirects": {k: v for k, v in redirects.items() if k != v}}
+
+
+_TOUR_LINK_RE = re.compile(r"tours/([a-z0-9-]+)\.html")
+
+
+def blog_links_to(slug, redirects):
+    """Titles of blog posts that link to the tour `slug`, directly or through
+    a redirect source that resolves to it."""
+    from posts import POSTS
+    return [p["title"] for p in POSTS
+            if any(resolve_redirect(m, redirects) == slug
+                   for m in _TOUR_LINK_RE.findall(p["body"]))]

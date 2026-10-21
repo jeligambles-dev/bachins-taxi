@@ -24,7 +24,7 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from data import AREAS      # noqa: E402
 from content import (KINDS, default_content, merge, price_label,  # noqa: E402
-                     price_unit)
+                     price_unit, resolve_redirect)
 from posts import POSTS     # noqa: E402
 import texts                # noqa: E402
 from texts import T, T_lines  # noqa: E402
@@ -847,6 +847,14 @@ def fmt_date(d):
     return datetime.date.fromisoformat(d).strftime("%-d %B %Y")
 
 
+def post_body(body, root):
+    """Post HTML with {ROOT} filled and links to renamed tours repointed."""
+    def fix(m):
+        slug = m.group(1)
+        return m.group(0) if slug in TOUR_BY_SLUG else f"tours/{resolve_redirect(slug, REDIRECTS)}.html"
+    return re.sub(r"tours/([a-z0-9-]+)\.html", fix, body).replace("{ROOT}", root)
+
+
 def build_blog():
     out = {}
     root = ""
@@ -885,7 +893,7 @@ def build_blog():
 
     <section class="theme-light">
       <article class="post-body">
-{p['body'].replace('{ROOT}', root)}
+{post_body(p['body'], root)}
       </article>
     </section>
 
