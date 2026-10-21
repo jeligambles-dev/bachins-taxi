@@ -19,7 +19,19 @@ TEMPLATE_PATH = Path(__file__).resolve().parent / "templates" / "index.html"
 MARKER_RE = re.compile(r"<!-- @t:([\w.]+) -->(.*?)<!-- /@t:\1 -->", re.S)
 
 _overrides = {}
+_max_pax = 8
 _template_cache = {}
+
+# Built-in wording that states the passenger limit as a bare "8". The admin
+# still shows the original default; the build swaps in the real limit. Owner
+# overrides are never touched. ("8-seater" and "Up to 8 seats" describe the
+# vehicle and stay as they are.)
+_PAX_PHRASES = (
+    (re.compile(r"\b(up to|more than) 8\b(?! seat)", re.I), lambda m, n: f"{m.group(1)} {n}"),
+    (re.compile(r"\bpassenger or 8\b"), lambda m, n: f"passenger or {n}"),
+    (re.compile(r'\bmax="8"'), lambda m, n: f'max="{n}"'),
+    (re.compile(r"\(9(\+|%2B)\)"), lambda m, n: f"({n + 1}{m.group(1)})"),
+)
 
 TEXTS = {
     # ── Call-to-action band (bottom of most pages) ───────────────────────────
@@ -173,9 +185,10 @@ TEXTS = {
 
 # ── Lookup ───────────────────────────────────────────────────────────────────
 
-def configure(overrides):
+def configure(overrides, max_passengers=8):
     """Set the owner overrides ({key: value}) used by T() until the next call."""
-    global _overrides
+    global _overrides, _max_pax
+    _max_pax = max_passengers
     _overrides = {k: v for k, v in (overrides or {}).items()
                   if isinstance(k, str) and isinstance(v, str)}
 
@@ -193,12 +206,30 @@ def _template_defaults():
     return _template_cache["v"][1]
 
 
+def dyn(text):
+    """Built-in wording with the passenger limit swapped in (see _PAX_PHRASES)."""
+    if _max_pax == 8:
+        return text
+    for pat, fn in _PAX_PHRASES:
+        text = pat.sub(lambda m, fn=fn: fn(m, _max_pax), text)
+    return text
+
+
+def dyn_template(s):
+    """dyn() for the parts of a template outside @t: markers."""
+    out, pos = [], 0
+    for m in MARKER_RE.finditer(s):
+        out += [dyn(s[pos:m.start()]), m.group(0)]
+        pos = m.end()
+    return "".join(out) + dyn(s[pos:])
+
+
 def _raw(key):
     if key in _overrides:
         return _overrides[key]
     if key in TEXTS:
-        return TEXTS[key][2]
-    return _template_defaults()[key]
+        return dyn(TEXTS[key][2])
+    return dyn(_template_defaults()[key])
 
 
 def raw(key):
@@ -225,7 +256,7 @@ def replace_markers(s):
     """Replace every template marker with its escaped merged value (markers stripped)."""
     def sub(m):
         key, default = m.group(1), html.unescape(m.group(2))
-        return esc(_overrides.get(key, default))
+        return esc(_overrides[key] if key in _overrides else dyn(default))
     return MARKER_RE.sub(sub, s)
 
 

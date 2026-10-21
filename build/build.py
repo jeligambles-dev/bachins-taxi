@@ -96,7 +96,7 @@ def _configure(content):
     global TOURS, TOUR_BY_SLUG, MULTI_DAY, AIRPORT_FARES, LONG_TRANSFERS
     global MODAL, FAB, CONFIG_JS, CONFIG_VER, REDIRECTS, SLOT_PHOTO, TOUR_PHOTO
     st = content["settings"]
-    texts.configure(content.get("texts"))
+    texts.configure(content.get("texts"), st["max_passengers"])
     PHONE = st["phone"]
     PHONE_DISPLAY = st["phone_display"]
     EMAIL = st["email"]
@@ -116,11 +116,11 @@ def _configure(content):
     SLOT_PHOTO = {slot: paths[pid] for slot, pid in (content.get("photo_slots") or {}).items()
                   if isinstance(pid, str) and pid in paths}
     TOUR_PHOTO = {t["slug"]: paths[t["photo"]] for t in TOURS if isinstance(t.get("photo"), str) and t["photo"] in paths}
-    MODAL = fill_tokens(_MODAL_RAW)
+    MODAL = fill_tokens(texts.dyn(_MODAL_RAW))
     FAB = fill_tokens(_FAB_RAW)
     CONFIG_JS = ("window.BCH = " + _json_inline({
         "email": EMAIL, "waNumber": st["whatsapp_number"],
-        "phoneDisplay": PHONE_DISPLAY}) + ";\n")
+        "phoneDisplay": PHONE_DISPLAY, "maxPax": MAX_PASSENGERS}) + ";\n")
     CONFIG_VER = hashlib.sha256(CONFIG_JS.encode()).hexdigest()[:8]
 
 
@@ -417,7 +417,7 @@ def tour_card(t, root, detail_link=True):
         {photo}{badge}
         <span class="tour-region">{E(t['region'])}</span>
         <h3><a href="{root}tours/{t['slug']}.html">{E(t['name'])}</a></h3>
-        <div class="tour-chips"><span>{E(t['duration'])}</span><span>Private</span><span>Up to 8</span></div>
+        <div class="tour-chips"><span>{E(t['duration'])}</span><span>Private</span><span>Up to {MAX_PASSENGERS}</span></div>
         <p>{E(t['desc'])}</p>
         <ul class="tour-list">{li}</ul>
         {more}
@@ -459,11 +459,16 @@ def cta_band(root, title_key="cta.title", text_key="cta.text"):
     </section>"""
 
 
+def group_service():
+    """Booking-form service name for groups bigger than one vehicle."""
+    return f"Group transport ({MAX_PASSENGERS + 1}+)"
+
+
 def group_band(root, is_index=False):
     """Banner for groups bigger than one van."""
-    book = (f'<button type="button" class="btn btn-gold" data-service="Group transport (9+)">Get a Group Quote</button>'
+    book = (f'<button type="button" class="btn btn-gold" data-service="{group_service()}">Get a Group Quote</button>'
             if is_index else
-            f'<a href="{root}index.html?service=Group%20transport%20(9%2B)#booking" class="btn btn-gold">Get a Group Quote</a>')
+            f'<a href="{root}index.html?service={quote(group_service(), safe='()')}#booking" class="btn btn-gold">Get a Group Quote</a>')
     points = "\n".join(f"          <li>{x}</li>" for x in T_lines("group.points"))
     return f"""  <section class="group-band theme-teal">
     <div class="group-inner reveal">
@@ -480,7 +485,7 @@ def group_band(root, is_index=False):
       </div>
       <div class="group-actions">
         {book}
-        <a href="{E(WHATSAPP)}?text={quote("Hi BCH Taxi, I'd like a quote for a group of more than 8 people.")}" class="btn btn-whatsapp" target="_blank" rel="noopener">Ask on WhatsApp</a>
+        <a href="{E(WHATSAPP)}?text={quote(f"Hi BCH Taxi, I'd like a quote for a group of more than {MAX_PASSENGERS} people.")}" class="btn btn-whatsapp" target="_blank" rel="noopener">Ask on WhatsApp</a>
       </div>
     </div>
   </section>"""
@@ -539,7 +544,7 @@ def build_tour_pages():
                          E(t["desc"]),
                          f"""
       <div class="hero-meta">
-        <span>{E(t['duration'])}</span><span>{"Private tour" if kind == "day" else KINDS[kind]}</span><span>Up to 8 passengers</span><span>From Dublin: {E(t['drive'])}</span>
+        <span>{E(t['duration'])}</span><span>{"Private tour" if kind == "day" else KINDS[kind]}</span><span>Up to {MAX_PASSENGERS} passengers</span><span>From Dublin: {E(t['drive'])}</span>
       </div>""") + f"""
 
     <section class="theme-light tour-detail">
@@ -556,7 +561,7 @@ def build_tour_pages():
         </div>
         <aside class="book-card">
           <span class="tour-region">{KINDS[kind] if kind != "day" else "Private tour"}</span>
-          <div class="tour-price">{price_html(t, "up to 8 people")}</div>
+          <div class="tour-price">{price_html(t, f"up to {MAX_PASSENGERS} people")}</div>
           <ul class="book-facts">
             <li><span>Duration</span>{E(t['duration'])}</li>
             <li><span>Drive from Dublin</span>{E(t['drive'])}</li>
@@ -564,7 +569,7 @@ def build_tour_pages():
           </ul>
           <button type="button" class="btn btn-gold tour-book" data-price="{price_attr(t)}" data-unit="{unit}" data-tour="{E(t['name'])}">Book This Tour</button>
           <a class="btn btn-whatsapp" href="{E(WHATSAPP)}?text={quote(f"Hi BCH Taxi, I'd like to ask about the {t['name']} tour.")}" target="_blank" rel="noopener">Ask on WhatsApp</a>{calc_link}
-          <p class="book-group">More than 8 people? <a href="{root}index.html?service=Group%20transport%20(9%2B)#booking">We can arrange extra vehicles.</a></p>
+          <p class="book-group">More than {MAX_PASSENGERS} people? <a href="{root}index.html?service={quote(group_service(), safe='()')}#booking">We can arrange extra vehicles.</a></p>
         </aside>
       </div>
     </section>
@@ -582,7 +587,7 @@ def build_tour_pages():
         }
         if t["price"] is not None:
             tour_ld["offers"] = {"@type": "Offer", "price": t["price"], "priceCurrency": "EUR",
-                                 "description": f"{unit.capitalize()}, up to 8 passengers"}
+                                 "description": f"{unit.capitalize()}, up to {MAX_PASSENGERS} passengers"}
         ld = [tour_ld, breadcrumb_ld([("Home", ""), (list_name, listing), (t["name"], f"tours/{t['slug']}.html")])]
         unit_title = "per " + unit[4:].capitalize()
         origin = " from Dublin" if kind == "day" else ""
@@ -594,8 +599,8 @@ def build_tour_pages():
             desc = f"Private {t['name']} day tour from Dublin or Meath in a wheelchair-accessible 8-seater. {t['duration']}"
         else:
             desc = f"Private {t['name']} {KIND_NOUN[kind]} in a wheelchair-accessible 8-seater. {t['duration']}"
-        desc += (f", from {price_label(t)} {unit} for up to 8 people." if t["price"] is not None
-                 else ", for up to 8 people.")
+        desc += (f", from {price_label(t)} {unit} for up to {MAX_PASSENGERS} people." if t["price"] is not None
+                 else f", for up to {MAX_PASSENGERS} people.")
         out[f"tours/{t['slug']}.html"] = page(
             root=root, active=active, path=f"tours/{t['slug']}.html", jsonld=ld,
             title=title, description=desc, body=body, noindex=not t["published"])
@@ -678,7 +683,7 @@ def build_tours_hub():
         title="Private Day Tours of Ireland from Dublin | BCH Taxi",
         description=(f"{n} private day tours from Dublin and Meath: " if n else "Private day tours from Dublin and Meath: ")
         + (", ".join(sample_names(day)) + " and more. " if n else "")
-        + "Per-vehicle prices for up to 8 people.",
+        + f"Per-vehicle prices for up to {MAX_PASSENGERS} people.",
         body=body)}
 
 
@@ -707,7 +712,7 @@ def build_multi_day():
         root=root, active="multi", path="multi-day-tours.html",
         jsonld=[breadcrumb_ld([("Home", ""), ("Multi-Day Tours", "multi-day-tours.html")])],
         title="Multi-Day Private Tours of Ireland | BCH Taxi",
-        description=f"Private multi-day tours of Ireland with your own driver, from {eur(MULTI_DAY_RATE)} per day for up to 8 people. Sample routes: West Coast, Kerry, Causeway Coast and the Wild Atlantic Way.",
+        description=f"Private multi-day tours of Ireland with your own driver, from {eur(MULTI_DAY_RATE)} per day for up to {MAX_PASSENGERS} people. Sample routes: West Coast, Kerry, Causeway Coast and the Wild Atlantic Way.",
         body=body)}
 
 
@@ -817,7 +822,7 @@ def build_calculator():
         root=root, active="prices", path="price-calculator.html",
         jsonld=[breadcrumb_ld([("Home", ""), ("Price Calculator", "price-calculator.html")])],
         title="Tour & Taxi Price Calculator | Instant Quote | BCH Taxi",
-        description="Work out the price of your Ireland day tour, multi-day trip or Dublin Airport transfer instantly. Per-vehicle prices for up to 8 passengers.",
+        description=f"Work out the price of your Ireland day tour, multi-day trip or Dublin Airport transfer instantly. Per-vehicle prices for up to {MAX_PASSENGERS} passengers.",
         body=body, extra_js=f'\n  <script src="{root}{asset("js/calculator.js")}"></script>')}
 
 
@@ -868,7 +873,8 @@ def post_body(body, root):
     def fix(m):
         slug = m.group(1)
         return m.group(0) if slug in TOUR_BY_SLUG else f"tours/{resolve_redirect(slug, REDIRECTS)}.html"
-    return re.sub(r"tours/([a-z0-9-]+)\.html", fix, body).replace("{ROOT}", root)
+    body = re.sub(r"tours/([a-z0-9-]+)\.html", fix, body).replace("{ROOT}", root)
+    return texts.dyn(body)   # posts are code, so the built-in passenger limit applies
 
 
 def build_blog():
@@ -984,7 +990,7 @@ def apply_index_photos(s):
 
 
 def build_index(out_dir):
-    s = TEMPLATE_INDEX.read_text()
+    s = texts.dyn_template(TEMPLATE_INDEX.read_text())
     fares = "\n".join(
         f'        <div class="fare-row"><span class="fare-place">{E(a)}</span><span class="fare-km">{E(km)}</span>'
         f'<span class="fare-price"><small>To airport</small>{eur(to)}</span><span class="fare-price"><small>From airport</small>{eur(fr)}</span></div>'

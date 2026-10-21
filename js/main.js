@@ -26,7 +26,7 @@ document.querySelectorAll('.nav-links a').forEach(link => {
 const CFG = window.BCH || {};
 const FORM_ENDPOINT = 'https://formsubmit.co/ajax/' + (CFG.email || '');
 const WHATSAPP = 'https://wa.me/' + (CFG.waNumber || '') + '?text=';
-const MAX_PAX = 8;
+const MAX_PAX = Number(CFG.maxPax) || 8;
 const form = document.getElementById('contact-form');
 const today = new Date().toISOString().slice(0, 10);
 document.querySelectorAll('input[type="date"]').forEach(el => { el.min = today; });
@@ -105,7 +105,7 @@ function sendWhatsApp(f, statusEl, intro, extra) {
   window.open(WHATSAPP + encodeURIComponent(lines.join('\n')), '_blank', 'noopener');
 }
 
-// Steppers. Passenger counters (adults/children/passengers) share the van's 8 seats.
+// Steppers. Passenger counters (adults/children/passengers) share the van's seats (CFG.maxPax).
 const PAX_FIELDS = ['adults', 'children', 'passengers'];
 function syncStepper(stepper) {
   const f = stepper.closest('form');
@@ -198,6 +198,8 @@ if (form) {
 
 }
 
+const euro = n => '€' + Number(n).toLocaleString('en-IE');
+
 // Tour modal (on every page that has tour "Book" buttons)
 const modal = document.getElementById('tour-modal');
 if (modal) {
@@ -206,7 +208,7 @@ if (modal) {
   let currentTour = null;
 
   function priceText(tour) {
-    return tour.price === null ? 'Price on request' : '€' + tour.price;
+    return tour.price === null ? 'Price on request' : euro(tour.price);
   }
 
   function updateSummary() {
@@ -236,7 +238,7 @@ if (modal) {
   modal.querySelector('[data-close]').addEventListener('click', () => modal.close());
   modal.addEventListener('click', (e) => { if (e.target === modal) modal.close(); });
 
-  const tourExtra = () => [['Tour', currentTour.name], ['Price', currentTour.price === null ? 'Price on request' : '€' + currentTour.price + ' ' + currentTour.unit]];
+  const tourExtra = () => [['Tour', currentTour.name], ['Price', currentTour.price === null ? 'Price on request' : euro(currentTour.price) + ' ' + currentTour.unit]];
   tourForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const ok = await sendEmail(tourForm, tmStatus, document.getElementById('tm-send'),
