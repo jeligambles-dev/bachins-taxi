@@ -1,0 +1,57 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit tour' if orig_slug else 'New tour' }}{% endblock %}
+{% block content %}
+<h1>{{ 'Edit tour' if orig_slug else 'New tour' }}</h1>
+{% include "admin/_errors.html" %}
+<form method="post" action="{{ '/admin/tours/' ~ orig_slug if orig_slug else '/admin/tours/new' }}" class="stack">
+  <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+  {% for f in o %}<input type="hidden" name="o__{{ f }}" value="{{ o[f] }}">{% endfor %}
+  <fieldset class="card">
+    <legend>Basics</legend>
+    <label for="name">Name</label>
+    <input id="name" name="name" value="{{ v.name }}" maxlength="200">
+    <label for="slug">Web address</label>
+    <input id="slug" name="slug" value="{{ v.slug }}" maxlength="200" autocapitalize="none" autocomplete="off">
+    <p class="hint">This is the web address. Changing it keeps the old address working.{% if not orig_slug %} Leave empty to make one from the name.{% endif %}</p>
+    <label for="kind">Type</label>
+    <select id="kind" name="kind">
+      {% for k, label in kinds.items() %}<option value="{{ k }}"{% if v.kind == k %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <label class="check"><input type="checkbox" name="published" value="1"{% if v.published == '1' %} checked{% endif %}> Show on the website</label>
+    <label class="check"><input type="checkbox" name="fav" value="1"{% if v.fav == '1' %} checked{% endif %}> Most popular badge</label>
+    <label for="price">Price (euros)</label>
+    <input id="price" name="price" inputmode="numeric" autocomplete="off" value="{{ v.price }}" placeholder="Price on request" maxlength="200">
+    <p class="hint">Leave blank to show 'Price on request'.{% if kind == 'golf' %} Golf trips are one fixed price per trip.{% endif %}</p>
+  </fieldset>
+  <fieldset class="card">
+    <legend>Details</legend>
+    <label for="region">Region</label>
+    <input id="region" name="region" value="{{ v.region }}" maxlength="200">
+    <label for="area">Area</label>
+    <input id="area" name="area" value="{{ v.area }}" maxlength="200">
+    <label for="duration">Duration</label>
+    <input id="duration" name="duration" value="{{ v.duration }}" maxlength="200">
+    <label for="drive">Drive from Dublin</label>
+    <input id="drive" name="drive" value="{{ v.drive }}" maxlength="200">
+    <label for="desc">Short description</label>
+    <textarea id="desc" name="desc" rows="4" maxlength="600">{{ v.desc }}</textarea>
+    <label for="highlights">Highlights (one per line, up to 12)</label>
+    <textarea id="highlights" name="highlights" rows="6">{{ v.highlights }}</textarea>
+    <label for="intro">Introduction</label>
+    <textarea id="intro" name="intro" rows="8" maxlength="4000">{{ v.intro }}</textarea>
+  </fieldset>
+  <fieldset class="card">
+    <legend>Photo</legend>
+    <div class="photos">
+      <label class="pick"><input type="radio" name="photo" value=""{% if not v.photo %} checked{% endif %}> <span>No photo</span></label>
+      {% for p in photos %}
+      <label class="pick"><input type="radio" name="photo" value="{{ p.id }}"{% if v.photo == p.id %} checked{% endif %}>
+        <img src="/admin/photos/{{ p.id }}/raw" alt="{{ p.original_name }}" loading="lazy" width="96" height="96"></label>
+      {% endfor %}
+    </div>
+  </fieldset>
+  <button type="submit" class="btn sticky">Save</button>
+</form>
+{% if orig_slug %}<p><a href="/admin/tours/{{ orig_slug }}/delete">Delete this tour</a></p>{% endif %}
+<p><a href="/admin/tours">Back to tours</a></p>
+{% endblock %}

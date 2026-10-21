@@ -1,0 +1,32 @@
+{% extends "admin/base.html" %}
+{% block title %}Tours{% endblock %}
+{% block content %}
+<h1>Tours</h1>
+<p class="actions">
+  <a class="btn" href="/admin/tours/new?kind=day">Add day tour</a>
+  <a class="btn" href="/admin/tours/new?kind=pub">Add pub tour</a>
+  <a class="btn" href="/admin/tours/new?kind=golf">Add golf trip</a>
+</p>
+{% for kind, label, items in groups %}
+<h2>{{ label }}</h2>
+{% for t in items %}
+<div class="card item">
+  <div>
+    <strong>{{ t.name }}</strong>
+    {% if t.fav %}<span class="badge">Most popular</span>{% endif %}
+    {% if not t.published %}<span class="badge off">Hidden</span>{% endif %}
+    <div class="hint">{{ t.price_text }}</div>
+  </div>
+  <div class="actions">
+    <a class="btn" href="/admin/tours/{{ t.slug }}">Edit</a>
+    <form method="post" action="/admin/tours/{{ t.slug }}/publish">
+      <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+      <input type="hidden" name="published" value="{{ '0' if t.published else '1' }}">
+      <button type="submit" class="btn dark">{{ 'Hide' if t.published else 'Show' }}</button>
+    </form>
+  </div>
+</div>
+{% else %}<p class="hint">None yet.</p>
+{% endfor %}
+{% endfor %}
+{% endblock %}

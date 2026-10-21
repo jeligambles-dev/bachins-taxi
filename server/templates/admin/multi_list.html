@@ -1,0 +1,13 @@
+{% extends "admin/base.html" %}
+{% block title %}Multi-day{% endblock %}
+{% block content %}
+<h1>Multi-day routes</h1>
+<p class="actions"><a class="btn" href="/admin/multi-day/new">Add route</a></p>
+{% for m in routes %}
+<div class="card item">
+  <div><strong>{{ m.name }}</strong><div class="hint">{{ m.days }} days</div></div>
+  <div class="actions"><a class="btn" href="/admin/multi-day/{{ m.slug }}">Edit</a>
+  <a class="btn dark" href="/admin/multi-day/{{ m.slug }}/delete">Delete</a></div>
+</div>
+{% else %}<p class="hint">None yet.</p>{% endfor %}
+{% endblock %}

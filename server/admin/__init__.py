@@ -68,4 +68,4 @@ def dashboard():
 
 
 # Editor pages register their routes on `bp` when imported.
-from . import prices, settings, texts  # noqa: E402,F401
+from . import prices, settings, texts, tours  # noqa: E402,F401

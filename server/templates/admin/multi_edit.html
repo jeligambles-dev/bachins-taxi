@@ -1,0 +1,26 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit route' if orig_slug else 'New route' }}{% endblock %}
+{% block content %}
+<h1>{{ 'Edit route' if orig_slug else 'New route' }}</h1>
+{% include "admin/_errors.html" %}
+<form method="post" action="{{ '/admin/multi-day/' ~ orig_slug if orig_slug else '/admin/multi-day/new' }}" class="stack">
+  <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+  {% for f in o %}<input type="hidden" name="o__{{ f }}" value="{{ o[f] }}">{% endfor %}
+  <fieldset class="card">
+    <label for="name">Name</label>
+    <input id="name" name="name" value="{{ v.name }}" maxlength="200">
+    <label for="slug">Web address</label>
+    <input id="slug" name="slug" value="{{ v.slug }}" maxlength="200" autocapitalize="none" autocomplete="off">
+    <p class="hint">Lowercase letters, numbers and hyphens.{% if not orig_slug %} Leave empty to make one from the name.{% endif %}</p>
+    <label for="days">Days (1 to 21)</label>
+    <input id="days" name="days" inputmode="numeric" value="{{ v.days }}" maxlength="10">
+    <label for="summary">Summary</label>
+    <textarea id="summary" name="summary" rows="3" maxlength="600">{{ v.summary }}</textarea>
+    <label for="plan">Plan (one line per day)</label>
+    <textarea id="plan" name="plan" rows="8">{{ v.plan }}</textarea>
+  </fieldset>
+  <button type="submit" class="btn sticky">Save</button>
+</form>
+{% if orig_slug %}<p><a href="/admin/multi-day/{{ orig_slug }}/delete">Delete this route</a></p>{% endif %}
+<p><a href="/admin/multi-day">Back to routes</a></p>
+{% endblock %}

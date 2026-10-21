@@ -1,0 +1,31 @@
+{% extends "admin/base.html" %}
+{% block title %}Delete {{ what }}{% endblock %}
+{% block content %}
+<h1>Delete {{ what }}</h1>
+{% include "admin/_errors.html" %}
+{% if item is none %}
+<p>This {{ what }} no longer exists.</p>
+<p><a class="btn" href="{{ base }}">Back</a></p>
+{% elif posts %}
+<div class="card">
+  <p>Can't delete: these blog posts link to this {{ what }}: {{ posts | join(", ") }}. Hide it instead.</p>
+  {% if hide_url %}
+  <form method="post" action="{{ hide_url }}">
+    <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+    <input type="hidden" name="published" value="0">
+    <button type="submit" class="btn">Hide</button>
+  </form>
+  {% endif %}
+</div>
+<p><a href="{{ base }}">Back</a></p>
+{% else %}
+<div class="card">
+  <p>Delete <strong>{{ item.name }}</strong>? This can't be undone.</p>
+  <form method="post" action="{{ base }}/{{ slug }}/delete">
+    <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+    <button type="submit" class="btn">Yes, delete</button>
+  </form>
+</div>
+<p><a href="{{ base }}/{{ slug }}">Cancel</a></p>
+{% endif %}
+{% endblock %}

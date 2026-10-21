@@ -36,3 +36,12 @@ details.card summary { cursor:pointer; min-height:44px; display:flex; align-item
 .banner p { margin:0 0 8px; }
 .btn.dark { background:var(--on-gold); color:var(--gold); }
 .btn.sticky { position:sticky; bottom:12px; }
+.item { flex-direction:row; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:12px; }
+.actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:0 0 12px; }
+.actions form { margin:0; }
+.actions .btn, .item .btn { display:inline-flex; align-items:center; text-decoration:none; }
+h2 { font-size:1.15rem; margin:1.5rem 0 .75rem; color:var(--gold); }
+.photos { display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:8px; }
+.pick { display:flex; flex-direction:column; align-items:center; gap:4px; min-height:44px; font-weight:400; background:var(--field); border-radius:8px; padding:6px; }
+.pick input { width:24px; min-height:24px; }
+.pick img { width:96px; height:96px; object-fit:cover; border-radius:6px; }
