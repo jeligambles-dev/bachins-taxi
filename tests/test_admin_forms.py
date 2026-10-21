@@ -294,3 +294,22 @@ def test_script_in_text_value_escaped_on_admin_page(app, logged_in):
     post(logged_in, "/admin/text", {"t__home.hero_title": payload})
     html = logged_in.get("/admin/text").get_data(as_text=True)
     assert payload not in html and "&lt;script&gt;alert(1)&lt;/script&gt;" in html
+
+
+def test_zero_flood_no_500(app, logged_in):
+    z = "0" * 5000
+    n = len(app.extensions["publisher"].content()["airport_fares"])
+    cases = [
+        {"multi_day_rate": z, "o__multi_day_rate": "649"},
+        {"tour_price__ring-of-kerry": z, "o__tour_price__ring-of-kerry": "1"},
+        {f"fare-{n}-area": "Swords", f"fare-{n}-to": z, f"fare-{n}-from": "35"},
+        {"long-5-area": "Belfast", "long-5-price": z},
+    ]
+    for over in cases:
+        r = post(logged_in, "/admin/prices", base_prices(app, **over))
+        assert r.status_code == 200 and b"flash err" in r.data, over
+
+
+def test_huge_row_index_no_500(app, logged_in):
+    r = post(logged_in, "/admin/prices", base_prices(app, **{"fare-" + "9" * 5000 + "-area": "x"}))
+    assert r.status_code == 302

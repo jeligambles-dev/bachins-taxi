@@ -45,14 +45,14 @@ def parse_int(raw, label, lo, hi, *, blank_ok=False, money=True):
     if not _MONEY_RE.match(t):
         return None, (f"{label}: \"{s}\" isn't a whole number"
                       + (" of euros (digits only, e.g. 450)" if money else ""))
-    v = int(t) if len(t.lstrip("0")) <= 9 else hi + 1   # never int() a huge string
+    v = int(t) if len(t) <= 12 else hi + 1   # never int() a huge string
     if not lo <= v <= hi:
         return None, f"{label} must be between {lo:,} and {hi:,}"
     return v, None
 
 
 def indices(form, prefix):
-    pat = re.compile(rf"^{re.escape(prefix)}-(\d+)-")
+    pat = re.compile(rf"^{re.escape(prefix)}-([0-9]{{1,4}})-", re.ASCII)
     return sorted({int(m.group(1)) for k in form if (m := pat.match(k))})
 
 
