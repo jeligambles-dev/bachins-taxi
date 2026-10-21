@@ -72,3 +72,7 @@ h2 { font-size:1.15rem; margin:1.5rem 0 .75rem; color:var(--gold); }
 }
 details.card { gap:0; }
 details.card[open] > summary { margin-bottom:4px; }
+html { scroll-padding-bottom:80px; }
+:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+.btn.dark, button.btn.dark[type=submit] { background:var(--on-gold); color:var(--gold); }
+.banner { margin-bottom:16px; }

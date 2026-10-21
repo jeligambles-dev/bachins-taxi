@@ -1,5 +1,6 @@
 """Turn whatever the owner's phone produced into a clean, web-sized photo."""
 import io
+import logging
 import warnings
 
 import pillow_heif
@@ -17,6 +18,7 @@ class ImageError(ValueError):
     pass
 
 
+log = logging.getLogger(__name__)
 _SRGB = None
 
 
@@ -34,6 +36,7 @@ def _to_srgb(img):
         out = ImageCms.profileToProfile(img, src, _SRGB, outputMode=img.mode)
         return out if out is not None else img
     except Exception:
+        log.debug("ICC conversion failed; dropping the profile", exc_info=True)
         return img
 
 

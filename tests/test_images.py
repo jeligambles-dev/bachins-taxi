@@ -82,11 +82,10 @@ def test_decompression_bomb_rejected():
 
 
 def _p3_jpeg():
-    from PIL import ImageCms
-    prof = ImageCms.ImageCmsProfile(ImageCms.createProfile("sRGB")).tobytes()
-    # a different-gamut profile: use a real wide-ish profile if available, else sRGB tag
+    import pathlib
+    icc = (pathlib.Path(__file__).parent / "data" / "display-p3.icc").read_bytes()
     buf = io.BytesIO()
-    Image.new("RGB", (40, 40), (200, 60, 60)).save(buf, "JPEG", icc_profile=prof)
+    Image.new("RGB", (40, 40), (230, 60, 60)).save(buf, "JPEG", quality=95, icc_profile=icc)
     return buf.getvalue()
 
 
@@ -139,16 +138,8 @@ def test_jpeg_draft_path_calls_draft_and_sizes_right(monkeypatch):
 
 
 def test_display_p3_keeps_saturation():
-    import os
-    path = "/System/Library/ColorSync/Profiles/Display P3.icc"
-    if not os.path.exists(path):
-        pytest.skip("no Display P3 profile on this machine")
-    icc = open(path, "rb").read()
-    buf = io.BytesIO()
-    Image.new("RGB", (40, 40), (230, 60, 60)).save(buf, "JPEG", quality=95, icc_profile=icc)
-    data, *_ = process_upload(buf.getvalue())
+    src = _p3_jpeg()
+    data, *_ = process_upload(src)
     converted = Image.open(io.BytesIO(data)).convert("RGB").getpixel((20, 20))
-    plain = Image.open(io.BytesIO(buf.getvalue())).convert("RGB").getpixel((20, 20))
-    # P3 red (230,60,60) is more saturated than the same numbers in sRGB: after conversion
-    # the red/green gap must be larger than a plain profile drop would give.
+    plain = Image.open(io.BytesIO(src)).convert("RGB").getpixel((20, 20))   # profile just dropped
     assert converted[0] - converted[1] > plain[0] - plain[1] + 3
