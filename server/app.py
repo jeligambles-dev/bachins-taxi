@@ -42,7 +42,7 @@ def create_app(store, site_root, *, admin_password, secret_key, testing=False):
                       SESSION_COOKIE_SECURE=not (
                           testing or os.environ.get("FLASK_DEBUG") == "1"),
                       PERMANENT_SESSION_LIFETIME=timedelta(days=30),
-                      MAX_CONTENT_LENGTH=25 * 1024 * 1024)
+                      MAX_CONTENT_LENGTH=100 * 1024 * 1024)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
     store.migrate()
@@ -61,7 +61,7 @@ def create_app(store, site_root, *, admin_password, secret_key, testing=False):
     def too_big(_e):
         if request.path.startswith("/admin"):
             resp = Response(render_template(
-                "admin/error.html", message="Photo too big (max 25 MB)", back="/admin/photos"),
+                "admin/error.html", message="Too much at once (max 100 MB per upload). Try fewer photos at a time.", back="/admin/photos"),
                 status=413, mimetype="text/html")
             resp.headers["Cache-Control"] = "no-store"
             return resp

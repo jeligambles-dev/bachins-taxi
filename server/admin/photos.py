@@ -10,6 +10,7 @@ from server.images import ImageError, process_upload
 
 SLOTS = (("hero", "Homepage hero"), ("taxi", "Taxi photo"), ("logo", "Logo"))
 GONE = "This photo was already deleted in another tab or device."
+FILE_MAX = 25 * 1024 * 1024
 SAVED = "Saved. The site is updated."
 
 
@@ -44,8 +45,12 @@ def photos_upload():
         if not name:
             continue
         name = name.replace("\\", "/").rsplit("/", 1)[-1][:120] or "photo"
+        raw = f.read(FILE_MAX + 1)
+        if len(raw) > FILE_MAX:
+            skipped.append(f"{name}: Photo too big (max 25 MB)")
+            continue
         try:
-            data, mime, w, h = process_upload(f.read())
+            data, mime, w, h = process_upload(raw)
         except ImageError as e:
             skipped.append(f"{name}: {e}")
             continue

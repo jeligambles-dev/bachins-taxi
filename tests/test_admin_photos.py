@@ -54,10 +54,11 @@ def test_upload_all_bad_never_500(logged_in, app):
     assert r.status_code == 302 and photos(app) == []
 
 
-def test_too_big_is_friendly(logged_in):
-    r = upload(logged_in, [("big.jpg", b"0" * (26 * 1024 * 1024))])
+def test_too_big_is_friendly(app, logged_in):
+    app.config["MAX_CONTENT_LENGTH"] = 2000
+    r = upload(logged_in, [("big.jpg", b"0" * 5000)])
     assert r.status_code == 413
-    assert "Photo too big (max 25 MB)" in r.get_data(as_text=True)
+    assert "Too much at once (max 100 MB per upload)" in r.get_data(as_text=True)
 
 
 def test_raw_requires_login(client, app):

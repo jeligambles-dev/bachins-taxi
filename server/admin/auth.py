@@ -52,7 +52,9 @@ class LoginLimiter:
 
 
 def pw_fingerprint(password):
-    return hashlib.sha256(password.encode()).hexdigest()[:16]
+    """Keyed, so the readable session cookie never exposes a bare password hash."""
+    return hmac.new(current_app.config["SECRET_KEY"].encode(), password.encode(),
+                    hashlib.sha256).hexdigest()[:32]
 
 
 def password_ok(given, expected):
@@ -71,9 +73,13 @@ def csrf_token():
 
 
 def check_csrf():
-    """before_request: every unsafe method under /admin needs a matching token."""
+    """before_request: every unsafe method under /admin needs a matching token.
+    Anonymous requests (except the login POST) are turned away before the body
+    is parsed."""
     if request.method in ("GET", "HEAD", "OPTIONS"):
         return
+    if request.path != "/admin/login" and not session.get("admin"):
+        return redirect("/admin/login")
     expected = session.get("csrf")
     given = request.form.get("csrf", "")
     if not expected or not hmac.compare_digest(expected.encode(), given.encode()):

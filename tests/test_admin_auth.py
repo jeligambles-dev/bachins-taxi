@@ -131,7 +131,7 @@ def test_session_is_permanent_after_login(client):
     r = login(client)
     assert "Expires=" in r.headers["Set-Cookie"]
     assert client.application.config["PERMANENT_SESSION_LIFETIME"].days == 30
-    assert client.application.config["MAX_CONTENT_LENGTH"] == 25 * 1024 * 1024
+    assert client.application.config["MAX_CONTENT_LENGTH"] == 100 * 1024 * 1024
 
 
 def test_admin_static_served_and_app_static_not(client):
