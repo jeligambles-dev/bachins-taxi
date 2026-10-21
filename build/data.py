@@ -1,6 +1,6 @@
 """Single source of truth for BCH Taxi prices, tours and content.
 
-Edit prices here, then run `python3 build/build.py` to regenerate every page.
+Defaults for the site content. The generated site is written to dist/ by `python3 build/build.py` (the owner admin overrides these values from the database).
 """
 
 PHONE = "+353870330046"

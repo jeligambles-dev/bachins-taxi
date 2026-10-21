@@ -1,24 +1,28 @@
 #!/usr/bin/env python3
 """Generate the BCH Taxi site from build/data.py and build/posts.py.
 
-Usage:  python3 build/build.py
+Usage:  python3 build/build.py [--out DIR]     (default DIR: dist/)
 
-- Rewrites the marked regions of index.html (nav, tour cards, fares, modal, footer)
-- Writes tours.html, tours/*.html, multi-day-tours.html, price-calculator.html,
-  destinations.html, blog.html and blog/*.html
-- Checks every local link and asset exists
+build_site(content, out_dir) renders the whole site into out_dir:
+- index.html from build/templates/index.html (marked regions filled in)
+- tours.html, tours/*.html, multi-day-tours.html, price-calculator.html,
+  destinations.html, blog.html and blog/*.html, sitemap.xml, robots.txt
+- copies css/, js/ and images/
+- checks every local link and asset exists (raises BuildError otherwise)
 """
 import html
 import json
 import os
 import re
+import shutil
 import sys
 from pathlib import Path
 from urllib.parse import quote
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from data import *          # noqa: E402,F401
+from data import AREAS      # noqa: E402
+from content import default_content, merge  # noqa: E402
 from posts import POSTS     # noqa: E402
 
 E = html.escape
@@ -26,7 +30,44 @@ PARTIALS = Path(__file__).resolve().parent / "partials"
 MODAL = (PARTIALS / "modal.html").read_text().strip()
 FAB = (PARTIALS / "fab.html").read_text().strip()
 
-TOUR_BY_SLUG = {t["slug"]: t for t in TOURS}
+TEMPLATE_INDEX = Path(__file__).resolve().parent / "templates" / "index.html"
+
+# Module-level context, (re)bound by build_site() via _configure(). Every
+# builder below reads these names.
+PHONE = PHONE_DISPLAY = EMAIL = WHATSAPP = SITE_URL = ""
+MULTI_DAY_RATE = EXTRA_HOUR_RATE = MAX_PASSENGERS = 0
+TOURS = []
+TOUR_BY_SLUG = {}
+MULTI_DAY = []
+AIRPORT_FARES = []
+LONG_TRANSFERS = []
+
+
+class BuildError(Exception):
+    def __init__(self, broken):
+        self.broken = list(broken)
+        super().__init__("Broken links: " + "; ".join(self.broken))
+
+
+def _configure(content):
+    global PHONE, PHONE_DISPLAY, EMAIL, WHATSAPP, SITE_URL
+    global MULTI_DAY_RATE, EXTRA_HOUR_RATE, MAX_PASSENGERS
+    global TOURS, TOUR_BY_SLUG, MULTI_DAY, AIRPORT_FARES, LONG_TRANSFERS
+    st = content["settings"]
+    PHONE = st["phone"]
+    PHONE_DISPLAY = st["phone_display"]
+    EMAIL = st["email"]
+    WHATSAPP = "https://wa.me/" + st["whatsapp_number"]
+    SITE_URL = st["site_url"]
+    MULTI_DAY_RATE = st["multi_day_rate"]
+    EXTRA_HOUR_RATE = st["extra_hour_rate"]
+    MAX_PASSENGERS = st["max_passengers"]
+    # TEMPORARY (Task 3 removes this line): starter tours have no price yet.
+    TOURS = [t for t in content["tours"] if t["kind"] == "day"]
+    TOUR_BY_SLUG = {t["slug"]: t for t in TOURS}
+    MULTI_DAY = content["multi_day"]
+    AIRPORT_FARES = [(f["area"], f["distance"], f["to"], f["from"]) for f in content["airport_fares"]]
+    LONG_TRANSFERS = [(f["area"], f["price"]) for f in content["long_transfers"]]
 
 
 def eur(n):
@@ -682,9 +723,8 @@ def replace_inline(s, name, value):
     return pat.sub(lambda m: m.group(1) + value + m.group(2), s)
 
 
-def build_index():
-    p = ROOT_DIR / "index.html"
-    s = p.read_text()
+def build_index(out_dir):
+    s = TEMPLATE_INDEX.read_text()
     fares = "\n".join(
         f'        <div class="fare-row"><span class="fare-place">{E(a)}</span><span class="fare-km">{km}</span>'
         f'<span class="fare-price"><small>To airport</small>{eur(to)}</span><span class="fare-price"><small>From airport</small>{eur(fr)}</span></div>'
@@ -713,15 +753,16 @@ def build_index():
     if 'css/pages.css' not in s:
         s = s.replace('<link rel="stylesheet" href="css/style.css">',
                       '<link rel="stylesheet" href="css/style.css">\n  <link rel="stylesheet" href="css/pages.css">')
-    p.write_text(s)
+    (out_dir / "index.html").write_text(s)
 
 
 # ── Link check ───────────────────────────────────────────────────────────────
 
-def check_links(files):
+def check_links(out_dir, files):
+    out_dir = Path(out_dir)
     bad = []
     for rel in files:
-        path = ROOT_DIR / rel
+        path = out_dir / rel
         text = path.read_text()
         for ref in re.findall(r'(?:href|src)="([^"]+)"', text) + re.findall(r"url\('([^']+)'\)", text):
             if re.match(r"^(https?:|mailto:|tel:|data:|#|javascript:)", ref):
@@ -729,38 +770,65 @@ def check_links(files):
             target = (path.parent / ref.split("#")[0].split("?")[0]).resolve()
             if not target.exists():
                 bad.append(f"{rel}: {ref}")
-    css = ROOT_DIR / "css" / "style.css"
+    css = out_dir / "css" / "style.css"
     for ref in re.findall(r"url\('([^']+)'\)", css.read_text()):
         if not (css.parent / ref).resolve().exists():
             bad.append(f"css/style.css: {ref}")
     return bad
 
 
-def main():
+def build_site(content, out_dir):
+    """Render the site for `content` into `out_dir` (emptied first)."""
+    out_dir = Path(out_dir).resolve()
+    if out_dir in (ROOT_DIR, *ROOT_DIR.parents) or out_dir == Path(out_dir.anchor):
+        raise ValueError(f"refusing to build into {out_dir}")
+    _configure(content)
+    if out_dir.exists():
+        for child in out_dir.iterdir():
+            if child.is_dir() and not child.is_symlink():
+                shutil.rmtree(child)
+            else:
+                child.unlink()
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for d in ("css", "js", "images"):
+        shutil.copytree(ROOT_DIR / d, out_dir / d)
+
     pages = {}
     for builder in (build_tour_pages, build_tours_hub, build_multi_day, build_calculator, build_destinations, build_blog):
         pages.update(builder())
-    for rel, content in pages.items():
-        target = ROOT_DIR / rel
+    for rel, text in pages.items():
+        target = out_dir / rel
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(content)
-    build_index()
+        target.write_text(text)
+    build_index(out_dir)
 
     if SITE_URL:
         urls = [""] + sorted(pages)
         base = SITE_URL.rstrip("/")
         xml = "\n".join(f"  <url><loc>{base}/{u}</loc></url>" for u in urls)
-        (ROOT_DIR / "sitemap.xml").write_text(
+        (out_dir / "sitemap.xml").write_text(
             f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{xml}\n</urlset>\n')
-        (ROOT_DIR / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {base}/sitemap.xml\n")
+        (out_dir / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {base}/sitemap.xml\n")
 
-    bad = check_links(["index.html"] + list(pages))
-    print(f"Built {len(pages)} pages + index.html")
+    bad = check_links(out_dir, ["index.html"] + list(pages))
     if bad:
+        raise BuildError(bad)
+
+
+def main(argv=None):
+    import argparse
+    ap = argparse.ArgumentParser(description="Build the BCH Taxi site.")
+    ap.add_argument("--out", default=str(ROOT_DIR / "dist"), help="output directory (default: dist/)")
+    args = ap.parse_args(argv)
+    out = Path(args.out)
+    try:
+        build_site(merge(default_content(), {}), out)
+    except BuildError as e:
         print("Broken links:")
-        for b in bad:
+        for b in e.broken:
             print("  " + b)
         sys.exit(1)
+    print(f"Built {len(list(out.rglob('*.html')))} HTML files in {out}")
     print("All local links OK")
 
 
