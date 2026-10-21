@@ -41,11 +41,17 @@ def test_apply_build_failure_keeps_old(store, tmp_path, monkeypatch):
     pub.rebuild()
     before, db, rel = _target(tmp_path), store.load(), _releases(tmp_path)
 
-    def boom(*a, **k):
+    made = []
+
+    def boom(content, out_dir, **k):
+        Path(out_dir).mkdir(parents=True, exist_ok=True)
+        (Path(out_dir) / "partial.html").write_text("x")
+        made.append(Path(out_dir))
         raise build.BuildError(["x: y"])
     monkeypatch.setattr("server.publish.build_site", boom)
     with pytest.raises(build.BuildError):
         pub.apply(lambda v: {"settings": {**v["settings"], "email": "z@example.com"}})
+    assert made and not made[0].exists()
     assert _target(tmp_path) == before
     assert store.load() == db
     assert _releases(tmp_path) == rel
@@ -81,13 +87,15 @@ def test_save_failure_deletes_release_and_keeps_current(store, tmp_path, monkeyp
 def test_apply_patches_only_changed_sections(store, tmp_path):
     pub = Publisher(store, tmp_path)
     pub.rebuild()
+    stale = pub.content()
     store.save_sections({"texts": {"cta.text": "Kept Title"}})
     seen = {}
 
     def mutate(view):
         seen["v"] = view
-        return {"settings": {**view["settings"], "email": "s@example.com"}}
+        return {"settings": {**stale["settings"], "email": "s@example.com"}}
     pub.apply(mutate)
+    assert seen["v"]["texts"]["cta.text"] == "Kept Title"
     stored = store.load()
     assert stored["texts"] == {"cta.text": "Kept Title"}
     assert stored["settings"]["email"] == "s@example.com"
@@ -136,3 +144,31 @@ def test_concurrent_applies_serialize(store, tmp_path):
     assert texts["cta.text"] == "val-cta.text" and texts["cta.title"] == "val-cta.title"
     assert (tmp_path / "current" / "index.html").exists()
     assert pub.content()["texts"]["cta.title"] == "val-cta.title"
+
+
+def test_relative_site_root_resolves(store, tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    pub = Publisher(store, "rel-site")
+    pub.rebuild()
+    assert pub.current_dir() is not None
+    assert (pub.current_dir() / "index.html").exists()
+    assert (Path("rel-site") / "current" / "index.html").exists()
+
+
+def test_content_returns_copy(store, tmp_path):
+    pub = Publisher(store, tmp_path)
+    pub.rebuild()
+    c = pub.content()
+    c["settings"]["email"] = "mutated@example.com"
+    assert pub.content()["settings"]["email"] != "mutated@example.com"
+
+
+def test_prune_by_creation_order(store, tmp_path, monkeypatch):
+    import server.publish as sp
+    monkeypatch.setattr(sp.secrets, "token_hex", lambda n=2: "ffff" if n == 2 else "0" * (2 * n))
+    pub = Publisher(store, tmp_path)
+    for i in range(6):
+        pub.apply(lambda v, i=i: {"settings": {**v["settings"], "email": f"e{i}@example.com"}})
+    kept = [p.name for p in _releases(tmp_path)]
+    assert len(kept) == 3
+    assert _target(tmp_path).name == kept[-1] == sorted(kept)[-1]

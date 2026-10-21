@@ -6,6 +6,7 @@ if it succeeds are the changes committed and the symlink swapped.
 build_site uses module-level globals and is not thread-safe, so every build
 (including rebuild()) happens under the single Publisher lock.
 """
+import copy
 import os
 import secrets
 import shutil
@@ -24,7 +25,7 @@ _EXT = {"image/jpeg": "jpg", "image/png": "png"}
 class Publisher:
     def __init__(self, store, site_root):
         self.store = store
-        self.site_root = Path(site_root)
+        self.site_root = Path(site_root).resolve()
         self._lock = threading.Lock()
         self._photo_cache: dict[str, bytes] = {}   # sha -> bytes
         self._content: dict | None = None
@@ -42,7 +43,7 @@ class Publisher:
         c = self._content
         if c is None:
             c = merge(default_content(), self.store.load())
-        return c
+        return copy.deepcopy(c)
 
     def rebuild(self) -> None:
         self.apply(lambda view: {})
@@ -70,7 +71,7 @@ class Publisher:
 
     # ── internals ───────────────────────────────────────────────────────────
     def _new_release_dir(self) -> Path:
-        stamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S%f")
         releases = self.site_root / "releases"
         releases.mkdir(parents=True, exist_ok=True)
         return releases / f"{stamp}-{secrets.token_hex(2)}"
