@@ -971,7 +971,7 @@ def apply_index_photos(s):
 def build_index(out_dir):
     s = TEMPLATE_INDEX.read_text()
     fares = "\n".join(
-        f'        <div class="fare-row"><span class="fare-place">{E(a)}</span><span class="fare-km">{km}</span>'
+        f'        <div class="fare-row"><span class="fare-place">{E(a)}</span><span class="fare-km">{E(km)}</span>'
         f'<span class="fare-price"><small>To airport</small>{eur(to)}</span><span class="fare-price"><small>From airport</small>{eur(fr)}</span></div>'
         for a, km, to, fr in AIRPORT_FARES)
     s = sync_faq_jsonld(s)
@@ -982,7 +982,7 @@ def build_index(out_dir):
     s = replace_region(s, "fare-long", "\n".join(
         f'      <div class="fare-long-card"><span>Dublin Airport ⇄ {E(a)}</span><strong>{eur(p)}</strong></div>'
         for a, p in LONG_TRANSFERS))
-    s = replace_inline(s, "min-fare", eur(min(to for _, _, to, _ in AIRPORT_FARES)) + "+")
+    s = replace_inline(s, "min-fare", eur(min(to for _, _, to, _ in AIRPORT_FARES)) + "+" if AIRPORT_FARES else "Fixed")
     priced = [t["price"] for t in published("day") if t["price"] is not None]
     pattern = r"day tours from €\d+(?:,\d{3})*"
     if not re.search(pattern, s):

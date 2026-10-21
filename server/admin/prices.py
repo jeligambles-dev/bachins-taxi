@@ -136,6 +136,9 @@ def _make_mutator(form):
                 result_fares = submitted
             else:
                 result_longs = submitted
+        if not result_fares:
+            raise ValidationError(["Keep at least one airport fare. The homepage "
+                                   "and calculator need one."])
         return {"tours": tours, "settings": settings,
                 "airport_fares": result_fares, "long_transfers": result_longs}
     return mutate

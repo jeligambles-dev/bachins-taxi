@@ -1,4 +1,5 @@
 """Shared helpers for the admin editor forms."""
+import logging
 import re
 
 from flask import current_app
@@ -9,6 +10,7 @@ from content import ValidationError
 _MONEY_RE = re.compile(r"^[0-9]+$", re.ASCII)
 SHORT_MAX = 200
 TEXT_MAX = 2000
+log = logging.getLogger("bch.admin")
 
 
 
@@ -27,6 +29,10 @@ def publish(mutate):
         if len(e.broken) > 3:
             shown += f"; and {len(e.broken) - 3} more"
         return [f"Couldn't publish: {shown}. Nothing was changed."]
+    except Exception:
+        log.exception("publish failed")
+        return ["Couldn't publish: something went wrong building the site. "
+                "Nothing was changed."]
     return []
 
 
