@@ -40,7 +40,8 @@ def E(value, quote=True):
 
 def _ld_dumps(obj, **kw):
     """JSON-LD / inline JSON for owner data, with "{{" neutralised."""
-    return _BRACE_RE.sub(lambda m: "\\u007b", json.dumps(obj, ensure_ascii=False, **kw))
+    out = json.dumps(obj, ensure_ascii=False, **kw).replace("<", "\\u003c")
+    return _BRACE_RE.sub(lambda m: "\\u007b", out)
 
 
 _PHOTO_RE = re.compile(r"^uploads/[a-z0-9]+\.(jpg|png)$")
@@ -113,8 +114,8 @@ def _configure(content):
     paths = {pid: p for pid, p in (content.get("_photos") or {}).items()
              if isinstance(p, str) and _PHOTO_RE.match(p)}
     SLOT_PHOTO = {slot: paths[pid] for slot, pid in (content.get("photo_slots") or {}).items()
-                  if pid in paths}
-    TOUR_PHOTO = {t["slug"]: paths[t["photo"]] for t in TOURS if t.get("photo") in paths}
+                  if isinstance(pid, str) and pid in paths}
+    TOUR_PHOTO = {t["slug"]: paths[t["photo"]] for t in TOURS if isinstance(t.get("photo"), str) and t["photo"] in paths}
     MODAL = fill_tokens(_MODAL_RAW)
     FAB = fill_tokens(_FAB_RAW)
     CONFIG_JS = ("window.BCH = " + _json_inline({

@@ -133,3 +133,14 @@ def test_owner_braces_render_literally(tmp_path):
         assert "{{FOO}}" not in (tmp_path / f).read_text()
     # contact tokens elsewhere are still filled
     assert "tel:" in page and "{{" not in page
+
+
+def test_script_breakout_escaped(tmp_path):
+    c = merge(default_content(), {})
+    c["tours"] = [dict(t, name="X</script><i>Z") if t["slug"] == "ring-of-kerry" else t
+                  for t in c["tours"]]
+    c["photo_slots"]["hero"] = ["corrupt"]
+    build.build_site(c, tmp_path)
+    for p in tmp_path.rglob("*.html"):
+        assert "</script><i>" not in p.read_text(), p
+    assert "\\u003c/script" in (tmp_path / "price-calculator.html").read_text()
