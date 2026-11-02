@@ -7,3 +7,8 @@ Photos from Unsplash (Unsplash License: free for commercial use, no attribution 
 - fleet-mpv.jpg — https://unsplash.com/photos/PNW4oeltJGo (William G; dark Mercedes van)
 - fleet-minibus.jpg — https://unsplash.com/photos/p_ILi6tlMwM (Fachy Marín; Mercedes Sprinter)
 - fleet-van.jpg — BCH Taxi's own photo (images/taxi.jpg), cropped
+- photo-events.jpg — https://unsplash.com/photos/TfljWjE3iLo (formal gathering / gala dinner)
+- photo-crew.jpg — https://unsplash.com/photos/uUh9G7U81j8 (people walking through an airport, silhouettes)
+- photo-business.jpg — https://unsplash.com/photos/bMIlyKZHKMY (traveller with luggage at an airport window)
+- photo-intercity.jpg — https://unsplash.com/photos/10B7f2rzofY (car on a mountain road by a lake)
+- photo-commute.jpg — https://unsplash.com/photos/RUNldEO8f0s (empty road with a hill behind)
