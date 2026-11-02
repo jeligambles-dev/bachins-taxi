@@ -45,6 +45,7 @@ TEST_DATABASE_URL=postgresql:///bch_taxi_test .venv/bin/pytest -q
 | `ADMIN_PASSWORD` | Owner login password, 12+ characters |
 | `SECRET_KEY` | Signs session cookies; use a long random value |
 | `SITE_ROOT` | Where releases are built (default `/tmp/bch-site`) |
+| `GOOGLE_MAPS_API_KEY` | Optional. Google Places (New) key for the From/To address search, used only by the server (`/api/places/*`). Restrict it to the Places API. Without it the site falls back to OpenStreetMap search. |
 | `PORT` | Set by Railway |
 
 ## Admin

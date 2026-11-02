@@ -779,3 +779,5 @@ body.modal-open { overflow: hidden; }
 .hero-frame { overflow: visible; }
 .hero-bg { overflow: hidden; }
 .hero { overflow-x: clip; }
+.places-attr.is-google { text-align: right; }
+.places-opt.is-pinned .places-main { color: var(--l-text); }

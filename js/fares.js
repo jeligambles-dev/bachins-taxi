@@ -1,8 +1,9 @@
 // Instant airport fares from picked (or typed) addresses. Pure functions, no DOM:
 // usable in the browser (window.BCHFares) and in Node (module.exports).
 (function (root) {
-  const AIRPORT = { lat: 53.4264, lon: -6.2499 };
-  const AIRPORT_RADIUS_KM = 3;
+  // Dublin Airport terminals; the server applies the same 1 km rule to Google places.
+  const TERMINALS = [{ lat: 53.4273, lon: -6.2441 }, { lat: 53.4264, lon: -6.2390 }];
+  const AIRPORT_RADIUS_KM = 1;
 
   function km(a, b) {
     const r = Math.PI / 180, dLat = (b.lat - a.lat) * r, dLon = (b.lon - a.lon) * r;
@@ -12,12 +13,18 @@
 
   const num = (v) => (v === '' || v === null || v === undefined ? NaN : Number(v));
 
-  // A place is the airport if its label says so, or it is within 3 km of it.
+  // Is this end of the trip Dublin Airport?
+  // 1. A picked Google place carries is_airport (airport type, or within 1 km
+  //    of a terminal), so "Dublin Airport Business Park, Santry" is not it.
+  // 2. Other picked places (OpenStreetMap fallback): within 1 km of a terminal.
+  // 3. Typed text: it starts with "Dublin Airport" (not a business park).
   function isAirport(p) {
     if (!p) return false;
-    if (/dublin airport/i.test(p.label || '')) return true;
+    if (p.is_airport === true || p.is_airport === 'true') return true;
+    if (p.is_airport === false || p.is_airport === 'false') return false;
     const lat = num(p.lat), lon = num(p.lon);
-    return isFinite(lat) && isFinite(lon) && km({ lat, lon }, AIRPORT) <= AIRPORT_RADIUS_KM;
+    if (isFinite(lat) && isFinite(lon)) return TERMINALS.some((t) => km({ lat, lon }, t) <= AIRPORT_RADIUS_KM);
+    return /^\s*dublin airport\b(?!\s+(business|logistics))/i.test(p.label || '');
   }
 
   const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -38,7 +45,7 @@
     // A place's own name only counts when the place is an area (a street called
     // "Bray Road" is not Bray).
     const areaName = /^(city|town|village|hamlet|locality|district|suburb|county|neighbourhood|state)$/i.test(p.type || '') ? p.name : '';
-    const parts = [areaName, p.district, p.locality, p.city, p.county].filter(Boolean);
+    const parts = [areaName, p.sublocality, p.district, p.locality, p.city, p.county].filter(Boolean);
     const texts = parts.length ? parts : [p.label || ''];
     const word = new RegExp('(^|[^\\p{L}\\p{N}])' + escape(area.trim()) + '($|[^\\p{L}\\p{N}])', 'iu');
     if (texts.some((t) => word.test(t))) return true;

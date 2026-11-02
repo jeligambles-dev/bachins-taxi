@@ -325,7 +325,7 @@ if (form) {
   if (params.get('date')) form.date.value = params.get('date');
   if (params.get('pickup')) form.pickup.value = params.get('pickup');
   if (params.get('destination')) form.destination.value = params.get('destination');
-  ['pickup', 'destination'].forEach(n => ['lat', 'lon', 'city', 'district', 'county', 'postcode', 'type'].forEach(k => {
+  ['pickup', 'destination'].forEach(n => ['lat', 'lon', 'postcode', 'locality', 'sublocality', 'county', 'is_airport', 'city', 'district', 'type'].forEach(k => {
     const h = form.querySelector(`input[type="hidden"][name="${n}_${k}"]`);
     if (h && params.get(n + '_' + k)) h.value = params.get(n + '_' + k);
   }));

@@ -12,6 +12,7 @@ from werkzeug.security import safe_join
 from content import resolve_redirect
 from server.admin import bp as admin_bp
 from server.admin.auth import LoginLimiter
+from server import places
 from server.publish import Publisher
 from server.store import Store
 
@@ -31,7 +32,8 @@ def _cache_control(rel: str, is_html: bool) -> str:
     return "no-cache"
 
 
-def create_app(store, site_root, *, admin_password, secret_key, testing=False):
+def create_app(store, site_root, *, admin_password, secret_key, testing=False,
+               google_maps_api_key=None):
     # No app-wide static route; the admin blueprint serves server/static/
     # at /admin/static/.
     app = Flask(__name__, static_folder=None)
@@ -58,6 +60,8 @@ def create_app(store, site_root, *, admin_password, secret_key, testing=False):
     app.extensions["publisher"] = publisher
     app.extensions["admin_limiter"] = LoginLimiter()
     app.register_blueprint(admin_bp)
+    # Address search proxy; the key stays on the server.
+    places.init_app(app, google_maps_api_key)
 
     @app.errorhandler(413)
     def too_big(_e):
@@ -128,4 +132,5 @@ def create_app_from_env():
     if not dsn:
         raise RuntimeError("DATABASE_URL is required")
     return create_app(Store(dsn), Path(os.environ.get("SITE_ROOT", "/tmp/bch-site")),
-                      admin_password=password, secret_key=secret)
+                      admin_password=password, secret_key=secret,
+                      google_maps_api_key=os.environ.get("GOOGLE_MAPS_API_KEY") or None)

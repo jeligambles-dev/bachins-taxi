@@ -50,6 +50,21 @@ def test_no_fixed_fare():
     assert match(street, AIRPORT) is None                                             # a street name is not a town
 
 
-def test_airport_by_coordinates():
-    near = {"label": "Swords Road", "lat": 53.43, "lon": -6.25}
+def test_airport_by_coordinates_and_google_flag():
+    near = {"label": "Swords Road", "lat": 53.428, "lon": -6.245}
     assert match(near, {"label": "Bray"})["dir"] == "from"
+    santry = {"label": "Dublin Airport Business Park, Santry, Dublin 9", "lat": 53.4036, "lon": -6.242,
+              "is_airport": "false", "sublocality": "Santry", "locality": "Dublin 9"}
+    assert match({"label": "Bray"}, santry) is None                      # Google says not the airport
+    assert match({"label": "Bray"}, {"label": "Dublin Airport Business Park"}) is None
+    t1 = {"label": "Dublin Airport, Collinstown", "is_airport": "true", "lat": 53.4265, "lon": -6.2499}
+    assert match({"label": "Bray"}, t1)["dir"] == "to"
+
+
+def test_google_components():
+    # Google details: Eircode routing key and locality / sublocality
+    d13 = {"label": "Grange Road, Baldoyle, Dublin 13, D13 R2X8", "postcode": "D13 R2X8",
+           "locality": "Dublin 13", "sublocality": "Baldoyle", "lat": 53.399, "lon": -6.127}
+    assert match(d13, AIRPORT) == {"area": "Dublin 13", "dir": "to", "price": 25}
+    lucan = {"label": "Main Street, Lucan, Co. Dublin, K78 X2Y4", "postcode": "K78 X2Y4", "locality": "Lucan"}
+    assert match(lucan, AIRPORT)["price"] == 45
