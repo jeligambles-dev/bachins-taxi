@@ -86,14 +86,15 @@ def test_rate_limit_window_expires_and_success_clears(app, client):
 
 
 def test_rate_limit_uses_forwarded_client_ip(client):
-    for _ in range(5):
+    # Railway sends "<client>, <edge ip>"; the edge ip rotates between requests.
+    for i in range(5):
         client.post("/admin/login", data={"password": "bad", "csrf": csrf_of(client)},
-                    headers={"X-Forwarded-For": "1.1.1.1"})
+                    headers={"X-Forwarded-For": f"1.1.1.1, 95.0.0.{190 + i}"})
     r = client.post("/admin/login", data={"password": ADMIN_PASSWORD, "csrf": csrf_of(client)},
-                    headers={"X-Forwarded-For": "1.1.1.1"})
+                    headers={"X-Forwarded-For": "1.1.1.1, 95.0.0.199"})
     assert r.status_code == 429
     r = client.post("/admin/login", data={"password": ADMIN_PASSWORD, "csrf": csrf_of(client)},
-                    headers={"X-Forwarded-For": "2.2.2.2"})
+                    headers={"X-Forwarded-For": "2.2.2.2, 95.0.0.190"})
     assert r.status_code == 302
 
 
@@ -175,10 +176,12 @@ def test_password_change_revokes_session(app, logged_in):
     assert r.status_code == 302 and r.headers["Location"].startswith("/admin/login")
 
 
-def test_forwarded_for_spoof_does_not_evade_limit(client):
-    def post(pw, xff):
+def test_rotating_edge_ip_does_not_evade_limit(client):
+    # Live bug 2026-11-02: keyed on the last hop, each Railway edge ip got its own
+    # counter and 7 wrong passwords in a row were never limited.
+    def post(pw, edge):
         return client.post("/admin/login", data={"password": pw, "csrf": csrf_of(client)},
-                           headers={"X-Forwarded-For": xff})
-    for _ in range(5):
-        post("bad", "9.9.9.9, 1.1.1.1")
-    assert post(ADMIN_PASSWORD, "8.8.8.8, 1.1.1.1").status_code == 429
+                           headers={"X-Forwarded-For": f"86.124.142.137, 95.173.199.{edge}"})
+    for i in range(5):
+        post("bad", 193 + i % 2)
+    assert post(ADMIN_PASSWORD, 194).status_code == 429

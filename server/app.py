@@ -43,7 +43,9 @@ def create_app(store, site_root, *, admin_password, secret_key, testing=False):
                           testing or os.environ.get("FLASK_DEBUG") == "1"),
                       PERMANENT_SESSION_LIFETIME=timedelta(days=30),
                       MAX_CONTENT_LENGTH=100 * 1024 * 1024)
-    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
+    # Railway's edge overwrites X-Forwarded-For with "<client>, <edge ip>" (verified
+    # live 2026-11-02; client-sent values are discarded), so the client is 2 hops back.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=2, x_proto=1)
 
     store.migrate()
     publisher = Publisher(store, site_root)
