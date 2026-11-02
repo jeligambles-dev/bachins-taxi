@@ -36,11 +36,11 @@
 }
 .book-card .tour-price { font-size: 2.2rem; }
 .book-facts { border-top: 1px solid var(--line); }
-.book-facts li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); font-weight: 600; font-size: .95rem; text-align: right; }
+.book-facts li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); font-weight: 600; text-align: right; }
 .book-facts span { color: var(--ink-soft); font-weight: 400; text-align: left; }
 .book-card .btn { width: 100%; }
-.book-alt { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; font-weight: 600; font-size: .95rem; }
-.book-group { font-size: .92rem; color: var(--ink-soft); }
+.book-alt { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; font-weight: 600; }
+.book-group { color: var(--ink-soft); }
 @media (min-width: 900px) {
   .detail-grid { grid-template-columns: minmax(0, 1fr) 360px; gap: 64px; }
   .book-card { grid-column: 2; grid-row: 1; position: sticky; top: 24px; padding: 28px; }
@@ -78,7 +78,7 @@
 .multi-head h3 { font-size: 1.35rem; margin-top: 2px; }
 .multi-head p { color: var(--ink-soft); margin: 6px 0 14px; }
 .multi-head .tour-meta { margin: 0; }
-.multi-days { display: grid; gap: 8px; flex: 1; align-content: start; font-size: .95rem; }
+.multi-days { display: grid; gap: 8px; flex: 1; align-content: start; }
 .multi-days li { display: grid; grid-template-columns: 52px 1fr; gap: 8px; }
 .multi-days strong { font-weight: 600; }
 .multi-card .tour-foot { padding: 18px 0 0; margin-top: 14px; border-top: 1px solid var(--line); }
@@ -90,7 +90,7 @@
 .calc-row:first-child { border-top: 1px solid var(--line); }
 .calc-row-head { display: flex; gap: 12px; align-items: flex-start; }
 .calc-row h3 { font-size: 1.1rem; }
-.calc-row p { color: var(--ink-soft); font-size: .92rem; margin-top: 2px; }
+.calc-row p { color: var(--ink-soft); margin-top: 2px; }
 .calc-num {
   display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 50%;
   background: var(--mist); font-weight: 600; font-size: .9rem;
@@ -106,7 +106,7 @@
 .stepper-unit { color: var(--ink-soft); font-size: .92rem; margin-left: 4px; }
 .calc-quote { background: var(--mist); border-radius: var(--radius); padding: 22px 20px; align-self: start; }
 .calc-quote h3 { font-size: 1.25rem; margin-bottom: 12px; }
-.calc-lines { display: grid; gap: 6px; font-size: .95rem; }
+.calc-lines { display: grid; gap: 6px; }
 .calc-lines li { display: flex; justify-content: space-between; gap: 12px; }
 .calc-lines strong { white-space: nowrap; }
 .calc-empty { color: var(--ink-soft); }
@@ -143,7 +143,7 @@
 }
 .dest-card:hover, .post-card:hover { border-color: var(--ink); color: var(--ink); }
 .dest-card h3, .post-card h3 { font-size: 1.15rem; }
-.dest-card p, .post-card p { color: var(--ink-soft); font-size: .95rem; }
+.dest-card p, .post-card p { color: var(--ink-soft); }
 .dest-card .tour-region, .post-card .tour-region { margin: 0; }
 .dest-meta { margin-top: auto; padding-top: 8px; display: flex; justify-content: space-between; gap: 12px; font-size: .92rem; color: var(--ink-soft); }
 .dest-meta strong { color: var(--ink); }

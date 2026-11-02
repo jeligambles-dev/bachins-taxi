@@ -185,6 +185,8 @@ if (form) {
     setStatus(statusEl, '');
   }
   form.querySelectorAll('.card-tabs [data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+  // No published tours: drop the Tours tab rather than offer an empty picker.
+  if (!tourSel.options.length) form.querySelector('.card-tabs').hidden = true;
   form.service.addEventListener('change', syncCard);
   tourSel.addEventListener('change', syncCard);
   areaSel.addEventListener('change', syncCard);
