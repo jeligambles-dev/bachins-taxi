@@ -5,7 +5,8 @@ Usage:  python3 build/build.py [--out DIR]     (default DIR: dist/)
 
 build_site(content, out_dir) renders the whole site into out_dir:
 - index.html from build/templates/index.html (marked regions filled in)
-- tours.html, tours/*.html, multi-day-tours.html, price-calculator.html,
+- fleet.html, business.html, partners.html, help.html,
+  tours.html, tours/*.html, multi-day-tours.html, price-calculator.html,
   destinations.html, blog.html and blog/*.html, sitemap.xml, robots.txt
 - copies css/, js/ and images/
 - checks every local link and asset exists (raises BuildError otherwise)
@@ -24,7 +25,7 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from data import AREAS      # noqa: E402
 from content import (KINDS, default_content, merge, price_label,  # noqa: E402
-                     price_unit, resolve_redirect)
+                     price_unit, resolve_redirect, _SLUG_RE)
 from posts import POSTS     # noqa: E402
 import texts                # noqa: E402
 from texts import T, T_lines  # noqa: E402
@@ -65,6 +66,9 @@ LONG_TRANSFERS = []
 REDIRECTS = {}      # old tour slug -> new slug
 SLOT_PHOTO = {}     # "hero" / "taxi" / "logo" -> site-relative path, if set
 TOUR_PHOTO = {}     # tour slug -> site-relative path, if set
+FLEET = []          # every vehicle, published or hidden
+VEHICLE_PHOTO = {}  # vehicle slug -> site-relative path, if an admin photo is set
+VAN_SLUG = "van"    # the fixed tour and airport prices are for this vehicle
 
 
 class BuildError(Exception):
@@ -95,6 +99,7 @@ def _configure(content):
     global MULTI_DAY_RATE, EXTRA_HOUR_RATE, MAX_PASSENGERS
     global TOURS, TOUR_BY_SLUG, MULTI_DAY, AIRPORT_FARES, LONG_TRANSFERS
     global MODAL, FAB, CONFIG_JS, CONFIG_VER, REDIRECTS, SLOT_PHOTO, TOUR_PHOTO
+    global FLEET, VEHICLE_PHOTO
     st = content["settings"]
     texts.configure(content.get("texts"), st["max_passengers"])
     PHONE = st["phone"]
@@ -116,6 +121,9 @@ def _configure(content):
     SLOT_PHOTO = {slot: paths[pid] for slot, pid in (content.get("photo_slots") or {}).items()
                   if isinstance(pid, str) and pid in paths}
     TOUR_PHOTO = {t["slug"]: paths[t["photo"]] for t in TOURS if isinstance(t.get("photo"), str) and t["photo"] in paths}
+    FLEET = list(content.get("fleet") or [])
+    VEHICLE_PHOTO = {v["slug"]: paths[v["photo"]] for v in FLEET
+                     if isinstance(v.get("photo"), str) and v["photo"] in paths}
     MODAL = fill_tokens(texts.dyn(_MODAL_RAW))
     FAB = fill_tokens(_FAB_RAW)
     CONFIG_JS = ("window.BCH = " + _json_inline({
@@ -210,27 +218,38 @@ BRAND = ('<span class="brand-mark" aria-hidden="true">BCH</span>'
          '<span class="brand-word">BCH Taxi</span>')
 
 
+NAV_TOURS = (("Day tours", "tours.html", "tours"), ("Pub tours", "pub-tours.html", "pub"),
+             ("Golf", "golf-trips.html", "golf"), ("Multi-day", "multi-day-tours.html", "multi"),
+             ("Price calculator", "price-calculator.html", "prices"))
+
+
 def nav(root, is_index=False, active=""):
-    items = [
-        ("Tours", f"{root}tours.html", "tours"),
-        ("Pub tours", f"{root}pub-tours.html", "pub"),
-        ("Golf", f"{root}golf-trips.html", "golf"),
-        ("Multi-day", f"{root}multi-day-tours.html", "multi"),
-        ("Prices", f"{root}price-calculator.html", "prices"),
-        ("Blog", f"{root}blog.html", "blog"),
-    ]
     current = ' aria-current="page"'
-    lis = "\n".join(
-        f'      <li><a href="{href}"{current if key == active else ""}>{label}</a></li>'
-        for label, href, key in items)
     home = "#" if is_index else f"{root}index.html"
+
+    def li(label, href, key):
+        return f'      <li><a href="{href}"{current if key == active else ""}>{label}</a></li>'
+
+    sub = "\n".join(f'          <li><a href="{root}{h}"{current if k == active else ""}>{l}</a></li>'
+                    for l, h, k in NAV_TOURS)
+    cls = "has-sub in-section" if active in {k for _, _, k in NAV_TOURS} else "has-sub"
+    tours_li = (f'      <li class="{cls}"><a href="{root}tours.html">Tours</a>\n'
+                f'        <ul class="nav-sub">\n{sub}\n        </ul>\n      </li>')
+    lis = "\n".join([
+        li("Personal", home, "personal"),
+        li("Business", f"{root}business.html", "business"),
+        li("Partners", f"{root}partners.html", "partners"),
+        li("Fleet", f"{root}fleet.html", "fleet"),
+        tours_li,
+        li("Help", f"{root}help.html", "help"),
+    ])
     return f"""  <nav class="site-nav">
     <a href="{home}" class="brand" aria-label="BCH Taxi home">
       {BRAND}
     </a>
     <ul class="nav-links" id="nav-links">
 {lis}
-      <li class="nav-book"><a href="{idx(root, 'booking', is_index)}" class="btn btn-primary">Book a taxi</a></li>
+      <li class="nav-book"><a href="{idx(root, 'booking', is_index)}" class="btn btn-primary">Book</a></li>
     </ul>
     <a class="nav-call" href="tel:{E(PHONE)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="nav-call-short">Call</span><span class="nav-call-num">{E(PHONE_DISPLAY)}</span></a>
     <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
@@ -265,23 +284,37 @@ def footer(root, is_index=False):
           <li><a href="mailto:{E(EMAIL)}">{E(EMAIL)}</a></li>
         </ul>
       </div>
-      <div>
+      <div class="footer-popular">
         <h4>Popular tours</h4>
         <ul>
 {tour_links}
         </ul>
       </div>
       <div>
-        <h4>More</h4>
+        <h4>Personal</h4>
         <ul>
           <li><a href="{root}tours.html">All day tours</a></li>
           <li><a href="{root}pub-tours.html">Pub tours</a></li>
           <li><a href="{root}golf-trips.html">Golf trips</a></li>
           <li><a href="{root}multi-day-tours.html">Multi-day tours</a></li>
+          <li><a href="{root}index.html?service=Airport%20transfer#booking">Airport transfers</a></li>
           <li><a href="{root}price-calculator.html">Price calculator</a></li>
           <li><a href="{root}destinations.html">Destinations</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Business</h4>
+        <ul>
+          <li><a href="{root}business.html">Business accounts</a></li>
+          <li><a href="{root}partners.html">Partners</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="{root}fleet.html">Fleet</a></li>
+          <li><a href="{root}help.html">Help centre</a></li>
           <li><a href="{root}blog.html">Travel guides</a></li>
-          <li><a href="{idx(root, 'faq', is_index)}">Questions</a></li>
         </ul>
       </div>
     </div>
@@ -889,6 +922,261 @@ def build_blog():
     return out
 
 
+# ── Fleet, business, partners, help ──────────────────────────────────────────
+
+def fleet_published():
+    return [v for v in FLEET if v.get("published")]
+
+
+def vehicle_image(v, root):
+    """Site path for a vehicle photo: the admin photo if set, else
+    images/fleet-<slug>.jpg if that file exists, else "" (a name panel)."""
+    path = VEHICLE_PHOTO.get(v["slug"])
+    if not path and isinstance(v["slug"], str) and _SLUG_RE.match(v["slug"]):
+        rel = f"images/fleet-{v['slug']}.jpg"
+        if (ROOT_DIR / rel).is_file():
+            path = rel
+    return root + path if path else ""
+
+
+def vehicle_media(v, root, cls="tour-photo"):
+    src = vehicle_image(v, root)
+    if src:
+        return f'<img class="{cls}" src="{E(src)}" alt="{E(v["name"])}" loading="lazy">'
+    return f'<div class="fleet-panel" aria-hidden="true"><span>{E(v["name"])}</span></div>'
+
+
+def vehicle_card(v, root):
+    specs = [f"Up to {v['passengers']} passengers"]
+    if v["bags"]:
+        specs.append(f"{v['bags']} bags")
+    feats = "".join(f"<li>{E(f)}</li>" for f in v["features"])
+    note = f'<p class="fleet-note">{E(v["price_note"])}</p>' if v["price_note"] else "<span></span>"
+    example = f'<p class="tour-meta">{E(v["example"])}</p>' if v["example"] else ""
+    desc = f'<p class="tour-desc">{E(v["desc"])}</p>' if v["desc"] else ""
+    return f"""      <article class="tour-card fleet-card" id="{E(v['slug'])}">
+        {vehicle_media(v, root)}
+        <div class="tour-body">
+          <h3>{E(v['name'])}</h3>
+          {example}
+          <p class="fleet-specs">{E(' · '.join(specs))}</p>
+          {desc}
+          <ul class="check-list">{feats}</ul>
+        </div>
+        <div class="tour-foot">
+          {note}
+          <a class="btn btn-primary" href="{root}index.html?vehicle={quote(v['slug'])}#booking">{T("fleet.book_button")}</a>
+        </div>
+      </article>"""
+
+
+def vehicle_mini(v, root):
+    return f"""        <a class="fleet-mini" href="{root}fleet.html">
+          {vehicle_media(v, root, "mini-img")}
+          <strong>{E(v['name'])}</strong>
+          <span>Up to {v['passengers']}</span>
+        </a>"""
+
+
+def build_fleet():
+    root = ""
+    vehicles = fleet_published()
+    cards = "\n".join(vehicle_card(v, root) for v in vehicles) if vehicles else \
+        f'      <p class="tours-note">{T("fleet.empty")}</p>'
+    body = page_hero(root, [("Home", "index.html"), ("Fleet", None)],
+                     T("fleet.title"), T("fleet.lead")) + f"""
+
+    <section class="section">
+      <div class="wrap">
+        <div class="fleet-grid tours-grid">
+{cards}
+        </div>
+      </div>
+    </section>
+
+{cta_band(root, "fleet.cta_title", "fleet.cta_text")}"""
+    return {"fleet.html": page(
+        root=root, active="fleet", path="fleet.html",
+        jsonld=[breadcrumb_ld([("Home", ""), ("Fleet", "fleet.html")])],
+        title="Our Fleet: Saloon, MPV, 8-Seater Van & Minibus | BCH Taxi",
+        description=texts.raw("fleet.description"), body=body)}
+
+
+def enquiry_form(form_id, *, subject, subject_field, kind, fields, button_key, legal_key):
+    """A FormSubmit enquiry form (sent by js/main.js). `fields` is a list of
+    (name, label, type, required, extra) with type text/email/tel/textarea/select."""
+    dial = re.search(r'<select name="dial".*?</select>', MODAL, re.S).group(0)
+    rows = []
+    for name, label, typ, req, extra in fields:
+        fid = f"{form_id}-{name}"
+        r = " required" if req else ""
+        lab = f'<label for="{fid}">{label}{"" if req else " (optional)"}</label>'
+        if typ == "textarea":
+            ctl = f'<textarea id="{fid}" name="{name}" rows="3" data-label="{label}"></textarea>'
+        elif typ == "select":
+            opts = "".join(f"<option>{o}</option>" for o in extra)
+            ctl = f'<select id="{fid}" name="{name}"{r} data-label="{label}">{opts}</select>'
+        elif typ == "tel":
+            ctl = (f'<div class="phone-row">{dial}<input id="{fid}" name="{name}" type="tel" '
+                   f'autocomplete="tel-national"{r} data-label="{label}"></div>')
+        else:
+            ac = f' autocomplete="{extra}"' if extra else ""
+            ctl = f'<input id="{fid}" name="{name}" type="{typ}"{ac}{r} data-label="{label}">'
+        rows.append(f'        <div class="form-field">{lab}{ctl}</div>')
+    return f"""      <form class="enquiry" id="{form_id}" novalidate data-subject="{E(subject)}" data-subject-field="{subject_field}" data-enquiry="{E(kind)}">
+{chr(10).join(rows)}
+        <input class="form-honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button type="submit" class="btn btn-primary btn-wide"><span class="send-label">{T(button_key)}</span></button>
+        <p class="form-status" role="status" aria-live="polite"></p>
+        <p class="form-legal">{T(legal_key)}</p>
+      </form>"""
+
+
+def _list(items):
+    return "".join(f"<li>{x}</li>" for x in items)
+
+
+def build_business():
+    root = ""
+    steps = "".join(f"\n          <li><strong>{T(f'business.step{n}_title')}</strong> {T(f'business.step{n}_text')}</li>"
+                    for n in (1, 2, 3))
+    form = enquiry_form(
+        "biz-form", subject="New business account enquiry from", subject_field="company",
+        kind="Business account", button_key="business.form_button", legal_key="business.form_legal",
+        fields=[("company", "Company", "text", True, "organization"),
+                ("name", "Your name", "text", True, "name"),
+                ("email", "Email", "email", True, "email"),
+                ("phone", "Phone", "tel", True, None),
+                ("team", "Team size", "text", False, None),
+                ("trips", "Typical trips", "textarea", False, None),
+                ("notes", "Notes", "textarea", False, None)])
+    body = page_hero(root, [("Home", "index.html"), ("Business", None)],
+                     T("business.title"), T("business.lead")) + f"""
+
+    <section class="section">
+      <div class="wrap wrap-narrow">
+        <h2>{T("business.benefits_title")}</h2>
+        <ul class="check-list">{_list(T_lines("business.benefits"))}</ul>
+        <h2 class="h-gap">{T("business.how_title")}</h2>
+        <ol class="steps-list steps-3">{steps}
+        </ol>
+      </div>
+    </section>
+
+    <section class="section section-mist" id="account">
+      <div class="wrap wrap-narrow">
+        <h2>{T("business.form_title")}</h2>
+        <p class="form-lead">{T("business.form_lead")}</p>
+{form}
+      </div>
+    </section>
+
+{cta_band(root)}"""
+    return {"business.html": page(
+        root=root, active="business", path="business.html",
+        jsonld=[breadcrumb_ld([("Home", ""), ("Business", "business.html")])],
+        title="Business Travel & Corporate Accounts | BCH Taxi",
+        description=texts.raw("business.description"), body=body)}
+
+
+def build_partners():
+    root = ""
+    form = enquiry_form(
+        "partner-form", subject="New partner enquiry from", subject_field="business",
+        kind="Partner", button_key="partners.form_button", legal_key="partners.form_legal",
+        fields=[("business", "Business name", "text", True, "organization"),
+                ("type", "Type of business", "select", True,
+                 ["Hotel or guest house", "Travel agent", "Event planner", "Tour operator", "Other"]),
+                ("name", "Your name", "text", True, "name"),
+                ("email", "Email", "email", True, "email"),
+                ("phone", "Phone", "tel", True, None),
+                ("website", "Website", "text", False, "url"),
+                ("notes", "Notes", "textarea", False, None)])
+    body = page_hero(root, [("Home", "index.html"), ("Partners", None)],
+                     T("partners.title"), T("partners.lead")) + f"""
+
+    <section class="section">
+      <div class="wrap wrap-narrow">
+        <h2>{T("partners.gets_title")}</h2>
+        <ul class="check-list">{_list(T_lines("partners.gets"))}</ul>
+        <h2 class="h-gap">{T("partners.who_title")}</h2>
+        <ul class="check-list">{_list(T_lines("partners.who"))}</ul>
+      </div>
+    </section>
+
+    <section class="section section-mist" id="partner">
+      <div class="wrap wrap-narrow">
+        <h2>{T("partners.form_title")}</h2>
+        <p class="form-lead">{T("partners.form_lead")}</p>
+{form}
+      </div>
+    </section>
+
+{cta_band(root)}"""
+    return {"partners.html": page(
+        root=root, active="partners", path="partners.html",
+        jsonld=[breadcrumb_ld([("Home", ""), ("Partners", "partners.html")])],
+        title="Partner With BCH Taxi | Hotels, Agents & Event Planners",
+        description=texts.raw("partners.description"), body=body)}
+
+
+HELP_FAQ = (1, 2, 3, 4, 5, 6, 7, 8)
+
+
+def faq_pairs():
+    """(question key, answer key) for every non-empty FAQ entry."""
+    out = []
+    for n in HELP_FAQ:
+        q, a = f"home.faq_question_{n}", f"home.faq_answer_{n}"
+        if n > 6:
+            q, a = f"help.faq_question_{n}", f"help.faq_answer_{n}"
+        if texts.raw(q).strip() and texts.raw(a).strip():
+            out.append((q, a))
+    return out
+
+
+def build_help():
+    root = ""
+    pairs = faq_pairs()
+    faq = "\n".join(f'        <details class="faq-item"><summary>{T(q)}</summary><p>{T(a)}</p></details>'
+                    for q, a in pairs)
+    faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+        {"@type": "Question", "name": texts.raw(q),
+         "acceptedAnswer": {"@type": "Answer", "text": texts.raw(a)}} for q, a in pairs]}
+    wa = f"{WHATSAPP}?text={quote('Hi BCH Taxi, I need to change a booking.')}"
+    body = page_hero(root, [("Home", "index.html"), ("Help", None)],
+                     T("help.title"), T("help.lead")) + f"""
+
+    <section class="section">
+      <div class="wrap wrap-narrow">
+        <h2>{T("help.faq_title")}</h2>
+        <div class="faq-list">
+{faq}
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-mist">
+      <div class="wrap wrap-narrow">
+        <h2>{T("help.contact_title")}</h2>
+        <p>{T("help.contact_text")}</p>
+        <ul class="help-contact">
+          <li><a class="btn btn-primary" href="tel:{E(PHONE)}">Call {E(PHONE_DISPLAY)}</a></li>
+          <li><a class="btn btn-quiet" href="{E(WHATSAPP)}" target="_blank" rel="noopener">WhatsApp</a></li>
+          <li><a class="btn btn-quiet" href="mailto:{E(EMAIL)}">{E(EMAIL)}</a></li>
+        </ul>
+        <h2 class="h-gap">{T("help.changes_title")}</h2>
+        <p>{T("help.changes_text")}</p>
+        <p><a class="btn btn-quiet" href="{E(wa)}" target="_blank" rel="noopener">WhatsApp us about a booking</a></p>
+      </div>
+    </section>"""
+    return {"help.html": page(
+        root=root, active="help", path="help.html",
+        jsonld=[breadcrumb_ld([("Home", ""), ("Help", "help.html")]), faq_ld],
+        title="Help Centre: Booking, Payment & Questions | BCH Taxi",
+        description=texts.raw("help.description"), body=body)}
+
+
 # ── index.html regions ───────────────────────────────────────────────────────
 
 def replace_region(s, name, content):
@@ -971,10 +1259,64 @@ def tour_options():
     return "\n".join(groups)
 
 
+def vehicle_field():
+    """Booking card: the vehicle choice (empty when no vehicle is published)."""
+    vehicles = fleet_published()
+    if not vehicles:
+        return ""
+    opts = "".join(
+        f'<option value="{E(v["slug"])}" data-pax="{v["passengers"]}"'
+        + (' data-fixed="1"' if v["slug"] == VAN_SLUG else "")
+        + f'>{E(v["name"])} (up to {v["passengers"]})</option>' for v in vehicles)
+    return f"""            <div class="field" id="cf-vehicle-field">
+              <label for="cf-vehicle">{T("home.card_vehicle_label")}</label>
+              <select id="cf-vehicle" name="vehicle"><option value="">Any suitable vehicle</option>{opts}</select>
+            </div>
+            <p class="card-hint" id="cf-vehicle-hint" aria-live="polite" hidden></p>"""
+
+
+def fleet_strip():
+    vehicles = fleet_published()[:4]
+    if not vehicles:
+        return ""
+    minis = "\n".join(vehicle_mini(v, "") for v in vehicles)
+    return f"""  <section class="section fleet-strip" id="fleet-strip">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>{T("home.fleet_title")}</h2>
+        <p>{T("home.fleet_intro")}</p>
+      </div>
+      <div class="fleet-strip-grid">
+{minis}
+      </div>
+      <p class="tours-foot"><a class="link-strong" href="fleet.html">{T("home.fleet_link")}</a></p>
+    </div>
+  </section>"""
+
+
+def teasers():
+    return f"""  <section class="section section-mist teasers" id="teasers">
+    <div class="wrap">
+      <div class="teaser">
+        <p><strong>{T("home.biz_title")}</strong> {T("home.biz_text")}</p>
+        <a class="btn btn-quiet" href="business.html">{T("home.biz_button")}</a>
+      </div>
+      <div class="teaser">
+        <p><strong>{T("home.partner_title")}</strong> {T("home.partner_text")}</p>
+        <a class="btn btn-quiet" href="partners.html">{T("home.partner_button")}</a>
+      </div>
+    </div>
+  </section>"""
+
+
 def build_index(out_dir):
     s = texts.dyn_template(TEMPLATE_INDEX.read_text())
     s = sync_faq_jsonld(s)
-    s = replace_region(s, "nav", nav("", is_index=True))
+    s = replace_region(s, "nav", nav("", is_index=True, active="personal"))
+    s = replace_region(s, "vehicle-field", vehicle_field())
+    s = replace_region(s, "fleet-strip", fleet_strip())
+    s = replace_region(s, "teasers", teasers())
+    s = replace_region(s, "faq-more", f'<a class="link-strong" href="help.html">{T("home.faq_all")}</a>')
     s = replace_region(s, "tours-grid", "\n".join(tour_card(t, "") for t in published()))
     s = replace_region(s, "area-options", area_options())
     s = replace_region(s, "tour-options", tour_options())
@@ -1059,7 +1401,8 @@ def build_site(content, out_dir, extra_files=None):
         target.write_bytes(data)
 
     pages = {}
-    for builder in (build_tour_pages, build_tours_hub, build_pub_tours, build_golf_trips, build_multi_day, build_calculator, build_destinations, build_blog):
+    for builder in (build_tour_pages, build_tours_hub, build_pub_tours, build_golf_trips, build_multi_day, build_calculator, build_destinations, build_blog,
+                    build_fleet, build_business, build_partners, build_help):
         pages.update(builder())
     for rel, text in pages.items():
         target = out_dir / rel

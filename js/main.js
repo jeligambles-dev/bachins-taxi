@@ -164,6 +164,11 @@ if (form) {
   const tourSel = document.getElementById('cf-tour');
   const areaSel = document.getElementById('cf-area');
   const TOUR_SERVICE = { day: 'Day tour', pub: 'Rural pub tour', golf: 'Golf trip' };
+  const vehicleSel = document.getElementById('cf-vehicle');
+  const vehicleHint = document.getElementById('cf-vehicle-hint');
+  const vehicleOpt = () => (vehicleSel && vehicleSel.value ? vehicleSel.selectedOptions[0] : null);
+  // The fixed prices are for the van (data-fixed); other vehicles are quoted by us.
+  const otherVehicle = () => { const o = vehicleOpt(); return o && !o.dataset.fixed ? o : null; };
   const mode = () => form.dataset.mode;
   const tourOpt = () => tourSel.selectedOptions[0];
 
@@ -176,8 +181,15 @@ if (form) {
     if (tours && tourOpt()) form.service.value = TOUR_SERVICE[tourOpt().dataset.kind] || 'Day tour';
     // Instant price hint in step 1 (the full quote opens in step 2).
     const q = quote(), hint = document.getElementById('cf-hint');
-    hint.textContent = q.price ? q.price + (q.short ? ' ' + q.short : '') : '';
-    hint.hidden = !q.price;
+    hint.textContent = q.price ? q.price + (q.short ? ' ' + q.short : '') : (otherVehicle() ? q.note : '');
+    hint.hidden = !hint.textContent;
+    // More people than the chosen vehicle takes.
+    const v = vehicleOpt(), pax = Number(form.passengers.value);
+    if (vehicleHint) {
+      vehicleHint.textContent = v && pax > Number(v.dataset.pax)
+        ? 'This vehicle takes up to ' + v.dataset.pax + ", so we'll suggest a bigger one or a second vehicle." : '';
+      vehicleHint.hidden = !vehicleHint.textContent;
+    }
   }
   function setMode(m) { form.dataset.mode = m; syncCard(); }
   function setStep(n) {
@@ -190,11 +202,17 @@ if (form) {
   form.service.addEventListener('change', syncCard);
   tourSel.addEventListener('change', syncCard);
   areaSel.addEventListener('change', syncCard);
+  if (vehicleSel) vehicleSel.addEventListener('change', syncCard);
+  form.addEventListener('paxchange', syncCard);
   form.pickup.addEventListener('input', syncCard);
   form.destination.addEventListener('input', syncCard);
 
   // The instant price shown at the top of step 2.
   function quote() {
+    const q = fareQuote(), o = otherVehicle();
+    return o ? { title: q.title + ' · ' + o.textContent, price: '', note: "We'll confirm the price for this vehicle." } : q;
+  }
+  function fareQuote() {
     if (mode() === 'tours') {
       const o = tourOpt();
       if (!o) return { title: 'Your tour', price: '', note: "We'll confirm a fixed price within the hour." };
@@ -217,6 +235,7 @@ if (form) {
   const quoteText = () => { const q = quote(); return q.price ? q.price + ' (' + q.title + ')' : 'To be confirmed'; };
   const extra = () => [
     ...(mode() === 'tours' ? [['Service', form.service.value]] : []),
+    ...(vehicleOpt() ? [['Vehicle', vehicleOpt().textContent]] : []),
     ['Quoted price', quoteText()],
   ];
 
@@ -276,9 +295,21 @@ if (form) {
 
   // Prefill from links on other pages, e.g. index.html?service=School%20transport#booking
   const wanted = new URLSearchParams(location.search).get('service');
+  const wantedVehicle = new URLSearchParams(location.search).get('vehicle');
+  if (vehicleSel && wantedVehicle && [...vehicleSel.options].some(o => o.value === wantedVehicle)) vehicleSel.value = wantedVehicle;
   if (wanted && [...form.service.options].some(o => o.value === wanted)) pickService(wanted);
   else syncCard();
 }
+
+// Business and partner enquiry forms: sent like the booking forms, to the same inbox.
+document.querySelectorAll('form.enquiry').forEach(f => {
+  f.addEventListener('submit', (e) => {
+    e.preventDefault();
+    sendEmail(f, f.querySelector('.form-status'), f.querySelector('[type="submit"]'),
+      () => f.dataset.subject + ' ' + f.elements[f.dataset.subjectField].value.trim(),
+      [['Enquiry', f.dataset.enquiry]]);
+  });
+});
 
 // Tour modal (on every page that has tour "Book" buttons)
 const modal = document.getElementById('tour-modal');

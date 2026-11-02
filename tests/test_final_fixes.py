@@ -84,6 +84,8 @@ def test_max_passengers_threaded(tmp_path):
     bad = []
     for rel, text in _texts(tmp_path).items():
         text = re.sub(r"8[- ]seater|8 Seater", "", text, flags=re.I)
+        # a vehicle's own capacity is fleet data, not the site's passenger limit
+        text = re.sub(r"\(up to 8\)|<span>Up to 8</span>|Up to 8 passengers ·", "", text)
         for pat in (r"[Uu]p to 8\b(?! seats)", r'max="8"', r"[Mm]ore than 8\b",
                     r"MAX_PAX = 8", r"or 8\b", r"\(9\+\)", r"%289%2B", r"\b9%2B"):
             if re.search(pat, text):

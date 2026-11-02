@@ -156,3 +156,72 @@
 .post-body ul { list-style: disc; padding-left: 1.3em; margin-bottom: 1.1em; }
 .post-body li { margin-bottom: .4em; }
 .post-body a { font-weight: 600; }
+
+/* ── Navigation: Tours sub-menu ─────────────────────────────────────────── */
+.nav-sub { padding-left: 14px; }
+.nav-sub a { font-weight: 400; color: var(--ink-soft); }
+.nav-links .has-sub.in-section > a { color: var(--moss); font-weight: 600; }
+@media (min-width: 1000px) {
+  .has-sub { position: relative; }
+  .nav-sub {
+    display: none; position: absolute; top: 100%; left: 0; min-width: 190px; padding: 6px;
+    background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-sm);
+    box-shadow: 0 10px 30px rgba(14, 42, 34, .14); z-index: 60;
+  }
+  .has-sub:hover > .nav-sub, .has-sub:focus-within > .nav-sub { display: block; }
+  .nav-sub a { white-space: nowrap; padding: 0 12px; }
+}
+
+/* ── Footer: five columns on desktop ────────────────────────────────────── */
+@media (min-width: 900px) { .footer-grid { grid-template-columns: 1.4fr repeat(4, 1fr); } }
+
+/* ── Fleet ──────────────────────────────────────────────────────────────── */
+.fleet-panel {
+  display: grid; place-items: center; width: 100%; aspect-ratio: 3 / 2; padding: 16px;
+  background: var(--ink); color: #fff; text-align: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.2rem;
+}
+.fleet-card .tour-desc { display: block; -webkit-line-clamp: unset; }
+.fleet-card .check-list { margin-top: 12px; }
+.fleet-specs { margin-top: 8px; font-weight: 600; }
+.fleet-note { color: var(--ink-soft); font-size: .92rem; max-width: 20ch; }
+.fleet-strip { padding: 36px 0; }
+.fleet-strip-grid {
+  display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory;
+  margin: 0 calc(-1 * var(--gutter)); padding: 2px var(--gutter) 6px; overscroll-behavior-x: contain;
+}
+.fleet-mini { flex: 0 0 44%; scroll-snap-align: start; }
+.fleet-mini { display: flex; flex-direction: column; gap: 2px; color: var(--ink); text-decoration: none; min-width: 0; }
+.fleet-mini:hover { color: var(--ink); }
+.fleet-mini .mini-img, .fleet-mini .fleet-panel { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: var(--radius-sm); margin-bottom: 6px; }
+.fleet-mini .fleet-panel { font-size: .95rem; }
+.fleet-mini span { color: var(--ink-soft); font-size: .92rem; }
+@media (min-width: 900px) { .fleet-strip-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; overflow: visible; margin: 0; padding: 0; } }
+
+/* ── Teaser rows, enquiry forms, help ───────────────────────────────────── */
+.teasers { padding: 16px 0; }
+.teaser { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 10px 0; }
+.teaser + .teaser { border-top: 1px solid var(--line); }
+.teaser p { flex: 1 1 200px; }
+.teaser .btn { min-height: 44px; padding: 0 18px; }
+.h-gap { margin-top: 36px; }
+.steps-3 { grid-template-columns: 1fr; }
+@media (min-width: 900px) { .steps-3 { grid-template-columns: repeat(3, 1fr); } }
+.form-lead { color: var(--ink-soft); margin-bottom: 16px; }
+.enquiry { display: grid; gap: 12px; max-width: 560px; }
+.enquiry .form-field input, .enquiry .form-field select, .enquiry .form-field textarea { width: 100%; }
+.help-contact { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 0; }
+.faq-more { margin-top: 16px; }
+.faq-more .link-strong { display: inline-flex; align-items: center; min-height: 44px; }
+
+/* Phones: the Personal column already lists the tour pages. */
+.footer-popular { display: none; }
+@media (min-width: 900px) { .footer-popular { display: block; } }
+@media (max-width: 899px) {
+  .fleet-strip .section-head p { display: none; }
+  .fleet-strip .section-head { margin-bottom: 12px; }
+  .teaser { gap: 6px 12px; padding: 6px 0; flex-wrap: nowrap; }
+  .teaser p { flex: 1 1 0; font-size: .95rem; line-height: 1.35; }
+  .teaser .btn { flex: none; padding: 0 14px; }
+  .site-footer { padding-top: 32px; }
+}

@@ -162,3 +162,24 @@ AIRPORT_FARES = [
     ("Bray", "35 km", 65, 70),
 ]
 LONG_TRANSFERS = [("Galway", 300), ("Cork", 350)]
+
+# The fleet: four vehicle classes, all editable in /admin. Photos default to
+# images/fleet-<slug>.jpg. Fixed tour and airport prices are for the van.
+FLEET = [
+    dict(slug="saloon", name="Executive saloon", example="Mercedes E-Class or similar",
+         passengers=3, bags=3, price_note="Price confirmed when you enquire",
+         features=["Air conditioning", "Room for 3 suitcases", "Door-to-door pickup"],
+         desc="A comfortable saloon for solo travellers, couples and business trips."),
+    dict(slug="mpv", name="Premium MPV", example="Mercedes V-Class or similar",
+         passengers=7, bags=6, price_note="Price confirmed when you enquire",
+         features=["Air conditioning", "Space for luggage", "Good for families and small groups"],
+         desc="More room for families, small teams and airport runs with luggage."),
+    dict(slug="van", name="8-seater van", example="Ford Transit Custom",
+         passengers=8, bags=8, price_note="Fixed prices for tours and airport transfers",
+         features=["Wheelchair accessible, with ramp", "Space for luggage", "Our main vehicle"],
+         desc="Our wheelchair-accessible 8-seater, used for all the fixed-price tours and airport fares on this site."),
+    dict(slug="minibus", name="Minibus / coach", example="Size arranged to suit your group",
+         passengers=16, bags=16, price_note="Quote on request",
+         features=["16 seats and up", "For groups and events", "Arranged on request"],
+         desc="For larger groups, weddings and events. Tell us your numbers and we'll arrange the right vehicle."),
+]

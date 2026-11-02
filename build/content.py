@@ -5,7 +5,7 @@ import re
 import data
 
 SECTIONS = ("settings", "texts", "tours", "multi_day", "airport_fares",
-            "long_transfers", "photo_slots", "redirects", "flags")
+            "long_transfers", "photo_slots", "redirects", "flags", "fleet")
 KINDS = {"day": "Day tour", "pub": "Rural pub tour", "golf": "Golf trip"}
 
 _DICT_SECTIONS = ("settings", "texts", "photo_slots", "flags")
@@ -25,6 +25,56 @@ def normalize_tour(t):
            "intro": "", "desc": "", "duration": "", "region": ""}
     out.update(copy.deepcopy(t))
     return out
+
+
+VEHICLE_CAPS = {"name": 80, "example": 120, "desc": 400, "feature": 80,
+                "price_note": 80}
+FEATURES_MAX = 6
+PAX_RANGE = (1, 60)
+BAGS_RANGE = (0, 60)
+
+
+def normalize_vehicle(v):
+    out = {"slug": "", "name": "", "example": "", "passengers": 4, "bags": 0,
+           "features": [], "photo": None, "published": True, "price_note": "",
+           "desc": ""}
+    out.update(copy.deepcopy(v))
+    return out
+
+
+def _is_int(x, lo, hi):
+    return isinstance(x, int) and not isinstance(x, bool) and lo <= x <= hi
+
+
+def validate_vehicle(v, others):
+    errors = []
+    slug = v.get("slug")
+    if not isinstance(slug, str) or not _SLUG_RE.match(slug):
+        errors.append("The web address (slug) must use only lowercase letters, "
+                      "numbers and single hyphens, e.g. my-vehicle.")
+    elif any(o.get("slug") == slug for o in others):
+        errors.append(f"Another vehicle already uses the web address \"{slug}\".")
+    name = v.get("name")
+    if not isinstance(name, str) or not name.strip():
+        errors.append("The vehicle name cannot be empty.")
+    for f, label in (("name", "Name"), ("example", "Example"), ("desc", "Description"),
+                     ("price_note", "Price note")):
+        val = v.get(f)
+        if isinstance(val, str) and len(val) > VEHICLE_CAPS[f]:
+            errors.append(f"{label} is too long (max {VEHICLE_CAPS[f]} characters).")
+    feats = v.get("features")
+    if not isinstance(feats, list) or not all(isinstance(x, str) for x in feats):
+        errors.append("Features must be a list of text lines.")
+    else:
+        if len(feats) > FEATURES_MAX:
+            errors.append(f"At most {FEATURES_MAX} features.")
+        if any(len(x) > VEHICLE_CAPS["feature"] for x in feats):
+            errors.append(f"A feature line is too long (max {VEHICLE_CAPS['feature']} characters).")
+    if not _is_int(v.get("passengers"), *PAX_RANGE):
+        errors.append("Passengers must be a whole number from 1 to 60.")
+    if not _is_int(v.get("bags"), *BAGS_RANGE):
+        errors.append("Bags must be a whole number from 0 to 60.")
+    return errors
 
 
 def default_content():
@@ -50,6 +100,7 @@ def default_content():
         "photo_slots": {"hero": None, "taxi": None, "logo": None},
         "redirects": {},
         "flags": {},
+        "fleet": [normalize_vehicle(v) for v in data.FLEET],
     }
 
 
@@ -59,12 +110,13 @@ def merge(defaults, stored):
     for k in _DICT_SECTIONS:
         if isinstance(stored.get(k), dict):
             out.setdefault(k, {}).update(copy.deepcopy(stored[k]))
-    for k in _LIST_SECTIONS + ("tours",):
+    for k in _LIST_SECTIONS + ("tours", "fleet"):
         if k in stored and stored[k] is not None:
             out[k] = copy.deepcopy(stored[k])
     if isinstance(stored.get("redirects"), dict):
         out["redirects"] = copy.deepcopy(stored["redirects"])
     out["tours"] = [normalize_tour(t) for t in out["tours"]]
+    out["fleet"] = [normalize_vehicle(v) for v in out["fleet"]]
     return out
 
 
