@@ -278,42 +278,43 @@ def footer(root, is_index=False):
           {BRAND}
         </a>
         <p>{T("footer.about")}</p>
+        <h4>Contact</h4>
         <ul class="footer-contact">
           <li><a href="tel:{E(PHONE)}">{E(PHONE_DISPLAY)}</a></li>
           <li><a href="{E(WHATSAPP)}" target="_blank" rel="noopener">WhatsApp</a></li>
           <li><a href="mailto:{E(EMAIL)}">{E(EMAIL)}</a></li>
         </ul>
       </div>
-      <div class="footer-popular">
-        <h4>Popular tours</h4>
-        <ul>
-{tour_links}
-        </ul>
-      </div>
       <div>
         <h4>Personal</h4>
         <ul>
-          <li><a href="{root}tours.html">All day tours</a></li>
+          <li><a href="{root}index.html?service=Airport%20transfer#booking">Airport transfers</a></li>
+          <li><a href="{root}tours.html">Day tours</a></li>
           <li><a href="{root}pub-tours.html">Pub tours</a></li>
           <li><a href="{root}golf-trips.html">Golf trips</a></li>
           <li><a href="{root}multi-day-tours.html">Multi-day tours</a></li>
-          <li><a href="{root}index.html?service=Airport%20transfer#booking">Airport transfers</a></li>
           <li><a href="{root}price-calculator.html">Price calculator</a></li>
-          <li><a href="{root}destinations.html">Destinations</a></li>
         </ul>
+        <div class="footer-popular">
+          <h4>Popular tours</h4>
+          <ul>
+{tour_links}
+          </ul>
+        </div>
       </div>
       <div>
         <h4>Business</h4>
         <ul>
           <li><a href="{root}business.html">Business accounts</a></li>
           <li><a href="{root}partners.html">Partners</a></li>
+          <li><a href="{root}fleet.html">Fleet</a></li>
         </ul>
       </div>
       <div>
         <h4>Company</h4>
         <ul>
-          <li><a href="{root}fleet.html">Fleet</a></li>
           <li><a href="{root}help.html">Help centre</a></li>
+          <li><a href="{root}destinations.html">Destinations</a></li>
           <li><a href="{root}blog.html">Travel guides</a></li>
         </ul>
       </div>
@@ -345,7 +346,7 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
   <title>{E(title)}</title>
   <meta name="description" content="{E(description)}">
   <meta name="robots" content="{'noindex' if noindex else 'index, follow'}">
-  <meta name="theme-color" content="#0E2A22">
+  <meta name="theme-color" content="#0B1F19">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="BCH Taxi">
   <meta property="og:locale" content="en_IE">
@@ -382,14 +383,34 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
 """
 
 
-def page_hero(root, crumbs, h1, lead, extra=""):
+def local_photo(rel):
+    """A site image path if that file exists, else None (so pages never link a
+    missing photo and fall back to a plain dark panel)."""
+    return rel if rel and (ROOT_DIR / rel).is_file() else None
+
+
+def page_hero(root, crumbs, h1, lead, extra="", photo=None, split=False):
+    """Page header. With `photo` (a site image path) it becomes a photo-led
+    header: full-bleed in a rounded frame, or photo-beside-text when `split`."""
     trail = " <span>/</span> ".join(
         f'<a href="{href}">{E(name)}</a>' if href else f'<span aria-current="page">{E(name)}</span>'
         for name, href in crumbs)
-    return f"""    <section class="page-hero">
-      <nav class="crumbs" aria-label="Breadcrumb">{trail}</nav>
+    text = f"""      <nav class="crumbs" aria-label="Breadcrumb">{trail}</nav>
       <h1>{h1}</h1>
-      <p class="page-lead">{lead}</p>{extra}
+      <p class="page-lead">{lead}</p>{extra}"""
+    photo = local_photo(photo)
+    if not photo:
+        return f"""    <section class="page-hero">
+{text}
+    </section>"""
+    kind = "split" if split else "framed"
+    return f"""    <section class="page-hero page-hero-{kind}">
+      <div class="page-hero-frame">
+        <img class="page-hero-img" src="{root}{photo}" alt="">
+        <div class="page-hero-text">
+{text}
+        </div>
+      </div>
     </section>"""
 
 
@@ -600,7 +621,7 @@ def build_kind_listing(kind, title):
         f'      <p class="tours-note">{T(kind + ".empty")}</p>'
     inc = "".join(f"<li>{x}</li>" for x in T_lines(f"included.{kind}"))
     body = page_hero(root, [("Home", "index.html"), (list_name, None)],
-                     T(kind + ".title"), T(kind + ".lead")) + f"""
+                     T(kind + ".title"), T(kind + ".lead"), photo=f"images/band-{kind}.jpg") + f"""
 
     <section class="section">
       <div class="wrap">
@@ -636,7 +657,7 @@ def build_tours_hub():
     n = len(day)
     lead_count = f"{count_word(n)} full-day private tours" if n else "Full-day private tours"
     body = page_hero(root, crumbs, T("tours.title"),
-                     f"{lead_count} {T('tours.lead')}") + f"""
+                     f"{lead_count} {T('tours.lead')}", photo="images/band-tours.jpg") + f"""
 
     <section class="section">
       <div class="wrap">
@@ -671,7 +692,7 @@ def build_multi_day():
     crumbs = [("Home", "index.html"), ("Multi-day tours", None)]
     notes = "".join(f"\n          <li>{x}</li>" for x in T_lines("multi.notes"))
     body = page_hero(root, crumbs, T("multi.title"),
-                     f"{T('multi.lead_before')} {eur(MULTI_DAY_RATE)} {T('multi.lead_after')}") + f"""
+                     f"{T('multi.lead_before')} {eur(MULTI_DAY_RATE)} {T('multi.lead_after')}", photo="images/hero.jpg") + f"""
 
     <section class="section">
       <div class="wrap">
@@ -946,10 +967,21 @@ def vehicle_media(v, root, cls="tour-photo"):
     return f'<div class="fleet-panel" aria-hidden="true"><span>{E(v["name"])}</span></div>'
 
 
-def vehicle_card(v, root):
-    specs = [f"Up to {v['passengers']} passengers"]
+ICON_SEAT = ('<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/>'
+             '<path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>')
+ICON_BAG = ('<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="16" height="13" rx="2"/>'
+            '<path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M9 20v1M15 20v1"/></svg>')
+
+
+def vehicle_specs(v):
+    """Seats and bags as small icon + number pairs."""
+    items = [f'<li>{ICON_SEAT}<b>{v["passengers"]}</b> seats</li>']
     if v["bags"]:
-        specs.append(f"{v['bags']} bags")
+        items.append(f'<li>{ICON_BAG}<b>{v["bags"]}</b> bags</li>')
+    return '<ul class="specs">' + "".join(items) + "</ul>"
+
+
+def vehicle_card(v, root):
     feats = "".join(f"<li>{E(f)}</li>" for f in v["features"])
     note = f'<p class="fleet-note">{E(v["price_note"])}</p>' if v["price_note"] else "<span></span>"
     example = f'<p class="tour-meta">{E(v["example"])}</p>' if v["example"] else ""
@@ -959,7 +991,7 @@ def vehicle_card(v, root):
         <div class="tour-body">
           <h3>{E(v['name'])}</h3>
           {example}
-          <p class="fleet-specs">{E(' · '.join(specs))}</p>
+          {vehicle_specs(v)}
           {desc}
           <ul class="check-list">{feats}</ul>
         </div>
@@ -974,7 +1006,7 @@ def vehicle_mini(v, root):
     return f"""        <a class="fleet-mini" href="{root}fleet.html">
           {vehicle_media(v, root, "mini-img")}
           <strong>{E(v['name'])}</strong>
-          <span>Up to {v['passengers']}</span>
+          {vehicle_specs(v)}
         </a>"""
 
 
@@ -984,7 +1016,7 @@ def build_fleet():
     cards = "\n".join(vehicle_card(v, root) for v in vehicles) if vehicles else \
         f'      <p class="tours-note">{T("fleet.empty")}</p>'
     body = page_hero(root, [("Home", "index.html"), ("Fleet", None)],
-                     T("fleet.title"), T("fleet.lead")) + f"""
+                     T("fleet.title"), T("fleet.lead"), photo="images/fleet-van.jpg") + f"""
 
     <section class="section">
       <div class="wrap">
@@ -1051,23 +1083,22 @@ def build_business():
                 ("trips", "Typical trips", "textarea", False, None),
                 ("notes", "Notes", "textarea", False, None)])
     body = page_hero(root, [("Home", "index.html"), ("Business", None)],
-                     T("business.title"), T("business.lead")) + f"""
+                     T("business.title"), T("business.lead"), photo="images/fleet-saloon.jpg", split=True) + f"""
 
     <section class="section">
-      <div class="wrap wrap-narrow">
-        <h2>{T("business.benefits_title")}</h2>
-        <ul class="check-list">{_list(T_lines("business.benefits"))}</ul>
-        <h2 class="h-gap">{T("business.how_title")}</h2>
-        <ol class="steps-list steps-3">{steps}
-        </ol>
-      </div>
-    </section>
-
-    <section class="section section-mist" id="account">
-      <div class="wrap wrap-narrow">
-        <h2>{T("business.form_title")}</h2>
-        <p class="form-lead">{T("business.form_lead")}</p>
+      <div class="wrap enquiry-grid">
+        <div>
+          <h2>{T("business.benefits_title")}</h2>
+          <ul class="check-list">{_list(T_lines("business.benefits"))}</ul>
+          <h2 class="h-gap">{T("business.how_title")}</h2>
+          <ol class="steps-list steps-col">{steps}
+          </ol>
+        </div>
+        <div class="form-panel" id="account">
+          <h2>{T("business.form_title")}</h2>
+          <p class="form-lead">{T("business.form_lead")}</p>
 {form}
+        </div>
       </div>
     </section>
 
@@ -1093,22 +1124,21 @@ def build_partners():
                 ("website", "Website", "text", False, "url"),
                 ("notes", "Notes", "textarea", False, None)])
     body = page_hero(root, [("Home", "index.html"), ("Partners", None)],
-                     T("partners.title"), T("partners.lead")) + f"""
+                     T("partners.title"), T("partners.lead"), photo="images/band-airport.jpg", split=True) + f"""
 
     <section class="section">
-      <div class="wrap wrap-narrow">
-        <h2>{T("partners.gets_title")}</h2>
-        <ul class="check-list">{_list(T_lines("partners.gets"))}</ul>
-        <h2 class="h-gap">{T("partners.who_title")}</h2>
-        <ul class="check-list">{_list(T_lines("partners.who"))}</ul>
-      </div>
-    </section>
-
-    <section class="section section-mist" id="partner">
-      <div class="wrap wrap-narrow">
-        <h2>{T("partners.form_title")}</h2>
-        <p class="form-lead">{T("partners.form_lead")}</p>
+      <div class="wrap enquiry-grid">
+        <div>
+          <h2>{T("partners.gets_title")}</h2>
+          <ul class="check-list">{_list(T_lines("partners.gets"))}</ul>
+          <h2 class="h-gap">{T("partners.who_title")}</h2>
+          <ul class="check-list">{_list(T_lines("partners.who"))}</ul>
+        </div>
+        <div class="form-panel" id="partner">
+          <h2>{T("partners.form_title")}</h2>
+          <p class="form-lead">{T("partners.form_lead")}</p>
 {form}
+        </div>
       </div>
     </section>
 
@@ -1148,26 +1178,25 @@ def build_help():
                      T("help.title"), T("help.lead")) + f"""
 
     <section class="section">
-      <div class="wrap wrap-narrow">
-        <h2>{T("help.faq_title")}</h2>
-        <div class="faq-list">
+      <div class="wrap enquiry-grid help-grid">
+        <div>
+          <h2>{T("help.faq_title")}</h2>
+          <div class="faq-list">
 {faq}
+          </div>
         </div>
-      </div>
-    </section>
-
-    <section class="section section-mist">
-      <div class="wrap wrap-narrow">
-        <h2>{T("help.contact_title")}</h2>
-        <p>{T("help.contact_text")}</p>
-        <ul class="help-contact">
-          <li><a class="btn btn-primary" href="tel:{E(PHONE)}">Call {E(PHONE_DISPLAY)}</a></li>
-          <li><a class="btn btn-quiet" href="{E(WHATSAPP)}" target="_blank" rel="noopener">WhatsApp</a></li>
-          <li><a class="btn btn-quiet" href="mailto:{E(EMAIL)}">{E(EMAIL)}</a></li>
-        </ul>
-        <h2 class="h-gap">{T("help.changes_title")}</h2>
-        <p>{T("help.changes_text")}</p>
-        <p><a class="btn btn-quiet" href="{E(wa)}" target="_blank" rel="noopener">WhatsApp us about a booking</a></p>
+        <div class="form-panel">
+          <h2>{T("help.contact_title")}</h2>
+          <p>{T("help.contact_text")}</p>
+          <ul class="help-contact">
+            <li><a class="btn btn-primary" href="tel:{E(PHONE)}">Call {E(PHONE_DISPLAY)}</a></li>
+            <li><a class="btn btn-quiet" href="{E(WHATSAPP)}" target="_blank" rel="noopener">WhatsApp</a></li>
+            <li><a class="btn btn-quiet" href="mailto:{E(EMAIL)}">{E(EMAIL)}</a></li>
+          </ul>
+          <h2 class="h-gap">{T("help.changes_title")}</h2>
+          <p>{T("help.changes_text")}</p>
+          <p class="help-contact"><a class="btn btn-quiet" href="{E(wa)}" target="_blank" rel="noopener">WhatsApp us about a booking</a></p>
+        </div>
       </div>
     </section>"""
     return {"help.html": page(
@@ -1294,17 +1323,25 @@ def fleet_strip():
   </section>"""
 
 
+def teaser_row(cls, photo, title_key, text_key, button_key, href):
+    img = local_photo(photo)
+    media = (f'<img class="split-img" src="{img}" alt="" loading="lazy">' if img
+             else '<div class="split-img split-panel" aria-hidden="true"></div>')
+    return f"""      <article class="split {cls}">
+        {media}
+        <div class="split-body">
+          <h2>{T(title_key)}</h2>
+          <p>{T(text_key)}</p>
+          <a class="btn btn-primary" href="{href}">{T(button_key)}</a>
+        </div>
+      </article>"""
+
+
 def teasers():
-    return f"""  <section class="section section-mist teasers" id="teasers">
-    <div class="wrap">
-      <div class="teaser">
-        <p><strong>{T("home.biz_title")}</strong> {T("home.biz_text")}</p>
-        <a class="btn btn-quiet" href="business.html">{T("home.biz_button")}</a>
-      </div>
-      <div class="teaser">
-        <p><strong>{T("home.partner_title")}</strong> {T("home.partner_text")}</p>
-        <a class="btn btn-quiet" href="partners.html">{T("home.partner_button")}</a>
-      </div>
+    return f"""  <section class="section teasers" id="teasers">
+    <div class="wrap wrap-wide splits">
+{teaser_row("split-biz", "images/fleet-saloon.jpg", "home.biz_title", "home.biz_text", "home.biz_button", "business.html")}
+{teaser_row("split-partner", "images/band-airport.jpg", "home.partner_title", "home.partner_text", "home.partner_button", "partners.html")}
     </div>
   </section>"""
 

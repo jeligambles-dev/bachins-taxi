@@ -210,7 +210,7 @@ if (form) {
   // The instant price shown at the top of step 2.
   function quote() {
     const q = fareQuote(), o = otherVehicle();
-    return o ? { title: q.title + ' · ' + o.textContent, price: '', note: "We'll confirm the price for this vehicle." } : q;
+    return o ? { title: q.title + ', ' + o.textContent, price: '', note: "We'll confirm the price for this vehicle." } : q;
   }
   function fareQuote() {
     if (mode() === 'tours') {
