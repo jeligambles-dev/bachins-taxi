@@ -1015,6 +1015,7 @@ def build_fleet():
     vehicles = fleet_published()
     cards = "\n".join(vehicle_card(v, root) for v in vehicles) if vehicles else \
         f'      <p class="tours-note">{T("fleet.empty")}</p>'
+    fleet_faq, fleet_ld = faq_block("fleet", 4, "fleet.faq_title")
     body = page_hero(root, [("Home", "index.html"), ("Fleet", None)],
                      T("fleet.title"), T("fleet.lead"), photo="images/fleet-van.jpg") + f"""
 
@@ -1026,10 +1027,12 @@ def build_fleet():
       </div>
     </section>
 
+{fleet_faq}
+
 {cta_band(root, "fleet.cta_title", "fleet.cta_text")}"""
     return {"fleet.html": page(
         root=root, active="fleet", path="fleet.html",
-        jsonld=[breadcrumb_ld([("Home", ""), ("Fleet", "fleet.html")])],
+        jsonld=[breadcrumb_ld([("Home", ""), ("Fleet", "fleet.html")]), fleet_ld],
         title="Our Fleet: Saloon, MPV, 8-Seater Van & Minibus | BCH Taxi",
         description=texts.raw("fleet.description"), body=body)}
 
@@ -1068,31 +1071,177 @@ def _list(items):
     return "".join(f"<li>{x}</li>" for x in items)
 
 
+# ── Shared page sections (business, partners, fleet, help) ─────────────────
+
+def book_link(root, service, topic=""):
+    """Homepage booking card with the service (and an optional topic for the
+    notes) filled in."""
+    q = f"service={quote(service, safe='()/')}"
+    if topic:
+        q += f"&topic={quote(topic)}"
+    return f"{root}index.html?{q}#booking"
+
+
+def service_cards(root, prefix, items, button_key):
+    """Photo cards with a title, one or two lines and a Book now button.
+    `items` is a list of (key, photo or None, service, extra_html). A card
+    with no photo file shows a plain dark panel."""
+    cards = []
+    for key, photo, service, extra in items:
+        img = local_photo(photo)
+        media = (f'<img class="svc-img" src="{root}{img}" alt="" loading="lazy">' if img
+                 else '<div class="svc-img svc-panel" aria-hidden="true"></div>')
+        title = texts.raw(f"{prefix}.{key}_title")
+        cards.append(f"""        <article class="svc-card{'' if img else ' no-photo'}">
+          {media}
+          <div class="svc-body">
+            <h3>{T(f"{prefix}.{key}_title")}</h3>
+            <p>{T(f"{prefix}.{key}_text")}</p>{extra}
+            <a class="btn btn-primary" href="{E(book_link(root, service, title))}">{T(button_key)}</a>
+          </div>
+        </article>""")
+    return '      <div class="svc-grid">\n' + "\n".join(cards) + "\n      </div>"
+
+
+def promise_row(prefix, n=3):
+    items = "".join(f'\n        <li><h3>{T(f"{prefix}.p{i}_title")}</h3><p>{T(f"{prefix}.p{i}_text")}</p></li>'
+                    for i in range(1, n + 1))
+    return f'      <ul class="promise-row">{items}\n      </ul>'
+
+
+def faq_block(prefix, n, title_key):
+    """Accordion of <prefix>.faq_q<i> / faq_a<i> plus its FAQPage JSON-LD."""
+    pairs = [(f"{prefix}.faq_q{i}", f"{prefix}.faq_a{i}") for i in range(1, n + 1)
+             if texts.raw(f"{prefix}.faq_q{i}").strip()]
+    items = "\n".join(f'          <details class="faq-item"><summary>{T(q)}</summary><p>{T(a)}</p></details>'
+                      for q, a in pairs)
+    html = f"""    <section class="section section-alt" id="faq">
+      <div class="wrap faq-split">
+        <h2>{T(title_key)}</h2>
+        <div class="faq-list">
+{items}
+        </div>
+      </div>
+    </section>"""
+    ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+        {"@type": "Question", "name": texts.raw(q),
+         "acceptedAnswer": {"@type": "Answer", "text": texts.raw(a)}} for q, a in pairs]}
+    return html, ld
+
+
+def booking_bar(root, service, title_key, button_key):
+    """Compact quote bar: sends date, from and to to the homepage booking card."""
+    return f"""
+      <form class="quote-bar" action="{root}index.html#booking" method="get">
+        <input type="hidden" name="service" value="{E(service)}">
+        <p class="quote-bar-title">{T(title_key)}</p>
+        <div class="quote-bar-fields">
+          <div class="field"><label for="qb-date">Date</label><input id="qb-date" name="date" type="date"></div>
+          <div class="field"><label for="qb-from">From</label><input id="qb-from" name="pickup" type="text" placeholder="e.g. your office"></div>
+          <div class="field"><label for="qb-to">To</label><input id="qb-to" name="destination" type="text" placeholder="e.g. the airport"></div>
+          <button type="submit" class="btn btn-primary">{T(button_key)}</button>
+        </div>
+      </form>"""
+
+
+def vehicle_grid(root):
+    """Compact vehicle cards (photo, name, seats and bags) linking to the fleet page."""
+    vehicles = fleet_published()
+    if not vehicles:
+        return f'      <p class="tours-note">{T("fleet.empty")}</p>'
+    return ('      <div class="fleet-strip-grid">\n'
+            + "\n".join(vehicle_mini(v, root) for v in vehicles) + "\n      </div>")
+
+
 def build_business():
     root = ""
-    steps = "".join(f"\n          <li><strong>{T(f'business.step{n}_title')}</strong> {T(f'business.step{n}_text')}</li>"
-                    for n in (1, 2, 3))
+    corp = "Corporate / business"
+    intercity = " ".join(f"{E(a)} {eur(p)}." for a, p in LONG_TRANSFERS[:3])
+    intercity = (f'\n            <p class="svc-prices">From Dublin Airport: {intercity}</p>' if intercity else "")
+    chauffeur = service_cards(root, "business", [
+        ("c1", "images/band-airport.jpg", "Airport transfer", ""),
+        ("c2", "images/fleet-saloon.jpg", corp, ""),
+        ("c3", "images/hero.jpg", corp, ""),
+        ("c4", None, corp, ""),
+        ("c5", "images/fleet-mpv.jpg", "Point-to-point", intercity),
+    ], "business.book_button")
+    crew = service_cards(root, "business", [
+        ("e1", None, corp, ""),
+        ("e2", None, corp, ""),
+        ("e3", None, corp, ""),
+        ("e4", "images/fleet-minibus.jpg", group_service(), ""),
+    ], "business.book_button")
+    options = _list(T_lines("business.special_options"))
     form = enquiry_form(
         "biz-form", subject="New business account enquiry from", subject_field="company",
         kind="Business account", button_key="business.form_button", legal_key="business.form_legal",
-        fields=[("company", "Company", "text", True, "organization"),
-                ("name", "Your name", "text", True, "name"),
+        fields=[("name", "Your name", "text", True, "name"),
+                ("company", "Company", "text", True, "organization"),
                 ("email", "Email", "email", True, "email"),
                 ("phone", "Phone", "tel", True, None),
-                ("team", "Team size", "text", False, None),
-                ("trips", "Typical trips", "textarea", False, None),
-                ("notes", "Notes", "textarea", False, None)])
+                ("reference", "Your reference or PO number", "text", False, None),
+                ("message", "What do you need?", "textarea", False, None)])
+    faq, faq_ld = faq_block("business", 7, "business.faq_title")
+    jumps = "".join(f'<li><a href="#{a}">{T(k)}</a></li>' for a, k in
+                    (("chauffeur", "business.chauffeur_title"), ("crew", "business.crew_title"),
+                     ("special", "business.special_title")))
     body = page_hero(root, [("Home", "index.html"), ("Business", None)],
-                     T("business.title"), T("business.lead"), photo="images/fleet-saloon.jpg", split=True) + f"""
+                     T("business.title"), T("business.lead"),
+                     extra=booking_bar(root, corp, "business.bar_title", "business.bar_button"),
+                     photo="images/fleet-saloon.jpg") + f"""
+
+    <section class="section offer">
+      <div class="wrap offer-grid">
+        <div>
+          <h2>{T("business.offer_title")}</h2>
+          <p class="lead-soft">{T("business.offer_text")}</p>
+          <ul class="jump-links">{jumps}</ul>
+        </div>
+        <div class="panel">
+          <h3>{T("business.built_title")}</h3>
+          <p>{T("business.built_text")}</p>
+        </div>
+      </div>
+      <div class="wrap">
+{promise_row("business")}
+      </div>
+    </section>
+
+    <section class="section section-alt" id="chauffeur">
+      <div class="wrap">
+        <div class="section-head"><h2>{T("business.chauffeur_title")}</h2><p>{T("business.chauffeur_text")}</p></div>
+{chauffeur}
+      </div>
+    </section>
 
     <section class="section">
+      <div class="wrap">
+        <h2>{T("business.why_title")}</h2>
+        <ul class="check-list check-grid">{_list(T_lines("business.benefits"))}</ul>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="crew">
+      <div class="wrap">
+        <div class="section-head"><h2>{T("business.crew_title")}</h2><p>{T("business.crew_text")}</p></div>
+{crew}
+      </div>
+    </section>
+
+    <section class="section" id="vehicles">
+      <div class="wrap">
+        <div class="section-head"><h2>{T("business.fleet_title")}</h2><p>{T("business.fleet_text")}</p></div>
+{vehicle_grid(root)}
+        <p class="tours-foot"><a class="link-strong" href="fleet.html">{T("business.fleet_link")}</a></p>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="special">
       <div class="wrap enquiry-grid">
         <div>
-          <h2>{T("business.benefits_title")}</h2>
-          <ul class="check-list">{_list(T_lines("business.benefits"))}</ul>
-          <h2 class="h-gap">{T("business.how_title")}</h2>
-          <ol class="steps-list steps-col">{steps}
-          </ol>
+          <h2>{T("business.special_title")}</h2>
+          <p class="lead-soft">{T("business.special_text")}</p>
+          <ul class="check-list special-list">{options}</ul>
         </div>
         <div class="form-panel" id="account">
           <h2>{T("business.form_title")}</h2>
@@ -1102,11 +1251,11 @@ def build_business():
       </div>
     </section>
 
-{cta_band(root)}"""
+{faq}"""
     return {"business.html": page(
         root=root, active="business", path="business.html",
-        jsonld=[breadcrumb_ld([("Home", ""), ("Business", "business.html")])],
-        title="Business Travel & Corporate Accounts | BCH Taxi",
+        jsonld=[breadcrumb_ld([("Home", ""), ("Business", "business.html")]), faq_ld],
+        title="Business Travel, Chauffeur & Staff Transport | BCH Taxi",
         description=texts.raw("business.description"), body=body)}
 
 
@@ -1123,29 +1272,58 @@ def build_partners():
                 ("phone", "Phone", "tel", True, None),
                 ("website", "Website", "text", False, "url"),
                 ("notes", "Notes", "textarea", False, None)])
+    steps = "".join(f"\n          <li><strong>{T(f'partners.step{n}_title')}</strong> {T(f'partners.step{n}_text')}</li>"
+                    for n in (1, 2, 3))
+    gets = "".join(f'\n        <li><p>{x}</p></li>' for x in T_lines("partners.gets"))
+    faq, faq_ld = faq_block("partners", 3, "partners.faq_title")
     body = page_hero(root, [("Home", "index.html"), ("Partners", None)],
                      T("partners.title"), T("partners.lead"), photo="images/band-airport.jpg", split=True) + f"""
 
     <section class="section">
-      <div class="wrap enquiry-grid">
+      <div class="wrap">
+        <h2>{T("partners.gets_title")}</h2>
+        <ul class="promise-row promise-plain">{gets}
+        </ul>
+      </div>
+    </section>
+
+    <section class="section section-alt">
+      <div class="wrap offer-grid">
         <div>
-          <h2>{T("partners.gets_title")}</h2>
-          <ul class="check-list">{_list(T_lines("partners.gets"))}</ul>
-          <h2 class="h-gap">{T("partners.who_title")}</h2>
+          <h2>{T("partners.who_title")}</h2>
           <ul class="check-list">{_list(T_lines("partners.who"))}</ul>
         </div>
-        <div class="form-panel" id="partner">
+        <div>
+          <h2>{T("partners.how_title")}</h2>
+          <ol class="steps-list steps-col">{steps}
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head"><h2>{T("business.fleet_title")}</h2><p>{T("business.fleet_text")}</p></div>
+{vehicle_grid(root)}
+      </div>
+    </section>
+
+    <section class="section section-alt" id="partner">
+      <div class="wrap enquiry-grid">
+        <div>
           <h2>{T("partners.form_title")}</h2>
-          <p class="form-lead">{T("partners.form_lead")}</p>
+          <p class="lead-soft">{T("partners.form_lead")}</p>
+        </div>
+        <div class="form-panel">
 {form}
         </div>
       </div>
     </section>
 
-{cta_band(root)}"""
+{faq}"""
     return {"partners.html": page(
         root=root, active="partners", path="partners.html",
-        jsonld=[breadcrumb_ld([("Home", ""), ("Partners", "partners.html")])],
+        jsonld=[breadcrumb_ld([("Home", ""), ("Partners", "partners.html")]), faq_ld],
         title="Partner With BCH Taxi | Hotels, Agents & Event Planners",
         description=texts.raw("partners.description"), body=body)}
 
@@ -1174,18 +1352,22 @@ def build_help():
         {"@type": "Question", "name": texts.raw(q),
          "acceptedAnswer": {"@type": "Answer", "text": texts.raw(a)}} for q, a in pairs]}
     wa = f"{WHATSAPP}?text={quote('Hi BCH Taxi, I need to change a booking.')}"
+    hrefs = ["#faq", "#faq", "fleet.html#faq", "business.html#faq", "partners.html#faq", "#contact"]
+    topics = "".join(f'<li><a href="{hrefs[i] if i < len(hrefs) else "#faq"}">{t}</a></li>'
+                     for i, t in enumerate(T_lines("help.topics")))
     body = page_hero(root, [("Home", "index.html"), ("Help", None)],
-                     T("help.title"), T("help.lead")) + f"""
+                     T("help.title"), T("help.lead"),
+                     extra=f'\n      <ul class="jump-links help-topics" aria-label="{T("help.topics_title")}">{topics}</ul>') + f"""
 
     <section class="section">
-      <div class="wrap enquiry-grid help-grid">
+      <div class="wrap enquiry-grid help-grid" id="faq">
         <div>
           <h2>{T("help.faq_title")}</h2>
           <div class="faq-list">
 {faq}
           </div>
         </div>
-        <div class="form-panel">
+        <div class="form-panel" id="contact">
           <h2>{T("help.contact_title")}</h2>
           <p>{T("help.contact_text")}</p>
           <ul class="help-contact">
@@ -1249,16 +1431,22 @@ def apply_index_photos(s):
     return s
 
 
-BANDS = ("airport", "tours", "pub", "golf")
+# Homepage service bands and the photo each one uses: its own file first
+# (drop images/band-<name>.jpg in to replace it), else a stand-in photo.
+BANDS = {
+    "airport": ("images/band-airport.jpg",),
+    "intercity": ("images/band-intercity.jpg", "images/hero.jpg"),
+    "tours": ("images/band-tours.jpg",),
+    "events": ("images/band-events.jpg", "images/band-pub.jpg"),
+}
 KIND_LABEL = {"day": "Day tours", "pub": "Pub tours", "golf": "Golf trips"}
 
 
 def band_image(band):
-    """Photo for a homepage service band: images/band-<name>.jpg if that file
-    exists. Without it the band falls back to a plain Ink panel (CSS), so a
-    missing photo never breaks the page or the link check."""
-    rel = f"images/band-{band}.jpg"
-    if not (ROOT_DIR / rel).is_file():
+    """Photo for a homepage service band, or "" for a plain Ink panel (CSS),
+    so a missing photo never breaks the page or the link check."""
+    rel = next((r for r in BANDS[band] if local_photo(r)), None)
+    if not rel:
         return ""
     return f'          <img class="band-img" src="{rel}" alt="" loading="lazy">'
 

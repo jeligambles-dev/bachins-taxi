@@ -154,9 +154,11 @@ def test_business_and_partner_forms(tmp_path):
     b = read(tmp_path, "business.html")
     assert 'data-subject="New business account enquiry from"' in b
     assert 'data-subject-field="company"' in b
-    for n in ("company", "name", "email", "phone", "team", "trips", "notes", "_honey"):
+    for n in ("company", "name", "email", "phone", "reference", "message", "_honey"):
         assert f'name="{n}"' in b, n
-    assert b.count("<li>") >= 5 and "<ol" in b
+    # Ava-style sections: service cards that prefill the booking card, and a FAQ.
+    assert b.count('class="svc-card') >= 9 and "index.html?service=" in b
+    assert b.count('<details class="faq-item">') >= 6
     p = read(tmp_path, "partners.html")
     assert 'data-subject="New partner enquiry from"' in p
     assert 'data-subject-field="business"' in p

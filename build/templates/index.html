@@ -218,10 +218,13 @@
     </div>
   </section>
 
-  <!-- Service bands -->
+  <!-- Services: large photo bands -->
   <section class="section bands" id="services-bands">
     <div class="wrap wrap-wide">
-      <h2><!-- @t:home.bands_title -->How can we help?<!-- /@t:home.bands_title --></h2>
+      <div class="bands-head">
+        <h2><!-- @t:home.bands_title -->Private transport across Ireland<!-- /@t:home.bands_title --></h2>
+        <p><!-- @t:home.intro_text -->One local team for taxis, airport runs, private tours and group trips, with fixed prices and a wheelchair-accessible 8-seater.<!-- /@t:home.intro_text --></p>
+      </div>
       <div class="band-grid">
         <article class="band band-airport">
 <!-- @band-airport -->
@@ -232,54 +235,38 @@
             <button type="button" class="btn btn-primary" data-service="Airport transfer"><!-- @t:home.band_airport_button -->Book a transfer<!-- /@t:home.band_airport_button --></button>
           </div>
         </article>
+        <article class="band band-intercity">
+<!-- @band-intercity -->
+<!-- /@band-intercity -->
+          <div class="band-body">
+            <h3><!-- @t:home.band_intercity_title -->Intercity transfers<!-- /@t:home.band_intercity_title --></h3>
+            <p><!-- @t:home.band_intercity_text -->Door to door to Galway, Cork and anywhere in Ireland, at one fixed price.<!-- /@t:home.band_intercity_text --></p>
+            <button type="button" class="btn btn-light" data-service="Point-to-point"><!-- @t:home.band_intercity_button -->Book a transfer<!-- /@t:home.band_intercity_button --></button>
+          </div>
+        </article>
         <article class="band band-tours">
 <!-- @band-tours -->
 <!-- /@band-tours -->
           <div class="band-body">
             <h3><!-- @t:home.band_tours_title -->Private day tours<!-- /@t:home.band_tours_title --></h3>
-            <p><!-- @t:home.band_tours_text -->The Cliffs of Moher, Kerry, the Causeway and more, at your own pace.<!-- /@t:home.band_tours_text --></p>
-            <a href="#tours" class="btn btn-light" data-tour-tab="day"><!-- @t:home.band_tours_button -->See day tours<!-- /@t:home.band_tours_button --></a>
+            <p><!-- @t:home.band_tours_text -->The Cliffs of Moher, Kerry, the Causeway, country pubs and golf, at your own pace.<!-- /@t:home.band_tours_text --></p>
+            <div class="band-actions">
+              <a href="#tours" class="btn btn-light" data-tour-tab="day"><!-- @t:home.band_tours_button -->See day tours<!-- /@t:home.band_tours_button --></a>
+              <a href="#tours" class="band-link" data-tour-tab="pub"><!-- @t:home.band_pub_button -->Pub tours<!-- /@t:home.band_pub_button --></a>
+              <a href="#tours" class="band-link" data-tour-tab="golf"><!-- @t:home.band_golf_button -->Golf trips<!-- /@t:home.band_golf_button --></a>
+            </div>
           </div>
         </article>
-        <article class="band band-pub">
-<!-- @band-pub -->
-<!-- /@band-pub -->
+        <article class="band band-events">
+<!-- @band-events -->
+<!-- /@band-events -->
           <div class="band-body">
-            <h3><!-- @t:home.band_pub_title -->Rural pub tours<!-- /@t:home.band_pub_title --></h3>
-            <p><!-- @t:home.band_pub_text -->Country pubs and live music. Your driver gets everyone home.<!-- /@t:home.band_pub_text --></p>
-            <a href="#tours" class="btn btn-light" data-tour-tab="pub"><!-- @t:home.band_pub_button -->See pub tours<!-- /@t:home.band_pub_button --></a>
-          </div>
-        </article>
-        <article class="band band-golf">
-<!-- @band-golf -->
-<!-- /@band-golf -->
-          <div class="band-body">
-            <h3><!-- @t:home.band_golf_title -->Golf trips<!-- /@t:home.band_golf_title --></h3>
-            <p><!-- @t:home.band_golf_text -->Links and parkland courses, with room for clubs and bags.<!-- /@t:home.band_golf_text --></p>
-            <a href="#tours" class="btn btn-light" data-tour-tab="golf"><!-- @t:home.band_golf_button -->See golf trips<!-- /@t:home.band_golf_button --></a>
+            <h3><!-- @t:home.band_events_title -->Events and groups<!-- /@t:home.band_events_title --></h3>
+            <p><!-- @t:home.band_events_text -->Weddings, nights out and team events. One booking for the whole group.<!-- /@t:home.band_events_text --></p>
+            <button type="button" class="btn btn-light" data-service="Group transport (9+)"><!-- @t:home.band_events_button -->Ask about groups<!-- /@t:home.band_events_button --></button>
           </div>
         </article>
       </div>
-    </div>
-  </section>
-
-  <!-- Tours -->
-  <section class="section section-alt tours" id="tours">
-    <div class="wrap">
-      <div class="section-head">
-        <h2><!-- @t:home.tours_title -->Tours and prices<!-- /@t:home.tours_title --></h2>
-        <p><!-- @t:home.tours_intro -->Pickup anywhere in Dublin or Meath. One price covers the whole vehicle.<!-- /@t:home.tours_intro --></p>
-      </div>
-      <div class="tour-tabs" aria-label="Tour type" role="group">
-        <button type="button" aria-pressed="true" data-kind="day"><!-- @t:home.tours_tab_1 -->Day tours<!-- /@t:home.tours_tab_1 --></button>
-        <button type="button" aria-pressed="false" data-kind="pub"><!-- @t:home.tours_tab_2 -->Pub tours<!-- /@t:home.tours_tab_2 --></button>
-        <button type="button" aria-pressed="false" data-kind="golf"><!-- @t:home.tours_tab_3 -->Golf<!-- /@t:home.tours_tab_3 --></button>
-      </div>
-      <div class="tours-grid tours-scroll">
-<!-- @tours-grid -->
-<!-- /@tours-grid -->
-      </div>
-      <p class="tours-foot"><a class="link-strong" href="tours.html"><!-- @t:home.tours_all_link -->See all tours<!-- /@t:home.tours_all_link --></a> <span><!-- @t:home.tours_text -->Want a custom route or a multi-day trip?<!-- /@t:home.tours_text --> <a href="#booking"><!-- @t:home.tours_link -->Ask us for a quote.<!-- /@t:home.tours_link --></a></span></p>
     </div>
   </section>
 
@@ -287,28 +274,28 @@
 <!-- @fleet-strip -->
 <!-- /@fleet-strip -->
 
-  <!-- Business and partner teasers -->
-<!-- @teasers -->
-<!-- /@teasers -->
-
-  <!-- Why BCH -->
+  <!-- Tailored trips -->
   <section class="section section-alt why" id="about">
     <div class="wrap why-grid">
       <div>
-        <h2><!-- @t:home.about_title -->Why travel with BCH Taxi<!-- /@t:home.about_title --></h2>
-        <ul class="why-list">
-          <li><strong><!-- @t:home.services_heading_1 -->Up to 8 passengers<!-- /@t:home.services_heading_1 --></strong> <span><!-- @t:home.services_text_1 -->A spacious Ford Transit Custom with space for luggage.<!-- /@t:home.services_text_1 --></span></li>
-          <li><strong><!-- @t:home.services_heading_2 -->Wheelchair accessible<!-- /@t:home.services_heading_2 --></strong> <span><!-- @t:home.services_text_2 -->A built-in ramp and secure fastening points.<!-- /@t:home.services_text_2 --></span></li>
-          <li><strong><!-- @t:home.services_heading_3 -->Open 24/7<!-- /@t:home.services_heading_3 --></strong> <span><!-- @t:home.services_text_3 -->Early flights and late nights are no problem.<!-- /@t:home.services_text_3 --></span></li>
-          <li><strong><!-- @t:home.services_heading_4 -->Fixed prices<!-- /@t:home.services_heading_4 --></strong> <span><!-- @t:home.services_text_4 -->You know the price before you travel. No meter.<!-- /@t:home.services_text_4 --></span></li>
+        <h2><!-- @t:home.about_title -->Trips shaped around you<!-- /@t:home.about_title --></h2>
+        <ul class="feature-grid">
+          <li><strong><!-- @t:home.services_heading_1 -->Wheelchair accessible<!-- /@t:home.services_heading_1 --></strong> <span><!-- @t:home.services_text_1 -->Our 8-seater van has a built-in ramp.<!-- /@t:home.services_text_1 --></span></li>
+          <li><strong><!-- @t:home.services_heading_2 -->Family friendly<!-- /@t:home.services_heading_2 --></strong> <span><!-- @t:home.services_text_2 -->Tell us about child seats when you book.<!-- /@t:home.services_text_2 --></span></li>
+          <li><strong><!-- @t:home.services_heading_3 -->Flexible stops<!-- /@t:home.services_heading_3 --></strong> <span><!-- @t:home.services_text_3 -->Extra pickups and stops on the way.<!-- /@t:home.services_text_3 --></span></li>
+          <li><strong><!-- @t:home.services_heading_4 -->Room for luggage<!-- /@t:home.services_heading_4 --></strong> <span><!-- @t:home.services_text_4 -->Suitcases, buggies and golf bags.<!-- /@t:home.services_text_4 --></span></li>
         </ul>
       </div>
       <img src="images/taxi.jpg" alt="BCH Taxi wheelchair-accessible 8-seater Ford Transit Custom" loading="lazy" width="899" height="658">
     </div>
   </section>
 
+  <!-- Business and partner teasers -->
+<!-- @teasers -->
+<!-- /@teasers -->
+
   <!-- Reviews -->
-  <section class="section reviews" id="reviews">
+  <section class="section section-alt reviews" id="reviews">
     <div class="wrap">
       <h2><!-- @t:home.reviews_title -->What passengers say<!-- /@t:home.reviews_title --></h2>
       <div class="reviews-grid">
@@ -325,6 +312,26 @@
           <figcaption><!-- @t:home.reviews_review_name_3 -->Ciara O'B.<!-- /@t:home.reviews_review_name_3 -->, <span><!-- @t:home.reviews_review_source_3 -->Dunshaughlin<!-- /@t:home.reviews_review_source_3 --></span></figcaption>
         </figure>
       </div>
+    </div>
+  </section>
+
+  <!-- Tours -->
+  <section class="section tours" id="tours">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><!-- @t:home.tours_title -->Discover Ireland: tours and prices<!-- /@t:home.tours_title --></h2>
+        <p><!-- @t:home.tours_intro -->Pickup anywhere in Dublin or Meath. One price covers the whole vehicle.<!-- /@t:home.tours_intro --></p>
+      </div>
+      <div class="tour-tabs" aria-label="Tour type" role="group">
+        <button type="button" aria-pressed="true" data-kind="day"><!-- @t:home.tours_tab_1 -->Day tours<!-- /@t:home.tours_tab_1 --></button>
+        <button type="button" aria-pressed="false" data-kind="pub"><!-- @t:home.tours_tab_2 -->Pub tours<!-- /@t:home.tours_tab_2 --></button>
+        <button type="button" aria-pressed="false" data-kind="golf"><!-- @t:home.tours_tab_3 -->Golf<!-- /@t:home.tours_tab_3 --></button>
+      </div>
+      <div class="tours-grid tours-scroll">
+<!-- @tours-grid -->
+<!-- /@tours-grid -->
+      </div>
+      <p class="tours-foot"><a class="link-strong" href="tours.html"><!-- @t:home.tours_all_link -->See all tours<!-- /@t:home.tours_all_link --></a> <span><!-- @t:home.tours_text -->Want a custom route or a multi-day trip?<!-- /@t:home.tours_text --> <a href="#booking"><!-- @t:home.tours_link -->Ask us for a quote.<!-- /@t:home.tours_link --></a></span></p>
     </div>
   </section>
 

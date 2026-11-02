@@ -325,7 +325,6 @@ body:has(.nav-links.open) { overflow: hidden; }
 /* ── Service bands: full-width photos ───────────────────────────────────── */
 .bands { padding: 12px 0 8px; }
 .bands .wrap { padding: 0 8px; }
-.bands h2 { padding: 20px 8px 4px; margin-bottom: 8px; }
 .band-grid { display: grid; gap: 8px; }
 .band {
   position: relative; overflow: hidden; isolation: isolate;
@@ -348,7 +347,7 @@ body:has(.nav-links.open) { overflow: hidden; }
 @media (min-width: 900px) {
   .bands { padding: 16px 0 8px; }
   .bands .wrap { padding: 0 16px; }
-  .bands h2 { padding: 40px 16px 6px; }
+
   .band-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .band { min-height: 380px; border-radius: 22px; }
   .band-pub .band-img { object-position: 50% 60%; }
@@ -529,4 +528,23 @@ body.modal-open { overflow: hidden; }
 @media (min-width: 640px) {
   .tm-body .field-row { grid-template-columns: 1fr 1fr; gap: 12px; }
   .tm-head, .tm-body { padding-left: 24px; padding-right: 24px; }
+}
+
+/* ── Home: services intro, band links, tailored-trip features ───────────── */
+.bands-head { padding: 20px 8px 6px; }
+.bands-head h2 { padding: 0; margin-bottom: 6px; }
+.bands-head p { color: var(--text-soft); }
+.band-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; }
+.band-link { display: inline-flex; align-items: center; min-height: 44px; color: #fff; font-weight: 600; }
+.band-link:hover { color: var(--taxi); }
+.feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.feature-grid li { background: var(--surface); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 2px; }
+.feature-grid strong { font-weight: 700; }
+.feature-grid span { color: var(--text-soft); font-size: .95rem; line-height: 1.45; }
+@media (min-width: 900px) { .bands-head { padding: 40px 16px 8px; } }
+/* Phones: title and button only, so the photo shows above the text. */
+@media (max-width: 599px) {
+  .band p { display: none; }
+  .band h3 { margin-bottom: 10px; }
+  .band:has(.band-img)::before { background: linear-gradient(180deg, rgba(8, 26, 21, 0) 30%, rgba(8, 26, 21, .6) 55%, rgba(8, 26, 21, .95) 85%); }
 }

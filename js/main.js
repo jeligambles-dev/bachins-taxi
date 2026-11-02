@@ -299,6 +299,13 @@ if (form) {
   if (vehicleSel && wantedVehicle && [...vehicleSel.options].some(o => o.value === wantedVehicle)) vehicleSel.value = wantedVehicle;
   if (wanted && [...form.service.options].some(o => o.value === wanted)) pickService(wanted);
   else syncCard();
+  // From the business quote bar and the "Book now" cards on other pages.
+  const params = new URLSearchParams(location.search);
+  if (params.get('date')) form.date.value = params.get('date');
+  if (params.get('pickup')) form.pickup.value = params.get('pickup');
+  if (params.get('destination')) form.destination.value = params.get('destination');
+  if (params.get('topic')) form.message.value = 'About: ' + params.get('topic');
+  if (params.get('date') || params.get('pickup') || params.get('destination')) syncCard();
 }
 
 // Business and partner enquiry forms: sent like the booking forms, to the same inbox.
