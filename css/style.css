@@ -244,8 +244,8 @@ button { cursor: pointer; }
   .hero-bg { position: absolute; inset: 0; height: auto; background-position: center 60%; }
   .hero-bg::after { content: ""; position: absolute; inset: 0; background: rgba(14, 42, 34, .6); }
   .hero-inner {
-    width: 100%; max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 auto; padding: 56px var(--gutter);
-    display: grid; grid-template-columns: 1fr 480px; gap: 56px; align-items: center;
+    width: 100%; max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 auto; padding: 40px var(--gutter);
+    display: grid; grid-template-columns: 1fr 500px; gap: 48px; align-items: center;
   }
   .hero-intro { display: block; color: #fff; }
   .hero-display { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.4rem, 1.6rem + 2vw, 3.25rem); line-height: 1.06; letter-spacing: -0.02em; max-width: 13ch; }

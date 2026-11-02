@@ -72,17 +72,17 @@ TEXTS = {
     "footer.tagline": ("Footer", "Bottom line", "Wheelchair-accessible 8-seater. Dublin, Meath and all of Ireland."),
 
     # ── Tours page ───────────────────────────────────────────────────────────
-    "tours.title": ("Tours page", "Main heading", "Private Tours of Ireland"),
+    "tours.title": ("Tours page", "Main heading", "Private tours of Ireland"),
     "tours.lead": ("Tours page", "Intro paragraph (follows the number of tours, e.g. \"Ten full-day private tours\")",
                    "from Dublin and Meath in our 8-seater. One price covers the whole vehicle, so the more of you there are, the better the value."),
-    "tours.multi_title": ("Tours page", "Multi-day promo: heading", "Multi-Day Tours"),
+    "tours.multi_title": ("Tours page", "Multi-day promo: heading", "Multi-day tours"),
     "tours.multi_before": ("Tours page", "Multi-day promo: text before the daily rate",
                            "Keep the same driver and van for your whole trip, from"),
     "tours.multi_after": ("Tours page", "Multi-day promo: text after the daily rate",
                           "per day. See our sample routes or plan your own."),
 
     # ── Pub tours page ───────────────────────────────────────────────────────
-    "pub.title": ("Pub tours page", "Main heading", "Rural Pub Tours from Dublin & Meath"),
+    "pub.title": ("Pub tours page", "Main heading", "Rural pub tours from Dublin and Meath"),
     "pub.lead": ("Pub tours page", "Intro paragraph",
                  "Country pubs, great pints and no one drawing the short straw. Your driver gets everyone home safely, in our wheelchair-accessible 8-seater."),
     "pub.description": ("Pub tours page", "Search-engine description",
@@ -94,7 +94,7 @@ TEXTS = {
                   "New trips are on the way. Tell us what you have in mind and we will plan it for you."),
 
     # ── Golf trips page ──────────────────────────────────────────────────────
-    "golf.title": ("Golf trips page", "Main heading", "Golf Trips from Dublin & Meath"),
+    "golf.title": ("Golf trips page", "Main heading", "Golf trips from Dublin and Meath"),
     "golf.lead": ("Golf trips page", "Intro paragraph",
                   "Links courses and parkland favourites with a private driver and room for clubs and bags. One fixed price per trip, for up to 8 golfers."),
     "golf.description": ("Golf trips page", "Search-engine description",
@@ -106,7 +106,7 @@ TEXTS = {
                    "New trips are on the way. Tell us what you have in mind and we will plan it for you."),
 
     # ── Multi-day page ───────────────────────────────────────────────────────
-    "multi.title": ("Multi-day page", "Main heading", "Multi-Day Private Tours of Ireland"),
+    "multi.title": ("Multi-day page", "Main heading", "Multi-day private tours of Ireland"),
     "multi.lead_before": ("Multi-day page", "Intro: text before the daily rate",
                           "Your own driver and wheelchair-accessible 8-seater for the whole trip, from"),
     "multi.lead_after": ("Multi-day page", "Intro: text after the daily rate",
@@ -121,7 +121,7 @@ TEXTS = {
                        "Tell us your dates, group size and the places on your list, and we'll put together a route and a fixed price."),
 
     # ── Price calculator page ────────────────────────────────────────────────
-    "calc.title": ("Calculator page", "Main heading", "Tour & Taxi Price Calculator"),
+    "calc.title": ("Calculator page", "Main heading", "Tour and taxi price calculator"),
     "calc.lead": ("Calculator page", "Intro paragraph",
                   "Pick a tour, a transfer or a multi-day trip and see your price instantly. Every price is for the whole vehicle, the same for 1 passenger or 8."),
     "calc.row1_desc": ("Calculator page", "Step 1 description", "A full-day private tour from Dublin or Meath."),
@@ -152,7 +152,7 @@ TEXTS = {
                         "We confirm availability and a final fixed price. You pay on the day."),
 
     # ── Destinations page ────────────────────────────────────────────────────
-    "dest.title": ("Destinations page", "Main heading", "Where Can We Take You?"),
+    "dest.title": ("Destinations page", "Main heading", "Where can we take you?"),
     "dest.lead": ("Destinations page", "Intro paragraph",
                   "Ireland's best-loved places, grouped by region, with approximate driving times from Dublin. Tap any place to see the full tour."),
     "dest.note_before": ("Destinations page", "Note: text before the \"Ask us\" link",
@@ -161,7 +161,7 @@ TEXTS = {
                         ", we go anywhere in Ireland."),
 
     # ── Blog page ────────────────────────────────────────────────────────────
-    "blog.title": ("Blog page", "Main heading", "Ireland Travel Guides & Tips"),
+    "blog.title": ("Blog page", "Main heading", "Ireland travel guides and tips"),
     "blog.lead": ("Blog page", "Intro paragraph",
                   "Day trip ideas, airport advice and practical tips for getting around Ireland."),
 }

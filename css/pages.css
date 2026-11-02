@@ -78,7 +78,7 @@
 .multi-head h3 { font-size: 1.35rem; margin-top: 2px; }
 .multi-head p { color: var(--ink-soft); margin: 6px 0 14px; }
 .multi-head .tour-meta { margin: 0; }
-.multi-days { display: grid; gap: 8px; flex: 1; font-size: .95rem; }
+.multi-days { display: grid; gap: 8px; flex: 1; align-content: start; font-size: .95rem; }
 .multi-days li { display: grid; grid-template-columns: 52px 1fr; gap: 8px; }
 .multi-days strong { font-weight: 600; }
 .multi-card .tour-foot { padding: 18px 0 0; margin-top: 14px; border-top: 1px solid var(--line); }

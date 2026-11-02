@@ -77,8 +77,8 @@ KIND_ORDER = ("day", "pub", "golf")
 # Page that lists each kind, with its breadcrumb name and nav key.
 KIND_PAGE = {
     "day": ("tours.html", "Tours", "tours"),
-    "pub": ("pub-tours.html", "Pub Tours", "pub"),
-    "golf": ("golf-trips.html", "Golf Trips", "golf"),
+    "pub": ("pub-tours.html", "Pub tours", "pub"),
+    "golf": ("golf-trips.html", "Golf trips", "golf"),
 }
 KIND_SUFFIX = {"day": "Private Tour", "pub": "Rural Pub Tour", "golf": "Golf Trip"}
 KIND_NOUN = {"day": "day tour", "pub": "rural pub tour", "golf": "golf trip"}
@@ -497,7 +497,7 @@ def build_tour_pages():
     </section>
 """ if also else ""
         body = page_hero(root, [(n, (root + h) if h else None) for n, h in crumbs],
-                         E(t["name"]) + " " + suffix,
+                         E(t["name"]) + " " + suffix.lower(),
                          E(t["desc"])) + f"""
 
     <section class="section tour-detail">
@@ -635,7 +635,7 @@ def build_tours_hub():
 
 def build_multi_day():
     root = ""
-    crumbs = [("Home", "index.html"), ("Multi-Day Tours", None)]
+    crumbs = [("Home", "index.html"), ("Multi-day tours", None)]
     notes = "".join(f"\n          <li>{x}</li>" for x in T_lines("multi.notes"))
     body = page_hero(root, crumbs, T("multi.title"),
                      f"{T('multi.lead_before')} {eur(MULTI_DAY_RATE)} {T('multi.lead_after')}") + f"""
@@ -658,7 +658,7 @@ def build_multi_day():
 {cta_band(root, "multi.cta_title", "multi.cta_text")}"""
     return {"multi-day-tours.html": page(
         root=root, active="multi", path="multi-day-tours.html",
-        jsonld=[breadcrumb_ld([("Home", ""), ("Multi-Day Tours", "multi-day-tours.html")])],
+        jsonld=[breadcrumb_ld([("Home", ""), ("Multi-day tours", "multi-day-tours.html")])],
         title="Multi-Day Private Tours of Ireland | BCH Taxi",
         description=f"Private multi-day tours of Ireland with your own driver, from {eur(MULTI_DAY_RATE)} per day for up to {MAX_PASSENGERS} people. Sample routes: West Coast, Kerry, Causeway Coast and the Wild Atlantic Way.",
         body=body)}
@@ -666,7 +666,7 @@ def build_multi_day():
 
 def build_calculator():
     root = ""
-    crumbs = [("Home", "index.html"), ("Price Calculator", None)]
+    crumbs = [("Home", "index.html"), ("Price calculator", None)]
     calc_tours = [t for t in published("day") if t["price"] is not None]
     data = {
         "tours": [{"slug": t["slug"], "name": t["name"], "price": t["price"]} for t in calc_tours],
@@ -767,7 +767,7 @@ def build_calculator():
     </section>"""
     return {"price-calculator.html": page(
         root=root, active="prices", path="price-calculator.html",
-        jsonld=[breadcrumb_ld([("Home", ""), ("Price Calculator", "price-calculator.html")])],
+        jsonld=[breadcrumb_ld([("Home", ""), ("Price calculator", "price-calculator.html")])],
         title="Tour & Taxi Price Calculator | Instant Quote | BCH Taxi",
         description=f"Work out the price of your Ireland day tour, multi-day trip or Dublin Airport transfer instantly. Per-vehicle prices for up to {MAX_PASSENGERS} passengers.",
         body=body, extra_js=f'\n  <script src="{root}{asset("js/calculator.js")}"></script>')}
