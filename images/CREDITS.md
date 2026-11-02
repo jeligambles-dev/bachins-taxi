@@ -3,3 +3,7 @@ Photos from Unsplash (Unsplash License: free for commercial use, no attribution 
 - band-tours.jpg — https://unsplash.com/photos/nNfIwdHgCyI (Cliffs of Moher at sunset)
 - band-pub.jpg — https://unsplash.com/photos/8A4ZnQ9vxYg (live trad music, Temple Bar, Dublin)
 - band-golf.jpg — https://unsplash.com/photos/SiqlWDsfmng (clifftop golf links by the ocean; not in Ireland)
+- fleet-saloon.jpg — https://unsplash.com/photos/YYS-Otg-Y6c (Martin Katler; black Mercedes saloon)
+- fleet-mpv.jpg — https://unsplash.com/photos/PNW4oeltJGo (William G; dark Mercedes van)
+- fleet-minibus.jpg — https://unsplash.com/photos/p_ILi6tlMwM (Fachy Marín; Mercedes Sprinter)
+- fleet-van.jpg — BCH Taxi's own photo (images/taxi.jpg), cropped
