@@ -21,7 +21,7 @@ MAX_PASSENGERS = 8
 # name, county/region, price, favourite, duration, approx drive from Dublin,
 # short description, highlights, longer intro
 TOURS = [
-    dict(kind="day", slug="giants-causeway", name="Giant's Causeway", region="Co. Antrim · Northern Ireland", area="North",
+    dict(kind="day", slug="giants-causeway", name="Giant's Causeway", region="Co. Antrim, Northern Ireland", area="North",
          price=600, fav=True, duration="12–13 hrs", drive="about 2 hrs 45 mins",
          desc="Head north across the border to 40,000 basalt columns on the Antrim coast, with Game of Thrones locations and a whiskey stop along the way.",
          highlights=["Giant's Causeway (UNESCO site)", "The Dark Hedges", "Carrick-a-Rede rope bridge (optional)",

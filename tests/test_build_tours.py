@@ -132,7 +132,7 @@ def test_nav_and_footer_have_new_pages(tmp_path):
 def test_service_dropdowns_have_new_trips(tmp_path):
     _build(tmp_path, merge(default_content(), {}))
     idx = (tmp_path / "index.html").read_text()
-    for sel in ("cf-service", "qb-service"):
+    for sel in ("cf-service",):   # the quick-book widget was merged into the booking card
         block = re.search(r'<select id="%s".*?</select>' % sel, idx, re.S).group(0)
         assert "<option>Rural pub tour</option>" in block
         assert "<option>Golf trip</option>" in block

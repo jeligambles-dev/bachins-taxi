@@ -1,25 +1,39 @@
-// Scroll reveal
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-    }
+// Mobile menu
+const navToggle = document.querySelector('.nav-toggle');
+const navLinks = document.querySelector('.nav-links');
+if (navToggle && navLinks) {
+  navToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(open));
+    navToggle.textContent = open ? 'Close' : 'Menu';
   });
-}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+    navToggle.textContent = 'Menu';
+  }));
+}
 
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-// Nav scroll effect
-window.addEventListener('scroll', () => {
-  document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 50);
-});
-
-// Close mobile menu on link click
-document.querySelectorAll('.nav-links a').forEach(link => {
-  link.addEventListener('click', () => {
-    document.querySelector('.nav-links').classList.remove('open');
+// Homepage tour tabs: show one kind of tour at a time; hide tabs with no tours.
+const tabs = [...document.querySelectorAll('.tour-tabs [data-kind]')];
+if (tabs.length) {
+  const cards = [...document.querySelectorAll('.tours-scroll .tour-card')];
+  const show = (kind) => {
+    tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.kind === kind)));
+    // At most six per kind here; "See all tours" leads to the full lists.
+    let n = 0;
+    cards.forEach(c => { c.hidden = c.dataset.kind !== kind || ++n > 6; });
+    const scroller = document.querySelector('.tours-scroll');
+    if (scroller) scroller.scrollLeft = 0;
+  };
+  tabs.forEach(t => {
+    if (!cards.some(c => c.dataset.kind === t.dataset.kind)) t.hidden = true;
+    t.addEventListener('click', () => show(t.dataset.kind));
   });
-});
+  const first = tabs.find(t => !t.hidden);
+  if (first) show(first.dataset.kind);
+  if (tabs.filter(t => !t.hidden).length < 2) document.querySelector('.tour-tabs').hidden = true;
+}
 
 // ── Booking forms ──
 // Contact details come from js/config.js (generated per build); tolerate it missing.
@@ -54,7 +68,7 @@ function collect(f) {
 
 function validate(f, statusEl) {
   let first = null;
-  f.querySelectorAll('[required]').forEach(el => {
+  f.querySelectorAll('[required], [type="email"]').forEach(el => {
     const live = !el.disabled && !el.closest('[hidden]') && !el.closest('fieldset:disabled');
     const bad = live && !el.checkValidity();
     el.classList.toggle('invalid', bad);
@@ -62,6 +76,8 @@ function validate(f, statusEl) {
   });
   if (first) {
     setStatus(statusEl, 'Please fill in the highlighted fields.', 'err');
+    const det = first.closest('details');
+    if (det) det.open = true;
     first.focus();
     return false;
   }
@@ -132,70 +148,36 @@ document.querySelectorAll('.stepper').forEach(st => {
   syncStepper(st);
 });
 
-document.querySelectorAll('[required]').forEach(el => el.addEventListener('input', () => el.classList.remove('invalid')));
+document.querySelectorAll('[required], [type="email"]').forEach(el => el.addEventListener('input', () => el.classList.remove('invalid')));
 
 if (form) {
-  // Main form: reason cards switch which panel is shown.
+  // Homepage booking card.
   const statusEl = document.getElementById('cf-status');
   const sendBtn = document.getElementById('cf-send');
-  const SEND_LABELS = { Booking: 'Send Booking Request', Enquiry: 'Send Enquiry', Support: 'Submit Support Request', Other: 'Send Message' };
-  const reason = () => form.querySelector('[name="reason"]:checked').value;
 
-  function showReason() {
-    const r = reason();
-    form.querySelectorAll('.panel').forEach(p => {
-      const on = p.dataset.reason === r;
-      p.hidden = !on;
-      p.disabled = !on;
-    });
-    sendBtn.querySelector('.send-label').textContent = SEND_LABELS[r];
-    setStatus(statusEl, '');
-  }
-  form.querySelectorAll('[name="reason"]').forEach(r => r.addEventListener('change', showReason));
-
-  function setReason(r) {
-    form.querySelector(`[name="reason"][value="${r}"]`).checked = true;
-    showReason();
-  }
-
-  const fullName = () => (form.first.value + ' ' + form.last.value).trim();
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     sendEmail(form, statusEl, sendBtn,
-      () => reason() === 'Booking' ? `New ${form.service.value.toLowerCase()} booking from ${fullName()}` : `New ${reason().toLowerCase()} from ${fullName()}`,
-      [['Reason', reason()]]);
+      () => `New ${form.service.value.toLowerCase()} booking from ${form.elements.name.value.trim()}`);
   });
   document.getElementById('cf-wa').addEventListener('click', () => {
-    const intro = reason() === 'Booking' ? "Hi BCH Taxi, I'd like to book: " + form.service.value : 'Hi BCH Taxi, ' + reason().toLowerCase() + ':';
-    sendWhatsApp(form, statusEl, intro);
+    sendWhatsApp(form, statusEl, "Hi BCH Taxi, I'd like to book: " + form.service.value);
   });
 
-  function goToForm(fill) {
-    setReason('Booking');
-    fill();
-    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setTimeout(() => document.getElementById('cf-first').focus({ preventScroll: true }), 600);
-  }
-
-  document.getElementById('quick-book')?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    goToForm(() => {
-      form.service.value = document.getElementById('qb-service').value;
-      form.pickup.value = document.getElementById('qb-pickup').value;
-      form.destination.value = document.getElementById('qb-dropoff').value;
+  // "Ask us" buttons elsewhere on the page pick a service and jump to the card.
+  document.querySelectorAll('[data-service]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      form.service.value = btn.dataset.service;
+      form.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+      setTimeout(() => document.getElementById('cf-pickup').focus({ preventScroll: true }), 500);
     });
   });
 
-  document.querySelectorAll('[data-service]').forEach(btn => {
-    btn.addEventListener('click', () => goToForm(() => { form.service.value = btn.dataset.service; }));
-  });
-
-    // Prefill from links on other pages, e.g. index.html?service=School%20transport#booking
-    const wanted = new URLSearchParams(location.search).get('service');
-    if (wanted && [...form.service.options].some(o => o.value === wanted)) {
-      form.service.value = wanted;
-    }
-
+  // Prefill from links on other pages, e.g. index.html?service=School%20transport#booking
+  const wanted = new URLSearchParams(location.search).get('service');
+  if (wanted && [...form.service.options].some(o => o.value === wanted)) {
+    form.service.value = wanted;
+  }
 }
 
 const euro = n => '€' + Number(n).toLocaleString('en-IE');
@@ -214,7 +196,7 @@ if (modal) {
   function updateSummary() {
     if (!currentTour) return;
     const pax = Number(tourForm.adults.value) + Number(tourForm.children.value);
-    document.getElementById('tm-sub').textContent = `${currentTour.name} · ${priceText(currentTour)} · ${pax} ${pax === 1 ? 'guest' : 'guests'}`;
+    document.getElementById('tm-sub').textContent = `${currentTour.name}, ${priceText(currentTour)}${currentTour.price === null ? '' : ' ' + currentTour.unit}`;
     document.getElementById('tm-sum-tour').textContent = currentTour.name;
     document.getElementById('tm-sum-pax').textContent = pax;
     document.getElementById('tm-sum-total').textContent = priceText(currentTour);
@@ -248,4 +230,13 @@ if (modal) {
   document.getElementById('tm-wa').addEventListener('click', () => {
     sendWhatsApp(tourForm, tmStatus, "Hi BCH Taxi, I'd like to book the " + currentTour.name + ' tour.', tourExtra());
   });
+}
+
+// On the homepage the booking card has its own WhatsApp button, so the floating
+// shortcut stays out of the way until the card has scrolled off screen.
+const fab = document.querySelector('.whatsapp-fab');
+if (fab && form && 'IntersectionObserver' in window) {
+  new IntersectionObserver(([entry]) => {
+    fab.classList.toggle('is-hidden', entry.isIntersecting);
+  }).observe(form);
 }

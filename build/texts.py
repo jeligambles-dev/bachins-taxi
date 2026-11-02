@@ -40,13 +40,10 @@ TEXTS = {
                  "Send us your dates and we'll confirm availability and a fixed price, usually within the hour."),
 
     # ── Large groups band ────────────────────────────────────────────────────
-    "group.label": ("Large groups band", "Small heading", "Large groups"),
-    "group.title_rest": ("Large groups band", "Heading (follows \"More than N\", where N is your passenger limit)",
-                         "passengers? We've got you covered."),
-    "group.text": ("Large groups band", "Paragraph",
-                   "Weddings, school trips, sports teams, corporate events or a big family holiday: we can source extra vehicles, from a second van to a minibus or coach, so your whole group travels together. One booking, one point of contact."),
-    "group.points": ("Large groups band", "Bullet points (one per line)",
-                     "Extra vans, minibuses or coaches\nAirport runs, tours and events\nOne quote for the whole group"),
+    "group.title_rest": ("Large groups (home page)", "Heading (follows \"More than N\", where N is your passenger limit)",
+                         "passengers"),
+    "group.text": ("Large groups (home page)", "Paragraph",
+                   "Weddings, teams and big families. We add extra vans, minibuses or coaches so everyone travels together, with one booking and one contact."),
 
     # ── What's included / Good to know, per tour type ────────────────────────
     "included.day": ("Day tours: included", "What's included (one item per line)",
@@ -67,23 +64,17 @@ TEXTS = {
     "tour.highlights_title": ("Tour pages", "\"Highlights\" heading", "Highlights"),
     "tour.included_title": ("Tour pages", "\"What's included\" heading", "What's included"),
     "tour.good_title": ("Tour pages", "\"Good to know\" heading", "Good to know"),
-    "tour.more_label": ("Tour pages", "\"More tours\" small heading", "More tours"),
     "tour.more_title": ("Tour pages", "\"More tours\" heading", "You might also like"),
 
     # ── Footer ───────────────────────────────────────────────────────────────
     "footer.about": ("Footer", "About paragraph",
                      "Taxis, Dublin Airport transfers and private tours of Ireland in our wheelchair-accessible 8-seater. Available 24/7."),
-    "footer.plan_title": ("Footer", "\"Plan a Trip\" heading", "Plan a Trip"),
-    "footer.plan_text": ("Footer", "\"Plan a Trip\" paragraph",
-                         "Tell us your dates and where you'd like to go. We'll reply quickly with a fixed price."),
-    "footer.tagline": ("Footer", "Bottom line", "Wheelchair-accessible 8-seater · Dublin, Meath & all of Ireland"),
+    "footer.tagline": ("Footer", "Bottom line", "Wheelchair-accessible 8-seater. Dublin, Meath and all of Ireland."),
 
     # ── Tours page ───────────────────────────────────────────────────────────
-    "tours.label": ("Tours page", "Small heading", "Private Day Tours"),
     "tours.title": ("Tours page", "Main heading", "Private Tours of Ireland"),
     "tours.lead": ("Tours page", "Intro paragraph (follows the number of tours, e.g. \"Ten full-day private tours\")",
                    "from Dublin and Meath in our 8-seater. One price covers the whole vehicle, so the more of you there are, the better the value."),
-    "tours.longer_label": ("Tours page", "Multi-day promo: small heading", "Longer trips"),
     "tours.multi_title": ("Tours page", "Multi-day promo: heading", "Multi-Day Tours"),
     "tours.multi_before": ("Tours page", "Multi-day promo: text before the daily rate",
                            "Keep the same driver and van for your whole trip, from"),
@@ -91,7 +82,6 @@ TEXTS = {
                           "per day. See our sample routes or plan your own."),
 
     # ── Pub tours page ───────────────────────────────────────────────────────
-    "pub.label": ("Pub tours page", "Small heading", "Rural Pub Tours"),
     "pub.title": ("Pub tours page", "Main heading", "Rural Pub Tours from Dublin & Meath"),
     "pub.lead": ("Pub tours page", "Intro paragraph",
                  "Country pubs, great pints and no one drawing the short straw. Your driver gets everyone home safely, in our wheelchair-accessible 8-seater."),
@@ -104,7 +94,6 @@ TEXTS = {
                   "New trips are on the way. Tell us what you have in mind and we will plan it for you."),
 
     # ── Golf trips page ──────────────────────────────────────────────────────
-    "golf.label": ("Golf trips page", "Small heading", "Golf Trips"),
     "golf.title": ("Golf trips page", "Main heading", "Golf Trips from Dublin & Meath"),
     "golf.lead": ("Golf trips page", "Intro paragraph",
                   "Links courses and parkland favourites with a private driver and room for clubs and bags. One fixed price per trip, for up to 8 golfers."),
@@ -117,7 +106,6 @@ TEXTS = {
                    "New trips are on the way. Tell us what you have in mind and we will plan it for you."),
 
     # ── Multi-day page ───────────────────────────────────────────────────────
-    "multi.label": ("Multi-day page", "Small heading", "Multi-Day Tours"),
     "multi.title": ("Multi-day page", "Main heading", "Multi-Day Private Tours of Ireland"),
     "multi.lead_before": ("Multi-day page", "Intro: text before the daily rate",
                           "Your own driver and wheelchair-accessible 8-seater for the whole trip, from"),
@@ -133,7 +121,6 @@ TEXTS = {
                        "Tell us your dates, group size and the places on your list, and we'll put together a route and a fixed price."),
 
     # ── Price calculator page ────────────────────────────────────────────────
-    "calc.label": ("Calculator page", "Small heading", "Instant Quote"),
     "calc.title": ("Calculator page", "Main heading", "Tour & Taxi Price Calculator"),
     "calc.lead": ("Calculator page", "Intro paragraph",
                   "Pick a tour, a transfer or a multi-day trip and see your price instantly. Every price is for the whole vehicle, the same for 1 passenger or 8."),
@@ -150,7 +137,6 @@ TEXTS = {
                         "in our van. It doesn't change the price."),
     "calc.legal": ("Calculator page", "Small print under the quote form",
                    "This is an estimate. We'll confirm a fixed price before anything is booked. Parking, tolls and attraction tickets may be extra."),
-    "calc.how_label": ("Calculator page", "How it works: small heading", "How it works"),
     "calc.how_title": ("Calculator page", "How it works: heading", "From estimate to fixed price"),
     "calc.step1_title": ("Calculator page", "How it works 1: title", "Build your trip"),
     "calc.step1_text": ("Calculator page", "How it works 1: text",
@@ -166,7 +152,6 @@ TEXTS = {
                         "We confirm availability and a final fixed price. You pay on the day."),
 
     # ── Destinations page ────────────────────────────────────────────────────
-    "dest.label": ("Destinations page", "Small heading", "Destination Guide"),
     "dest.title": ("Destinations page", "Main heading", "Where Can We Take You?"),
     "dest.lead": ("Destinations page", "Intro paragraph",
                   "Ireland's best-loved places, grouped by region, with approximate driving times from Dublin. Tap any place to see the full tour."),
@@ -176,7 +161,6 @@ TEXTS = {
                         ", we go anywhere in Ireland."),
 
     # ── Blog page ────────────────────────────────────────────────────────────
-    "blog.label": ("Blog page", "Small heading", "Travel Guides"),
     "blog.title": ("Blog page", "Main heading", "Ireland Travel Guides & Tips"),
     "blog.lead": ("Blog page", "Intro paragraph",
                   "Day trip ideas, airport advice and practical tips for getting around Ireland."),

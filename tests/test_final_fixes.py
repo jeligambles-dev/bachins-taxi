@@ -54,12 +54,15 @@ def test_unexpected_exception_is_friendly(app, store, logged_in, monkeypatch):
 
 # 2 ── fare distance escaped ──────────────────────────────────────────────────
 
-def test_fare_distance_is_escaped(tmp_path):
+def test_fare_text_is_escaped(tmp_path):
+    # Fares left the homepage; the calculator is where fare text is rendered now.
     fares = default_content()["airport_fares"]
-    fares[0] = dict(fares[0], distance="<b>5 km</b>")
+    fares[0] = dict(fares[0], area="<b>Swords</b>", distance="<b>5 km</b>")
     _built(tmp_path, airport_fares=fares)
-    page = (tmp_path / "index.html").read_text()
-    assert "<b>5 km</b>" not in page and "&lt;b&gt;5 km&lt;/b&gt;" in page
+    for p, text in _texts(tmp_path).items():
+        assert "<b>Swords</b>" not in text and "<b>5 km</b>" not in text, p
+    calc = (tmp_path / "price-calculator.html").read_text()
+    assert "&lt;b&gt;Swords&lt;/b&gt;" in calc and "\\u003cb>Swords\\u003c/b>" in calc
 
 
 # 3 ── contact stale tab ──────────────────────────────────────────────────────
@@ -131,7 +134,7 @@ def test_413_message_reworded(app, logged_in):
 def test_default_footer_matches_original(tmp_path):
     _built(tmp_path)
     page = (tmp_path / "tours.html").read_text()
-    foot = page[page.index('<h4>Popular Tours</h4>'):]
+    foot = page[page.index('<h4>Popular tours</h4>'):]
     foot = foot[:foot.index("</ul>")]
     assert re.findall(r"tours/([a-z0-9-]+)\.html", foot) == [
         "giants-causeway", "ring-of-kerry", "cliffs-of-moher",

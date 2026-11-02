@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BCH Taxi | Dublin Taxi, Airport Transfers &amp; Tours</title>
-  <meta name="description" content="24/7 taxi in Dublin &amp; Meath. Fixed Dublin Airport fares, private Ireland day tours from €280, corporate &amp; school transport. Accessible 8-seater.">
+  <meta name="description" content="24/7 taxi in Dublin &amp; Meath. Airport transfers, private Ireland day tours from €280, pub tours and golf trips. Wheelchair-accessible 8-seater.">
   <meta name="keywords" content="taxi Dublin, Dublin Airport taxi, airport transfer Meath, 8 seater taxi Dublin, wheelchair accessible taxi, private tours Ireland, Cliffs of Moher day tour, school transport Meath, corporate taxi Dublin">
   <link rel="canonical" href="https://web-production-95242.up.railway.app/">
   <meta name="robots" content="index, follow">
-  <meta name="theme-color" content="#062a1f">
+  <meta name="theme-color" content="#0E2A22">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="BCH Taxi">
   <meta property="og:locale" content="en_IE">
@@ -128,879 +128,186 @@
   <link rel="preload" as="image" href="images/hero.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/pages.css">
 </head>
-<body>
+<body class="home">
 
-  <!-- Navigation -->
   <!-- @nav -->
-  <nav>
-    <a href="#" class="brand" aria-label="BCH Taxi home">
-      <span class="brand-mark" aria-hidden="true">BCH</span><span class="brand-word">BCH Taxi<small>Taxi · Airport · Tours</small></span>
-    </a>
-    <ul class="nav-links">
-      <li><a href="tours.html">Tours</a></li>
-      <li><a href="multi-day-tours.html">Multi-Day</a></li>
-      <li><a href="price-calculator.html">Prices</a></li>
-      <li><a href="#airport">Airport</a></li>
-      <li><a href="#corporate">Business</a></li>
-      <li><a href="blog.html">Blog</a></li>
-      <li><a href="#contact">Contact</a></li>
-      <li class="nav-call"><a href="tel:{{PHONE}}">Call {{PHONE_DISPLAY}}</a></li>
-      <li><a href="#booking" class="nav-cta">Book Taxi</a></li>
-    </ul>
-    <div class="mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">
-      <span></span><span></span><span></span>
-    </div>
-  </nav>
+  <nav class="site-nav"></nav>
   <!-- /@nav -->
 
-  <!-- Hero -->
+  <main>
+  <!-- Booking first -->
   <section class="hero">
-    <div class="hero-bg"></div>
+    <div class="hero-bg" aria-hidden="true"></div>
     <div class="hero-inner">
-      <div class="hero-content">
-        <span class="hero-label"><!-- @t:home.hero_label -->Dublin · Meath · All of Ireland<!-- /@t:home.hero_label --></span>
-        <h1><!-- @t:home.hero_title -->Taxis, Airport Runs &amp;<!-- /@t:home.hero_title --> <span class="gold"><!-- @t:home.hero_title_gold -->Private Tours of Ireland<!-- /@t:home.hero_title_gold --></span></h1>
-        <p class="hero-sub"><!-- @t:home.hero_sub -->BCH Taxi takes you anywhere: the local trip, Dublin Airport at 4am, or a full day at the Cliffs of Moher. Our spacious, wheelchair-accessible 8-seater is available 24/7.<!-- /@t:home.hero_sub --></p>
-        <div class="hero-actions">
-          <a href="#booking" class="btn btn-gold"><!-- @t:home.hero_book_btn -->Book a Taxi<!-- /@t:home.hero_book_btn --></a>
-          <a href="tel:{{PHONE}}" class="btn btn-outline">
-            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <!-- @t:home.hero_call_btn -->Call Now<!-- /@t:home.hero_call_btn -->
-          </a>
-          <a href="#tours" class="btn btn-outline"><!-- @t:home.hero_tours_btn -->View Day Tours<!-- /@t:home.hero_tours_btn --></a>
-        </div>
-        <ul class="hero-trust">
-          <li><strong>24/7</strong><span><!-- @t:home.hero_span_1 -->Day &amp; night<!-- /@t:home.hero_span_1 --></span></li>
-          <li><strong>8</strong><span><!-- @t:home.hero_span_2 -->Seats<!-- /@t:home.hero_span_2 --></span></li>
-          <li><strong>&#9855;&#xFE0E;</strong><span><!-- @t:home.hero_span_3 -->Accessible<!-- /@t:home.hero_span_3 --></span></li>
-          <li><strong><!-- @min-fare -->€25+<!-- /@min-fare --></strong><span><!-- @t:home.hero_span_4 -->Airport fares<!-- /@t:home.hero_span_4 --></span></li>
+      <div class="hero-intro">
+        <p class="hero-display"><!-- @t:home.hero_headline -->Taxis, airport runs and private tours of Ireland<!-- /@t:home.hero_headline --></p>
+        <p class="hero-sub"><!-- @t:home.hero_sub -->Local trips, Dublin Airport at 4am or a full day at the Cliffs of Moher, in our wheelchair-accessible 8-seater.<!-- /@t:home.hero_sub --></p>
+        <ul class="hero-facts">
+          <li><!-- @t:home.hero_span_1 -->Open day and night, 24/7<!-- /@t:home.hero_span_1 --></li>
+          <li><!-- @t:home.hero_span_2 -->Room for up to 8 people<!-- /@t:home.hero_span_2 --></li>
+          <li><!-- @t:home.hero_span_3 -->Wheelchair accessible<!-- /@t:home.hero_span_3 --></li>
         </ul>
       </div>
-      <form class="hero-quick" id="quick-book">
-        <h2><!-- @t:home.quick_title -->Quick Booking<!-- /@t:home.quick_title --></h2>
-        <p><!-- @t:home.quick_text -->Tell us where you're going and we'll get straight back to you.<!-- /@t:home.quick_text --></p>
-        <label for="qb-service"><!-- @t:home.quick_field_1 -->Service<!-- /@t:home.quick_field_1 --></label>
-        <select id="qb-service">
-          <option>Local taxi</option>
-          <option>Airport transfer</option>
-          <option>Day tour</option>
-          <option>Rural pub tour</option>
-          <option>Golf trip</option>
-          <option>Corporate / business</option>
-          <option>School transport</option>
-          <option>Point-to-point</option>
-          <option>Group transport (9+)</option>
-        </select>
-        <label for="qb-pickup"><!-- @t:home.quick_field_2 -->Pickup<!-- /@t:home.quick_field_2 --></label>
-        <input id="qb-pickup" type="text" placeholder="e.g. Dublin City">
-        <label for="qb-dropoff"><!-- @t:home.quick_field_3 -->Destination<!-- /@t:home.quick_field_3 --></label>
-        <input id="qb-dropoff" type="text" placeholder="e.g. Dublin Airport">
-        <button type="submit" class="btn btn-gold"><!-- @t:home.quick_button -->Continue Booking<!-- /@t:home.quick_button --></button>
+
+      <form class="booking-card" id="contact-form" novalidate>
+        <span id="booking" class="anchor"></span>
+        <h1><!-- @t:home.hero_title -->Book a taxi<!-- /@t:home.hero_title --> <span><!-- @t:home.hero_title_gold -->or a private tour<!-- /@t:home.hero_title_gold --></span></h1>
+        <p class="card-sub"><!-- @t:home.quick_text -->Fixed price. We usually reply within the hour.<!-- /@t:home.quick_text --></p>
+
+        <div class="field">
+          <label for="cf-service"><!-- @t:home.quick_field_1 -->Service<!-- /@t:home.quick_field_1 --></label>
+          <select id="cf-service" name="service" required data-label="Service"><option>Local taxi</option><option>Airport transfer</option><option>Day tour</option><option>Rural pub tour</option><option>Golf trip</option><option>Multi-day tour</option><option>Point-to-point</option><option>Corporate / business</option><option>School transport</option><option>Group transport (9+)</option><option>Custom tour</option></select>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="cf-pickup"><!-- @t:home.quick_field_2 -->From<!-- /@t:home.quick_field_2 --></label><input id="cf-pickup" name="pickup" type="text" placeholder="Hotel, address" autocomplete="street-address" required data-label="Pickup"></div>
+          <div class="field"><label for="cf-dropoff"><!-- @t:home.quick_field_3 -->To<!-- /@t:home.quick_field_3 --></label><input id="cf-dropoff" name="destination" type="text" placeholder="Airport, town" required data-label="Destination"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="cf-date"><!-- @t:home.form_booking_field_2 -->Date<!-- /@t:home.form_booking_field_2 --></label><input id="cf-date" name="date" type="date" required data-label="Date"></div>
+          <div class="field"><label for="cf-time"><!-- @t:home.form_booking_field_3 -->Pickup time<!-- /@t:home.form_booking_field_3 --></label><input id="cf-time" name="time" type="time" required data-label="Pickup time"></div>
+        </div>
+        <div class="field field-pax">
+          <label for="cf-passengers"><!-- @t:home.form_booking_span_1 -->People<!-- /@t:home.form_booking_span_1 --></label>
+          <div class="stepper">
+            <button type="button" data-step="-1" aria-label="Fewer people">−</button>
+            <input id="cf-passengers" name="passengers" type="number" value="2" min="1" max="8" readonly data-label="People">
+            <button type="button" data-step="1" aria-label="More people">+</button>
+          </div>
+        </div>
+        <p class="pax-more" hidden><!-- @t:home.form_booking_text_2 -->More than 8 of you? We can add extra vehicles. Tell us your group size in the notes.<!-- /@t:home.form_booking_text_2 --></p>
+        <div class="field-row field-row-contact">
+          <div class="field"><label for="cf-name"><!-- @t:home.form_field_1 -->Your name<!-- /@t:home.form_field_1 --></label><input id="cf-name" name="name" type="text" autocomplete="name" required data-label="Name"></div>
+          <div class="field"><label for="cf-phone"><!-- @t:home.form_field_5 -->Phone<!-- /@t:home.form_field_5 --></label>
+            <div class="phone-row"><select name="dial" aria-label="Country code" data-label="Dial code"><option value="+353">IE +353</option><option value="+44">UK +44</option><option value="+1">US/CA +1</option><option value="+61">AU +61</option><option value="+49">DE +49</option><option value="+33">FR +33</option><option value="+34">ES +34</option><option value="+39">IT +39</option><option value="+31">NL +31</option></select><input id="cf-phone" name="phone" type="tel" autocomplete="tel-national" placeholder="87 123 4567" required data-label="Phone"></div>
+          </div>
+        </div>
+
+        <details class="more-details">
+          <summary><!-- @t:home.form_more -->Add email, notes or Eircode<!-- /@t:home.form_more --></summary>
+          <div class="field"><label for="cf-email"><!-- @t:home.form_field_3 -->Email<!-- /@t:home.form_field_3 --></label><input id="cf-email" name="email" type="email" autocomplete="email" data-label="Email"></div>
+          <div class="field-row">
+            <div class="field"><label for="cf-country"><!-- @t:home.form_field_4 -->Country<!-- /@t:home.form_field_4 --></label><select id="cf-country" name="country" data-label="Country"><option>Ireland</option><option>United Kingdom</option><option>United States</option><option>Canada</option><option>Australia</option><option>Germany</option><option>France</option><option>Spain</option><option>Italy</option><option>Netherlands</option><option>Other</option></select></div>
+            <div class="field"><label for="cf-eircode"><!-- @t:home.form_booking_field_5 -->Eircode<!-- /@t:home.form_booking_field_5 --></label><input id="cf-eircode" name="eircode" type="text" placeholder="D02 X285" autocapitalize="characters" data-label="Eircode"></div>
+          </div>
+          <div class="field"><label for="cf-message"><!-- @t:home.form_booking_field_7 -->Notes<!-- /@t:home.form_booking_field_7 --></label><textarea id="cf-message" name="message" rows="3" placeholder="Flight number, luggage, child seats, wheelchair" data-label="Notes"></textarea></div>
+        </details>
+
+        <input class="form-honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="card-actions">
+          <button type="submit" class="btn btn-ink" id="cf-send"><span class="send-label"><!-- @t:home.form_send_label -->Get my fixed price<!-- /@t:home.form_send_label --></span></button>
+          <button type="button" class="btn btn-wa" id="cf-wa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span><!-- @t:home.form_button -->WhatsApp<!-- /@t:home.form_button --></span></button>
+        </div>
+        <p class="form-status" id="cf-status" role="status" aria-live="polite"></p>
+        <p class="form-legal"><!-- @t:home.form_text_4 -->No payment online. You pay on the day.<!-- /@t:home.form_text_4 --></p>
       </form>
     </div>
   </section>
 
-  <!-- Ticker -->
-  <div class="ticker">
-    <div class="ticker-track">
-      <span class="ticker-item"><!-- @t:home.ticker_item_1 -->24/7 Availability<!-- /@t:home.ticker_item_1 --></span>
-      <span class="ticker-item"><!-- @t:home.ticker_item_2 -->Airport Transfers<!-- /@t:home.ticker_item_2 --></span>
-      <span class="ticker-item"><!-- @t:home.ticker_item_3 -->8 Seater Van<!-- /@t:home.ticker_item_3 --></span>
-      <span class="ticker-item"><!-- @t:home.ticker_item_4 -->Wheelchair Accessible<!-- /@t:home.ticker_item_4 --></span>
-      <span class="ticker-item"><!-- @t:home.ticker_item_5 -->Dublin<!-- /@t:home.ticker_item_5 --></span>
-      <span class="ticker-item"><!-- @t:home.ticker_item_6 -->Meath<!-- /@t:home.ticker_item_6 --></span>
-      <span class="ticker-item"><!-- @t:home.ticker_item_1 -->24/7 Availability<!-- /@t:home.ticker_item_1 --></span>
-      <span class="ticker-item"><!-- @t:home.ticker_item_2 -->Airport Transfers<!-- /@t:home.ticker_item_2 --></span>
-      <span class="ticker-item"><!-- @t:home.ticker_item_3 -->8 Seater Van<!-- /@t:home.ticker_item_3 --></span>
-      <span class="ticker-item"><!-- @t:home.ticker_item_4 -->Wheelchair Accessible<!-- /@t:home.ticker_item_4 --></span>
-      <span class="ticker-item"><!-- @t:home.ticker_item_5 -->Dublin<!-- /@t:home.ticker_item_5 --></span>
-      <span class="ticker-item"><!-- @t:home.ticker_item_6 -->Meath<!-- /@t:home.ticker_item_6 --></span>
-    </div>
-  </div>
-
-  <!-- Services -->
-  <section class="theme-light services" id="services">
-    <div class="reveal">
-      <span class="section-label"><!-- @t:home.services_label -->What We Offer<!-- /@t:home.services_label --></span>
-      <h2 class="section-title"><!-- @t:home.services_title -->Our Services<!-- /@t:home.services_title --></h2>
-      <p class="section-desc"><!-- @t:home.services_intro -->Professional, reliable taxi services across Dublin and Meath. Whatever your journey, we've got you covered.<!-- /@t:home.services_intro --></p>
-    </div>
-    <div class="services-grid">
-      <div class="service-card reveal">
-        <div class="service-icon">
-          <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-        </div>
-        <h3><!-- @t:home.services_heading_1 -->8 Seater Van<!-- /@t:home.services_heading_1 --></h3>
-        <p><!-- @t:home.services_text_1 -->Spacious Ford Transit Custom with room for up to 8 passengers. Fully wheelchair accessible for those who need it.<!-- /@t:home.services_text_1 --></p>
-      </div>
-      <div class="service-card reveal">
-        <div class="service-icon">
-          <svg viewBox="0 0 24 24"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.4-.1.9.3 1.1l5.6 3.2-3.5 3.5-2.2-.8c-.4-.1-.8 0-1 .3l-.2.3c-.2.3-.1.7.2.9l3 2 2 3c.2.3.6.4.9.2l.3-.2c.3-.2.4-.6.3-1l-.8-2.2 3.5-3.5 3.2 5.6c.2.4.7.5 1.1.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
-        </div>
-        <h3><!-- @t:home.services_heading_2 -->Airport Transfers<!-- /@t:home.services_heading_2 --></h3>
-        <p><!-- @t:home.services_text_2 -->Reliable transfers to and from Dublin Airport. We track your flight so we're there when you land — no waiting, no stress.<!-- /@t:home.services_text_2 --></p>
-      </div>
-      <div class="service-card reveal">
-        <div class="service-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
-        </div>
-        <h3><!-- @t:home.services_heading_3 -->Local Taxi Services<!-- /@t:home.services_heading_3 --></h3>
-        <p><!-- @t:home.services_text_3 -->Whether it's a trip to the shops, a night out in Dublin, or a school run — your trusted local taxi is just a phone call away.<!-- /@t:home.services_text_3 --></p>
-      </div>
-      <div class="service-card reveal">
-        <div class="service-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        </div>
-        <h3><!-- @t:home.services_heading_4 -->24/7 Availability<!-- /@t:home.services_heading_4 --></h3>
-        <p><!-- @t:home.services_text_4 -->Day or night, weekday or weekend. We're available around the clock to get you where you need to be, safely and on time.<!-- /@t:home.services_text_4 --></p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Wheelchair Accessibility Badge -->
-
   <!-- Tours -->
-  <section class="theme-mint tours" id="tours">
-    <div class="reveal">
-      <span class="section-label"><!-- @t:home.tours_label -->Private Day Tours<!-- /@t:home.tours_label --></span>
-      <h2 class="section-title"><!-- @t:home.tours_title -->Explore Ireland With Us<!-- /@t:home.tours_title --></h2>
-      <p class="section-desc"><!-- @t:home.tours_intro -->Full-day private tours in our 8-seater, with pickup anywhere in Dublin or Meath. One price for the whole vehicle, so bring the family.<!-- /@t:home.tours_intro --></p>
-    </div>
-    <div class="tours-grid">
+  <section class="section tours" id="tours">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><!-- @t:home.tours_title -->Private tours<!-- /@t:home.tours_title --></h2>
+        <p><!-- @t:home.tours_intro -->Pickup anywhere in Dublin or Meath. One price for the whole vehicle.<!-- /@t:home.tours_intro --></p>
+      </div>
+      <div class="tour-tabs" role="tablist" aria-label="Tour type">
+        <button type="button" role="tab" aria-selected="true" data-kind="day"><!-- @t:home.tours_tab_1 -->Day tours<!-- /@t:home.tours_tab_1 --></button>
+        <button type="button" role="tab" aria-selected="false" data-kind="pub"><!-- @t:home.tours_tab_2 -->Pub tours<!-- /@t:home.tours_tab_2 --></button>
+        <button type="button" role="tab" aria-selected="false" data-kind="golf"><!-- @t:home.tours_tab_3 -->Golf<!-- /@t:home.tours_tab_3 --></button>
+      </div>
+      <div class="tours-grid tours-scroll">
 <!-- @tours-grid -->
-      <article class="tour-card reveal fav">
-        <span class="tour-badge">Most Popular</span>
-        <span class="tour-region">Co. Antrim · Northern Ireland</span>
-        <h3><a href="tours/giants-causeway.html">Giant&#x27;s Causeway</a></h3>
-        <div class="tour-chips"><span>12–13 hrs</span><span>Private</span><span>Up to 8</span></div>
-        <p>Head north across the border to 40,000 basalt columns on the Antrim coast, with Game of Thrones locations and a whiskey stop along the way.</p>
-        <ul class="tour-list"><li>Giant&#x27;s Causeway (UNESCO site)</li><li>The Dark Hedges</li><li>Carrick-a-Rede rope bridge (optional)</li><li>Bushmills Distillery</li></ul>
-        <details class="tour-more"><summary>+2 more</summary><ul class="tour-list"><li>Dunluce Castle</li><li>Belfast sights &amp; Titanic Quarter (optional)</li></ul></details>
-        <a class="tour-details" href="tours/giants-causeway.html">View tour details →</a>
-        <div class="tour-foot">
-          <div class="tour-price"><small>From</small>€600<span>per vehicle</span></div>
-          <button type="button" class="btn btn-gold tour-book" data-price="600" data-tour="Giant&#x27;s Causeway">Book</button>
-        </div>
-      </article>
-      <article class="tour-card reveal fav">
-        <span class="tour-badge">Most Popular</span>
-        <span class="tour-region">Co. Kerry</span>
-        <h3><a href="tours/ring-of-kerry.html">Ring of Kerry</a></h3>
-        <div class="tour-chips"><span>11–12 hrs</span><span>Private</span><span>Up to 8</span></div>
-        <p>The classic 179 km loop around the Iveragh Peninsula: lakes, mountain passes, harbour villages and the coast where Star Wars was filmed.</p>
-        <ul class="tour-list"><li>Killarney National Park &amp; Muckross House</li><li>Ladies View &amp; Moll&#x27;s Gap</li><li>Kenmare</li><li>Sneem, Waterville &amp; Cahersiveen</li></ul>
-        <details class="tour-more"><summary>+2 more</summary><ul class="tour-list"><li>Skellig Ring</li><li>Valentia Island detour (optional)</li></ul></details>
-        <a class="tour-details" href="tours/ring-of-kerry.html">View tour details →</a>
-        <div class="tour-foot">
-          <div class="tour-price"><small>From</small>€460<span>per vehicle</span></div>
-          <button type="button" class="btn btn-gold tour-book" data-price="460" data-tour="Ring of Kerry">Book</button>
-        </div>
-      </article>
-      <article class="tour-card reveal fav">
-        <span class="tour-badge">Most Popular</span>
-        <span class="tour-region">Co. Clare</span>
-        <h3><a href="tours/cliffs-of-moher.html">Cliffs of Moher</a></h3>
-        <div class="tour-chips"><span>10–11 hrs</span><span>Private</span><span>Up to 8</span></div>
-        <p>Stand 214 m above the Atlantic on Ireland&#x27;s most famous cliffs, then drive through the Burren and stop in Doolin for some trad music.</p>
-        <ul class="tour-list"><li>O&#x27;Brien&#x27;s Tower viewpoint</li><li>Cliffs visitor centre</li><li>Doolin village</li><li>The Burren drive</li></ul>
-        <details class="tour-more"><summary>+1 more</summary><ul class="tour-list"><li>Wild Atlantic Way coastline</li></ul></details>
-        <a class="tour-details" href="tours/cliffs-of-moher.html">View tour details →</a>
-        <div class="tour-foot">
-          <div class="tour-price"><small>From</small>€430<span>per vehicle</span></div>
-          <button type="button" class="btn btn-gold tour-book" data-price="430" data-tour="Cliffs of Moher">Book</button>
-        </div>
-      </article>
-      <article class="tour-card reveal">
-        
-        <span class="tour-region">Co. Wicklow</span>
-        <h3><a href="tours/glendalough-wicklow.html">Glendalough &amp; Wicklow</a></h3>
-        <div class="tour-chips"><span>Half or full day</span><span>Private</span><span>Up to 8</span></div>
-        <p>The closest escape from Dublin: a 6th-century monastic site in a glacial valley, mountain roads and Ireland&#x27;s tallest waterfall.</p>
-        <ul class="tour-list"><li>Glendalough monastic site &amp; round tower</li><li>Upper &amp; Lower Lakes</li><li>Sally Gap &amp; Military Road</li><li>Powerscourt Waterfall</li></ul>
-        <details class="tour-more"><summary>+2 more</summary><ul class="tour-list"><li>Lough Tay (&#x27;Guinness Lake&#x27;)</li><li>Avoca woollen mill</li></ul></details>
-        <a class="tour-details" href="tours/glendalough-wicklow.html">View tour details →</a>
-        <div class="tour-foot">
-          <div class="tour-price"><small>From</small>€280<span>per vehicle</span></div>
-          <button type="button" class="btn btn-gold tour-book" data-price="280" data-tour="Glendalough &amp; Wicklow">Book</button>
-        </div>
-      </article>
-      <article class="tour-card reveal">
-        
-        <span class="tour-region">Co. Clare</span>
-        <h3><a href="tours/the-burren.html">The Burren</a></h3>
-        <div class="tour-chips"><span>Full day</span><span>Private</span><span>Up to 8</span></div>
-        <p>A strange, beautiful limestone landscape packed with ancient tombs, caves and stone forts, and with rare flowers in the cracks.</p>
-        <ul class="tour-list"><li>Poulnabrone Dolmen</li><li>Aillwee Cave</li><li>Burren National Park trails</li><li>Caherconnell Stone Fort</li></ul>
-        <details class="tour-more"><summary>+2 more</summary><ul class="tour-list"><li>Corcomroe Abbey</li><li>Doolin &amp; Kilfenora</li></ul></details>
-        <a class="tour-details" href="tours/the-burren.html">View tour details →</a>
-        <div class="tour-foot">
-          <div class="tour-price"><small>From</small>€380<span>per vehicle</span></div>
-          <button type="button" class="btn btn-gold tour-book" data-price="380" data-tour="The Burren">Book</button>
-        </div>
-      </article>
-      <article class="tour-card reveal">
-        
-        <span class="tour-region">Co. Kerry</span>
-        <h3><a href="tours/killarney-national-park.html">Killarney National Park</a></h3>
-        <div class="tour-chips"><span>Half or full day</span><span>Private</span><span>Up to 8</span></div>
-        <p>Oak woods, three lakes and Ireland&#x27;s only native red deer, plus castles, waterfalls and the lively town of Killarney.</p>
-        <ul class="tour-list"><li>Muckross House &amp; gardens</li><li>Ross Castle</li><li>Torc Waterfall</li><li>Lakes of Killarney</li></ul>
-        <details class="tour-more"><summary>+2 more</summary><ul class="tour-list"><li>Gap of Dunloe viewpoints</li><li>Killarney town</li></ul></details>
-        <a class="tour-details" href="tours/killarney-national-park.html">View tour details →</a>
-        <div class="tour-foot">
-          <div class="tour-price"><small>From</small>€330<span>per vehicle</span></div>
-          <button type="button" class="btn btn-gold tour-book" data-price="330" data-tour="Killarney National Park">Book</button>
-        </div>
-      </article>
-      <article class="tour-card reveal">
-        
-        <span class="tour-region">Co. Donegal</span>
-        <h3><a href="tours/slieve-league.html">Slieve League</a></h3>
-        <div class="tour-chips"><span>12 hrs</span><span>Private</span><span>Up to 8</span></div>
-        <p>Sea cliffs nearly three times the height of Moher, in wild Donegal and far from the crowds.</p>
-        <ul class="tour-list"><li>Slieve League cliffs (601 m)</li><li>Bunglas viewing point</li><li>Glencolmcille folk village</li><li>Killybegs harbour</li></ul>
-        <details class="tour-more"><summary>+2 more</summary><ul class="tour-list"><li>Assaranca Waterfall &amp; Maghera Caves</li><li>Donegal Castle</li></ul></details>
-        <a class="tour-details" href="tours/slieve-league.html">View tour details →</a>
-        <div class="tour-foot">
-          <div class="tour-price"><small>From</small>€560<span>per vehicle</span></div>
-          <button type="button" class="btn btn-gold tour-book" data-price="560" data-tour="Slieve League">Book</button>
-        </div>
-      </article>
-      <article class="tour-card reveal">
-        
-        <span class="tour-region">Co. Mayo</span>
-        <h3><a href="tours/achill-island.html">Achill Island</a></h3>
-        <div class="tour-chips"><span>Full day</span><span>Private</span><span>Up to 8</span></div>
-        <p>Ireland&#x27;s largest island: blue-flag beaches, towering cliffs, a deserted Famine village and the Atlantic Drive.</p>
-        <ul class="tour-list"><li>Keem Bay</li><li>Atlantic Drive</li><li>Slievemore Deserted Village</li><li>Croaghaun Cliffs</li></ul>
-        <details class="tour-more"><summary>+2 more</summary><ul class="tour-list"><li>Westport</li><li>Croagh Patrick views</li></ul></details>
-        <a class="tour-details" href="tours/achill-island.html">View tour details →</a>
-        <div class="tour-foot">
-          <div class="tour-price"><small>From</small>€430<span>per vehicle</span></div>
-          <button type="button" class="btn btn-gold tour-book" data-price="430" data-tour="Achill Island">Book</button>
-        </div>
-      </article>
-      <article class="tour-card reveal">
-        
-        <span class="tour-region">Co. Kerry</span>
-        <h3><a href="tours/skellig-michael.html">Skellig Michael</a></h3>
-        <div class="tour-chips"><span>10–11 hrs</span><span>Private</span><span>Up to 8</span></div>
-        <p>A cliff-top monastery 12 km out in the Atlantic, famous as Luke Skywalker&#x27;s island hideaway. Landings run May to September, weather permitting.</p>
-        <ul class="tour-list"><li>Skellig Michael boat trip (seasonal)</li><li>Skellig Ring drive</li><li>Portmagee harbour</li><li>Valentia Island</li></ul>
-        <details class="tour-more"><summary>+2 more</summary><ul class="tour-list"><li>Star Wars filming locations</li><li>Cahergal stone fort</li></ul></details>
-        <a class="tour-details" href="tours/skellig-michael.html">View tour details →</a>
-        <div class="tour-foot">
-          <div class="tour-price"><small>From</small>€600<span>per vehicle</span></div>
-          <button type="button" class="btn btn-gold tour-book" data-price="600" data-tour="Skellig Michael">Book</button>
-        </div>
-      </article>
-      <article class="tour-card reveal">
-        
-        <span class="tour-region">Co. Tipperary</span>
-        <h3><a href="tours/rock-of-cashel.html">Rock of Cashel</a></h3>
-        <div class="tour-chips"><span>Half or full day</span><span>Private</span><span>Up to 8</span></div>
-        <p>The hilltop seat of the Kings of Munster, with a medieval cathedral, a round tower and one of Ireland&#x27;s best Norman castles nearby.</p>
-        <ul class="tour-list"><li>Rock of Cashel cathedral &amp; round tower</li><li>Cormac&#x27;s Chapel</li><li>Hore Abbey</li><li>Cahir Castle</li></ul>
-        <details class="tour-more"><summary>+2 more</summary><ul class="tour-list"><li>Mitchelstown Cave (optional)</li><li>Glen of Aherlow</li></ul></details>
-        <a class="tour-details" href="tours/rock-of-cashel.html">View tour details →</a>
-        <div class="tour-foot">
-          <div class="tour-price"><small>From</small>€330<span>per vehicle</span></div>
-          <button type="button" class="btn btn-gold tour-book" data-price="330" data-tour="Rock of Cashel">Book</button>
-        </div>
-      </article>
-      <article class="tour-card reveal">
-        
-        <span class="tour-region">Co. Kerry</span>
-        <h3><a href="tours/dingle-peninsula.html">Dingle Peninsula</a></h3>
-        <div class="tour-chips"><span>Full day</span><span>Private</span><span>Up to 8</span></div>
-        <p>Slea Head Drive to the western edge of Europe, with beehive huts, the Blasket Islands and a colourful harbour town.</p>
-        <ul class="tour-list"><li>Slea Head Drive</li><li>Dingle town</li><li>Beehive huts</li><li>Blasket Islands viewpoint</li></ul>
-        <details class="tour-more"><summary>+2 more</summary><ul class="tour-list"><li>Conor Pass</li><li>Gallarus Oratory &amp; Inch Beach</li></ul></details>
-        <a class="tour-details" href="tours/dingle-peninsula.html">View tour details →</a>
-        <div class="tour-foot">
-          <div class="tour-price"><small>From</small>€460<span>per vehicle</span></div>
-          <button type="button" class="btn btn-gold tour-book" data-price="460" data-tour="Dingle Peninsula">Book</button>
-        </div>
-      </article>
-      <article class="tour-card reveal">
-        
-        <span class="tour-region">Co. Galway</span>
-        <h3><a href="tours/connemara-galway.html">Connemara &amp; Galway</a></h3>
-        <div class="tour-chips"><span>Full day</span><span>Private</span><span>Up to 8</span></div>
-        <p>Galway&#x27;s buzzing streets, then the mountains and lakes of Connemara, Kylemore Abbey and Ireland&#x27;s only fjord.</p>
-        <ul class="tour-list"><li>Galway city &amp; Latin Quarter</li><li>Connemara National Park</li><li>Kylemore Abbey &amp; gardens</li><li>Sky Road</li></ul>
-        <details class="tour-more"><summary>+2 more</summary><ul class="tour-list"><li>Clifden</li><li>Killary Fjord</li></ul></details>
-        <a class="tour-details" href="tours/connemara-galway.html">View tour details →</a>
-        <div class="tour-foot">
-          <div class="tour-price"><small>From</small>€400<span>per vehicle</span></div>
-          <button type="button" class="btn btn-gold tour-book" data-price="400" data-tour="Connemara &amp; Galway">Book</button>
-        </div>
-      </article>
 <!-- /@tours-grid -->
+      </div>
+      <p class="tours-foot"><a class="link-strong" href="tours.html"><!-- @t:home.tours_all_link -->See all tours<!-- /@t:home.tours_all_link --></a> <span><!-- @t:home.tours_text -->Want a custom route or a multi-day trip?<!-- /@t:home.tours_text --> <a href="#booking"><!-- @t:home.tours_link -->Ask us for a quote.<!-- /@t:home.tours_link --></a></span></p>
     </div>
-    <p class="tours-note reveal"><!-- @t:home.tours_text -->Prices are per vehicle for up to 8 passengers. More than 8? We can arrange extra vehicles. Want a custom route or a multi-day trip?<!-- /@t:home.tours_text --> <a href="#contact"><!-- @t:home.tours_link -->Ask us for a quote.<!-- /@t:home.tours_link --></a></p>
   </section>
 
-  <!-- @group-band -->
-  <section class="group-band theme-teal">
-    <div class="group-inner reveal">
-      <div class="group-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>
-      </div>
-      <div class="group-text">
-        <span class="section-label">Large groups</span>
-        <h2>More than 8 passengers? We've got you covered.</h2>
-        <p>Weddings, school trips, sports teams, corporate events or a big family holiday: we can source extra vehicles, from a second van to a minibus or coach, so your whole group travels together. One booking, one point of contact.</p>
-        <ul class="group-points">
-          <li>Extra vans, minibuses or coaches</li>
-          <li>Airport runs, tours and events</li>
-          <li>One quote for the whole group</li>
+  <!-- Why BCH -->
+  <section class="section section-mist why" id="about">
+    <div class="wrap why-grid">
+      <div>
+        <h2><!-- @t:home.about_title -->Why travel with BCH Taxi<!-- /@t:home.about_title --></h2>
+        <ul class="why-list">
+          <li><strong><!-- @t:home.services_heading_1 -->Up to 8 passengers<!-- /@t:home.services_heading_1 --></strong> <span><!-- @t:home.services_text_1 -->A spacious Ford Transit Custom with space for luggage.<!-- /@t:home.services_text_1 --></span></li>
+          <li><strong><!-- @t:home.services_heading_2 -->Wheelchair accessible<!-- /@t:home.services_heading_2 --></strong> <span><!-- @t:home.services_text_2 -->A built-in ramp and secure fastening points.<!-- /@t:home.services_text_2 --></span></li>
+          <li><strong><!-- @t:home.services_heading_3 -->Open 24/7<!-- /@t:home.services_heading_3 --></strong> <span><!-- @t:home.services_text_3 -->Early flights and late nights are no problem.<!-- /@t:home.services_text_3 --></span></li>
+          <li><strong><!-- @t:home.services_heading_4 -->Fixed prices<!-- /@t:home.services_heading_4 --></strong> <span><!-- @t:home.services_text_4 -->You know the price before you travel. No meter.<!-- /@t:home.services_text_4 --></span></li>
         </ul>
       </div>
-      <div class="group-actions">
-        <button type="button" class="btn btn-gold" data-service="Group transport (9+)">Get a Group Quote</button>
-        <a href="https://wa.me/{{WA_NUMBER}}?text=Hi%20BCH%20Taxi%2C%20I%27d%20like%20a%20quote%20for%20a%20group%20of%20more%20than%208%20people." class="btn btn-whatsapp" target="_blank" rel="noopener">Ask on WhatsApp</a>
-      </div>
-    </div>
-  </section>
-  <!-- /@group-band -->
-
-  <!-- Airport fares -->
-  <section class="fares" id="airport">
-    <div class="reveal">
-      <span class="section-label"><!-- @t:home.airport_label -->Dublin Airport<!-- /@t:home.airport_label --></span>
-      <h2 class="section-title"><!-- @t:home.airport_title -->Fixed Airport Fares<!-- /@t:home.airport_title --></h2>
-      <p class="section-desc"><!-- @t:home.airport_intro -->No meter, no surprises. The price is agreed before you travel, any hour of the day or night.<!-- /@t:home.airport_intro --></p>
-    </div>
-    <div class="fare-table reveal">
-      <div class="fare-row fare-head"><span><!-- @t:home.airport_span_1 -->Area<!-- /@t:home.airport_span_1 --></span><span><!-- @t:home.airport_span_2 -->Distance<!-- /@t:home.airport_span_2 --></span><span><!-- @t:home.airport_span_3 -->To airport<!-- /@t:home.airport_span_3 --></span><span><!-- @t:home.airport_span_4 -->From airport<!-- /@t:home.airport_span_4 --></span></div>
-<!-- @fares -->
-        <div class="fare-row"><span class="fare-place">Dublin 13</span><span class="fare-km">10 km</span><span class="fare-price"><small>To airport</small>€25</span><span class="fare-price"><small>From airport</small>€30</span></div>
-        <div class="fare-row"><span class="fare-place">Dublin City Centre</span><span class="fare-km">12–15 km</span><span class="fare-price"><small>To airport</small>€35</span><span class="fare-price"><small>From airport</small>€40</span></div>
-        <div class="fare-row"><span class="fare-place">Lucan</span><span class="fare-km">20–25 km</span><span class="fare-price"><small>To airport</small>€45</span><span class="fare-price"><small>From airport</small>€50</span></div>
-        <div class="fare-row"><span class="fare-place">Tallaght</span><span class="fare-km">25–30 km</span><span class="fare-price"><small>To airport</small>€50</span><span class="fare-price"><small>From airport</small>€55</span></div>
-        <div class="fare-row"><span class="fare-place">Dun Laoghaire</span><span class="fare-km">25 km</span><span class="fare-price"><small>To airport</small>€55</span><span class="fare-price"><small>From airport</small>€60</span></div>
-        <div class="fare-row"><span class="fare-place">Rathcoole</span><span class="fare-km">32 km</span><span class="fare-price"><small>To airport</small>€60</span><span class="fare-price"><small>From airport</small>€65</span></div>
-        <div class="fare-row"><span class="fare-place">Bray</span><span class="fare-km">35 km</span><span class="fare-price"><small>To airport</small>€65</span><span class="fare-price"><small>From airport</small>€70</span></div>
-<!-- /@fares -->
-    </div>
-    <div class="fare-long reveal">
-<!-- @fare-long -->
-      <div class="fare-long-card"><span>Dublin Airport ⇄ Galway</span><strong>€300</strong></div>
-      <div class="fare-long-card"><span>Dublin Airport ⇄ Cork</span><strong>€350</strong></div>
-<!-- /@fare-long -->
-    </div>
-    <p class="tours-note reveal"><!-- @t:home.airport_text -->Fares are for a private vehicle. Extra stops or other areas are quoted when you book.<!-- /@t:home.airport_text --> <a href="#contact"><!-- @t:home.airport_link -->Get a quote.<!-- /@t:home.airport_link --></a></p>
-  </section>
-
-  <!-- Corporate -->
-  <section class="theme-light corporate" id="corporate">
-    <div class="biz-head reveal">
-      <div>
-        <span class="section-label"><!-- @t:home.corporate_label -->Corporate &amp; Business<!-- /@t:home.corporate_label --></span>
-        <h2 class="section-title"><!-- @t:home.corporate_title -->Transport Your Business Can Rely On<!-- /@t:home.corporate_title --></h2>
-        <p class="section-desc"><!-- @t:home.corporate_intro -->For companies, hotels, clinics and event organisers. Every job is booked in advance with an agreed price, so no meter and no surprises on the invoice.<!-- /@t:home.corporate_intro --></p>
-      </div>
-      <div class="biz-perks">
-        <div><strong><!-- @t:home.corporate_strong_1 -->Fixed quotes<!-- /@t:home.corporate_strong_1 --></strong><span><!-- @t:home.corporate_span_1 -->Rates agreed before you travel<!-- /@t:home.corporate_span_1 --></span></div>
-        <div><strong><!-- @t:home.corporate_strong_2 -->One-off or ongoing<!-- /@t:home.corporate_strong_2 --></strong><span><!-- @t:home.corporate_span_2 -->Single trips or recurring schedules<!-- /@t:home.corporate_span_2 --></span></div>
-        <div><strong><!-- @t:home.corporate_strong_3 -->Corporate accounts<!-- /@t:home.corporate_strong_3 --></strong><span><!-- @t:home.corporate_span_3 -->One contact for every booking<!-- /@t:home.corporate_span_3 --></span></div>
-      </div>
-    </div>
-    <div class="biz-grid">
-      <div class="biz-tile reveal"><h3><!-- @t:home.corporate_heading_1 -->Executive Transfers<!-- /@t:home.corporate_heading_1 --></h3><p><!-- @t:home.corporate_text_1 -->Meetings, client visits and office-to-office runs, with multi-stop days handled without rebooking.<!-- /@t:home.corporate_text_1 --></p></div>
-      <div class="biz-tile reveal"><h3><!-- @t:home.corporate_heading_2 -->Corporate Airport Runs<!-- /@t:home.corporate_heading_2 --></h3><p><!-- @t:home.corporate_text_2 -->Dublin Airport collections and drop-offs for staff and visiting clients. We watch the flight, so a delay doesn&#x27;t mean a missed pickup.<!-- /@t:home.corporate_text_2 --></p></div>
-      <div class="biz-tile reveal"><h3><!-- @t:home.corporate_heading_3 -->Healthcare &amp; Patient Transport<!-- /@t:home.corporate_heading_3 --></h3><p><!-- @t:home.corporate_text_3 -->Pre-booked trips to hospital and clinic appointments, with extra time and a helping hand. Our van is wheelchair accessible.<!-- /@t:home.corporate_text_3 --></p></div>
-      <div class="biz-tile reveal"><h3><!-- @t:home.corporate_heading_4 -->Hotels &amp; Hospitality<!-- /@t:home.corporate_heading_4 --></h3><p><!-- @t:home.corporate_text_4 -->One number for your front desk: guest airport transfers, evening trips, weddings and tours.<!-- /@t:home.corporate_text_4 --></p></div>
-      <div class="biz-tile reveal"><h3><!-- @t:home.corporate_heading_5 -->Conferences &amp; Events<!-- /@t:home.corporate_heading_5 --></h3><p><!-- @t:home.corporate_text_5 -->Group pickups and scheduled returns for conferences, company dinners and events, for up to 8 passengers per trip.<!-- /@t:home.corporate_text_5 --></p></div>
-      <div class="biz-tile reveal"><h3><!-- @t:home.corporate_heading_6 -->Staff &amp; Shift Transport<!-- /@t:home.corporate_heading_6 --></h3><p><!-- @t:home.corporate_text_6 -->Regular early-morning and late-night runs for workplaces that public transport doesn&#x27;t reach.<!-- /@t:home.corporate_text_6 --></p></div>
-      <div class="biz-tile reveal"><h3><!-- @t:home.corporate_heading_7 -->Driver for the Day<!-- /@t:home.corporate_heading_7 --></h3><p><!-- @t:home.corporate_text_7 -->One vehicle and driver from first pickup to last drop-off, with waiting time included. Half-day options are available.<!-- /@t:home.corporate_text_7 --></p></div>
-      <div class="biz-tile reveal"><h3><!-- @t:home.corporate_heading_8 -->Intercity Travel<!-- /@t:home.corporate_heading_8 --></h3><p><!-- @t:home.corporate_text_8 -->Door-to-door to Cork, Galway, Limerick, Waterford, Belfast and anywhere else in Ireland.<!-- /@t:home.corporate_text_8 --></p></div>
-    </div>
-    <div class="biz-cta reveal">
-      <p><!-- @t:home.corporate_text_9 -->Need a regular arrangement or a one-off executive transfer?<!-- /@t:home.corporate_text_9 --></p>
-      <button type="button" class="btn btn-gold" data-service="Corporate / business"><!-- @t:home.corporate_button -->Request a Corporate Quote<!-- /@t:home.corporate_button --></button>
-    </div>
-    <p class="biz-note reveal"><!-- @t:home.corporate_text_10 -->Patient transport is a pre-booked passenger service, not an emergency or medical service. In an emergency, call 112 or 999.<!-- /@t:home.corporate_text_10 --></p>
-  </section>
-
-  <!-- School transport -->
-  <section class="theme-teal school" id="school">
-    <div class="biz-head reveal">
-      <div>
-        <span class="section-label"><!-- @t:home.school_label -->School Transport<!-- /@t:home.school_label --></span>
-        <h2 class="section-title"><!-- @t:home.school_title -->The School Run, Sorted<!-- /@t:home.school_title --></h2>
-        <p class="section-desc"><!-- @t:home.school_intro -->Safe, reliable door-to-door school transport across Dublin and Meath. Book a regular seat for the school year, or just a one-off run.<!-- /@t:home.school_intro --></p>
-      </div>
-      <div class="biz-perks">
-        <div><strong><!-- @t:home.school_strong_1 -->Door to door<!-- /@t:home.school_strong_1 --></strong><span><!-- @t:home.school_span_1 -->From home to the school gate<!-- /@t:home.school_span_1 --></span></div>
-        <div><strong><!-- @t:home.school_strong_2 -->Parent updates<!-- /@t:home.school_strong_2 --></strong><span><!-- @t:home.school_span_2 -->Messages at pickup and drop-off<!-- /@t:home.school_span_2 --></span></div>
-        <div><strong><!-- @t:home.school_strong_3 -->Up to 8 seats<!-- /@t:home.school_strong_3 --></strong><span><!-- @t:home.school_span_3 -->Room for siblings and neighbours<!-- /@t:home.school_span_3 --></span></div>
-      </div>
-    </div>
-    <div class="biz-grid">
-      <div class="biz-tile reveal"><h3><!-- @t:home.school_heading_1 -->Daily School Run<!-- /@t:home.school_heading_1 --></h3><p><!-- @t:home.school_text_1 -->Door-to-door pickup in the morning and drop-off in the afternoon, every school day.<!-- /@t:home.school_text_1 --></p></div>
-      <div class="biz-tile reveal"><h3><!-- @t:home.school_heading_2 -->Same Driver All Year<!-- /@t:home.school_heading_2 --></h3><p><!-- @t:home.school_text_2 -->A familiar face your children know, with pickup and drop-off confirmations sent to you.<!-- /@t:home.school_text_2 --></p></div>
-      <div class="biz-tile reveal"><h3><!-- @t:home.school_heading_3 -->Wheelchair Accessible<!-- /@t:home.school_heading_3 --></h3><p><!-- @t:home.school_text_3 -->Our ramp-equipped van suits children with mobility needs, and we help with boarding and securing.<!-- /@t:home.school_text_3 --></p></div>
-      <div class="biz-tile reveal"><h3><!-- @t:home.school_heading_4 -->Siblings &amp; Shared Routes<!-- /@t:home.school_heading_4 --></h3><p><!-- @t:home.school_text_4 -->Brothers and sisters travel together, and neighbouring families can share a route.<!-- /@t:home.school_text_4 --></p></div>
-      <div class="biz-tile reveal"><h3><!-- @t:home.school_heading_5 -->After-School Activities<!-- /@t:home.school_heading_5 --></h3><p><!-- @t:home.school_text_5 -->Drop-offs at sports, clubs, lessons, childcare or a family member&#x27;s home.<!-- /@t:home.school_text_5 --></p></div>
-      <div class="biz-tile reveal"><h3><!-- @t:home.school_heading_6 -->One-Off Runs<!-- /@t:home.school_heading_6 --></h3><p><!-- @t:home.school_text_6 -->Appointments, late finishes or a sudden change of plans, subject to availability.<!-- /@t:home.school_text_6 --></p></div>
-    </div>
-    <div class="biz-cta reveal">
-      <p><!-- @t:home.school_text_7 -->Ask about availability for your school.<!-- /@t:home.school_text_7 --></p>
-      <button type="button" class="btn btn-gold" data-service="School transport"><!-- @t:home.school_button -->Enquire About School Transport<!-- /@t:home.school_button --></button>
-    </div>
-  </section>
-
-  <section class="theme-dark accessibility-banner">
-    <div class="accessibility-inner reveal">
-      <div class="accessibility-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm-.5 7.5c-2 0-3.5.5-3.5.5L7 14h2.5l-1.5 8h2l2-5 2 5h2l-1.5-8H15l-1-4s-1.5-.5-3.5-.5z"/></svg>
-      </div>
-      <div class="accessibility-text">
-        <h3><!-- @t:home.accessibility_banner_heading -->Wheelchair Accessible<!-- /@t:home.accessibility_banner_heading --> <span class="gold-text"><!-- @t:home.accessibility_banner_gold_1 -->Vehicle<!-- /@t:home.accessibility_banner_gold_1 --></span></h3>
-        <p><!-- @t:home.accessibility_banner_text -->Our 8-seater Ford Transit Custom is fully equipped with a wheelchair ramp and secure fastening points. Everyone deserves comfortable, dignified transport —<!-- /@t:home.accessibility_banner_text --> <span class="gold-text"><!-- @t:home.accessibility_banner_gold_2 -->no exceptions<!-- /@t:home.accessibility_banner_gold_2 --></span>.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- About -->
-  <section class="theme-light" id="about">
-    <div class="about">
-      <div class="about-image reveal">
-        <img src="images/taxi.jpg" alt="BCH Taxi wheelchair-accessible 8-seater Ford Transit Custom" loading="lazy" width="899" height="658">
-      </div>
-      <div class="about-text reveal">
-        <span class="section-label"><!-- @t:home.about_label -->About Us<!-- /@t:home.about_label --></span>
-        <h2 class="section-title"><!-- @t:home.about_title -->BCH Taxi<!-- /@t:home.about_title --></h2>
-        <p class="section-desc"><!-- @t:home.about_intro_1 -->BCH Taxi is a professional taxi, airport transfer and private tour service covering Dublin, Meath and the whole of Ireland.<!-- /@t:home.about_intro_1 --></p>
-        <p class="section-desc" style="margin-top: 1rem;"><!-- @t:home.about_intro_2 -->Our 8-seater Ford Transit Custom is wheelchair accessible, making sure everyone can travel comfortably. Whether you need an airport transfer or a local trip, we're here for you.<!-- /@t:home.about_intro_2 --></p>
-        <div class="about-stats">
-          <div>
-            <div class="stat-number">24/7</div>
-            <div class="stat-label"><!-- @t:home.about_stat_label_1 -->Always Available<!-- /@t:home.about_stat_label_1 --></div>
-          </div>
-          <div>
-            <div class="stat-number">8</div>
-            <div class="stat-label"><!-- @t:home.about_stat_label_2 -->Passenger Seats<!-- /@t:home.about_stat_label_2 --></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Areas -->
-  <section class="theme-mint areas" id="areas">
-    <div class="reveal">
-      <span class="section-label"><!-- @t:home.areas_label -->Coverage<!-- /@t:home.areas_label --></span>
-      <h2 class="section-title"><!-- @t:home.areas_title -->Areas We Serve<!-- /@t:home.areas_title --></h2>
-      <p class="section-desc" style="margin: 0 auto;"><!-- @t:home.areas_intro -->Serving Dublin, Meath, and everywhere in between.<!-- /@t:home.areas_intro --></p>
-    </div>
-    <div class="areas-list reveal">
-      <span class="area-tag"><!-- @t:home.areas_area_1 -->Dunshaughlin<!-- /@t:home.areas_area_1 --></span>
-      <span class="area-tag"><!-- @t:home.areas_area_2 -->Dunboyne<!-- /@t:home.areas_area_2 --></span>
-      <span class="area-tag"><!-- @t:home.areas_area_3 -->Navan<!-- /@t:home.areas_area_3 --></span>
-      <span class="area-tag"><!-- @t:home.areas_area_4 -->Trim<!-- /@t:home.areas_area_4 --></span>
-      <span class="area-tag"><!-- @t:home.areas_area_5 -->Dublin City<!-- /@t:home.areas_area_5 --></span>
-      <span class="area-tag"><!-- @t:home.areas_area_6 -->Dublin Airport<!-- /@t:home.areas_area_6 --></span>
-      <span class="area-tag"><!-- @t:home.areas_area_7 -->Swords<!-- /@t:home.areas_area_7 --></span>
-      <span class="area-tag"><!-- @t:home.areas_area_8 -->Blanchardstown<!-- /@t:home.areas_area_8 --></span>
-      <span class="area-tag"><!-- @t:home.areas_area_9 -->Maynooth<!-- /@t:home.areas_area_9 --></span>
-      <span class="area-tag"><!-- @t:home.areas_area_10 -->Enfield<!-- /@t:home.areas_area_10 --></span>
+      <img src="images/taxi.jpg" alt="BCH Taxi wheelchair-accessible 8-seater Ford Transit Custom" loading="lazy" width="899" height="658">
     </div>
   </section>
 
   <!-- Reviews -->
-  <section class="theme-light reviews" id="reviews">
-    <div class="reveal">
-      <span class="section-label"><!-- @t:home.reviews_label -->Testimonials<!-- /@t:home.reviews_label --></span>
-      <h2 class="section-title"><!-- @t:home.reviews_title -->What Our Passengers Say<!-- /@t:home.reviews_title --></h2>
-    </div>
-    <div class="reviews-grid">
-      <div class="review-card reveal">
-        <div class="review-stars">
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        </div>
-        <blockquote><!-- @t:home.reviews_quote_1 -->"Brilliant service. Velemir picked us up at 4am for an early flight — on time, friendly, and the van was spotless. Won't use anyone else now."<!-- /@t:home.reviews_quote_1 --></blockquote>
-        <div class="review-author">
-          <div class="review-avatar">S</div>
-          <div>
-            <div class="review-name"><!-- @t:home.reviews_review_name_1 -->Sarah M.<!-- /@t:home.reviews_review_name_1 --></div>
-            <div class="review-source"><!-- @t:home.reviews_review_source_1 -->Airport transfer<!-- /@t:home.reviews_review_source_1 --></div>
-          </div>
-        </div>
-      </div>
-      <div class="review-card reveal">
-        <div class="review-stars">
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        </div>
-        <blockquote><!-- @t:home.reviews_quote_2 -->"My mam uses a wheelchair and BCH Taxi is the only taxi we trust. The ramp is solid, Velemir always helps, and she feels safe every time. A lifesaver."<!-- /@t:home.reviews_quote_2 --></blockquote>
-        <div class="review-author">
-          <div class="review-avatar">D</div>
-          <div>
-            <div class="review-name"><!-- @t:home.reviews_review_name_2 -->David K.<!-- /@t:home.reviews_review_name_2 --></div>
-            <div class="review-source"><!-- @t:home.reviews_review_source_2 -->Wheelchair passenger<!-- /@t:home.reviews_review_source_2 --></div>
-          </div>
-        </div>
-      </div>
-      <div class="review-card reveal">
-        <div class="review-stars">
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        </div>
-        <blockquote><!-- @t:home.reviews_quote_3 -->"Use BCH Taxi for the school run and airport trips. Always on time, always sound. The 8-seater is class for when we're heading away with the kids."<!-- /@t:home.reviews_quote_3 --></blockquote>
-        <div class="review-author">
-          <div class="review-avatar">C</div>
-          <div>
-            <div class="review-name"><!-- @t:home.reviews_review_name_3 -->Ciara O'B.<!-- /@t:home.reviews_review_name_3 --></div>
-            <div class="review-source"><!-- @t:home.reviews_review_source_3 -->Dunshaughlin<!-- /@t:home.reviews_review_source_3 --></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="reveal" style="text-align: center;">
-      <div class="review-badge">
-        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        <span><!-- @t:home.reviews_span -->5-Star Rated Local Taxi Service<!-- /@t:home.reviews_span --></span>
+  <section class="section reviews" id="reviews">
+    <div class="wrap">
+      <h2><!-- @t:home.reviews_title -->What passengers say<!-- /@t:home.reviews_title --></h2>
+      <div class="reviews-grid">
+        <figure class="review">
+          <blockquote><!-- @t:home.reviews_quote_1 -->"Picked us up at 4am for an early flight. On time, friendly, and the van was spotless."<!-- /@t:home.reviews_quote_1 --></blockquote>
+          <figcaption><!-- @t:home.reviews_review_name_1 -->Sarah M.<!-- /@t:home.reviews_review_name_1 -->, <span><!-- @t:home.reviews_review_source_1 -->airport transfer<!-- /@t:home.reviews_review_source_1 --></span></figcaption>
+        </figure>
+        <figure class="review">
+          <blockquote><!-- @t:home.reviews_quote_2 -->"My mam uses a wheelchair and this is the only taxi we trust. She feels safe every time."<!-- /@t:home.reviews_quote_2 --></blockquote>
+          <figcaption><!-- @t:home.reviews_review_name_2 -->David K.<!-- /@t:home.reviews_review_name_2 -->, <span><!-- @t:home.reviews_review_source_2 -->wheelchair passenger<!-- /@t:home.reviews_review_source_2 --></span></figcaption>
+        </figure>
+        <figure class="review">
+          <blockquote><!-- @t:home.reviews_quote_3 -->"We use them for the school run and airport trips. Always on time, and the 8-seater is great with the kids."<!-- /@t:home.reviews_quote_3 --></blockquote>
+          <figcaption><!-- @t:home.reviews_review_name_3 -->Ciara O'B.<!-- /@t:home.reviews_review_name_3 -->, <span><!-- @t:home.reviews_review_source_3 -->Dunshaughlin<!-- /@t:home.reviews_review_source_3 --></span></figcaption>
+        </figure>
       </div>
     </div>
   </section>
 
   <!-- FAQ -->
-  <section class="theme-mint faq" id="faq">
-    <div class="reveal">
-      <span class="section-label"><!-- @t:home.faq_label -->Questions<!-- /@t:home.faq_label --></span>
-      <h2 class="section-title"><!-- @t:home.faq_title -->Frequently Asked<!-- /@t:home.faq_title --></h2>
-      <p class="section-desc"><!-- @t:home.faq_intro -->Everything you need to know before you book.<!-- /@t:home.faq_intro --></p>
-    </div>
-    <div class="faq-list reveal">
-      <div class="faq-item">
-        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
-          <!-- @t:home.faq_question_1 -->How far in advance should I book?<!-- /@t:home.faq_question_1 -->
-          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-        <div class="faq-answer">
-          <p><!-- @t:home.faq_answer_1 -->For airport transfers and early morning pickups, we recommend booking at least 24 hours in advance. For local trips, same-day bookings are usually no problem — just give us a call or WhatsApp.<!-- /@t:home.faq_answer_1 --></p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
-          <!-- @t:home.faq_question_2 -->Is the van wheelchair accessible?<!-- /@t:home.faq_question_2 -->
-          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-        <div class="faq-answer">
-          <p><!-- @t:home.faq_answer_2 -->Yes. Our Ford Transit Custom has a built-in wheelchair ramp and secure fastening points. We can accommodate wheelchair users comfortably alongside other passengers.<!-- /@t:home.faq_answer_2 --></p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
-          <!-- @t:home.faq_question_3 -->Do you accept card payments?<!-- /@t:home.faq_question_3 -->
-          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-        <div class="faq-answer">
-          <p><!-- @t:home.faq_answer_3 -->We accept both cash and card payments. You can also arrange payment by bank transfer for regular bookings.<!-- /@t:home.faq_answer_3 --></p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
-          <!-- @t:home.faq_question_4 -->What areas do you cover?<!-- /@t:home.faq_question_4 -->
-          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-        <div class="faq-answer">
-          <p><!-- @t:home.faq_answer_4 -->We cover all of Dublin and Co. Meath, including Dublin City, Dublin Airport, Dunshaughlin, Dunboyne, Navan and Trim. Our day tours and intercity trips go anywhere in Ireland.<!-- /@t:home.faq_answer_4 --></p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
-          <!-- @t:home.faq_question_5 -->Can I book for a group?<!-- /@t:home.faq_question_5 -->
-          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-        <div class="faq-answer">
-          <p><!-- @t:home.faq_answer_5 -->Absolutely. Our 8-seater van is perfect for groups of up to 8, whether it's a family holiday, a hen party or a team outing. For larger groups we can arrange extra vehicles, from a second van to a minibus or coach, so everyone travels together with one booking and one point of contact.<!-- /@t:home.faq_answer_5 --></p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
-          <!-- @t:home.faq_question_6 -->Do you track flights for airport pickups?<!-- /@t:home.faq_question_6 -->
-          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-        <div class="faq-answer">
-          <p><!-- @t:home.faq_answer_6 -->Yes. We monitor your flight in real time so if it's early or delayed, we adjust. No waiting around at arrivals — we'll be there when you land.<!-- /@t:home.faq_answer_6 --></p>
-        </div>
+  <section class="section section-mist faq" id="faq">
+    <div class="wrap wrap-narrow">
+      <h2><!-- @t:home.faq_title -->Questions<!-- /@t:home.faq_title --></h2>
+      <div class="faq-list">
+        <details class="faq-item"><summary><!-- @t:home.faq_question_1 -->How far in advance should I book?<!-- /@t:home.faq_question_1 --></summary><p><!-- @t:home.faq_answer_1 -->For airport transfers and early morning pickups, we recommend booking at least 24 hours in advance. For local trips, same-day bookings are usually no problem — just give us a call or WhatsApp.<!-- /@t:home.faq_answer_1 --></p></details>
+        <details class="faq-item"><summary><!-- @t:home.faq_question_2 -->Is the van wheelchair accessible?<!-- /@t:home.faq_question_2 --></summary><p><!-- @t:home.faq_answer_2 -->Yes. Our Ford Transit Custom has a built-in wheelchair ramp and secure fastening points. We can accommodate wheelchair users comfortably alongside other passengers.<!-- /@t:home.faq_answer_2 --></p></details>
+        <details class="faq-item"><summary><!-- @t:home.faq_question_3 -->Do you accept card payments?<!-- /@t:home.faq_question_3 --></summary><p><!-- @t:home.faq_answer_3 -->We accept both cash and card payments. You can also arrange payment by bank transfer for regular bookings.<!-- /@t:home.faq_answer_3 --></p></details>
+        <details class="faq-item"><summary><!-- @t:home.faq_question_4 -->What areas do you cover?<!-- /@t:home.faq_question_4 --></summary><p><!-- @t:home.faq_answer_4 -->We cover all of Dublin and Co. Meath, including Dublin City, Dublin Airport, Dunshaughlin, Dunboyne, Navan and Trim. Our day tours and intercity trips go anywhere in Ireland.<!-- /@t:home.faq_answer_4 --></p></details>
+        <details class="faq-item"><summary><!-- @t:home.faq_question_5 -->Can I book for a group?<!-- /@t:home.faq_question_5 --></summary><p><!-- @t:home.faq_answer_5 -->Absolutely. Our 8-seater van is perfect for groups of up to 8, whether it's a family holiday, a hen party or a team outing. For larger groups we can arrange extra vehicles, from a second van to a minibus or coach, so everyone travels together with one booking and one point of contact.<!-- /@t:home.faq_answer_5 --></p></details>
+        <details class="faq-item"><summary><!-- @t:home.faq_question_6 -->Do you track flights for airport pickups?<!-- /@t:home.faq_question_6 --></summary><p><!-- @t:home.faq_answer_6 -->Yes. We monitor your flight in real time so if it's early or delayed, we adjust. No waiting around at arrivals — we'll be there when you land.<!-- /@t:home.faq_answer_6 --></p></details>
       </div>
     </div>
   </section>
 
-  <!-- Contact -->
-  <section class="contact" id="contact">
-    <div class="reveal">
-      <span class="section-label"><!-- @t:home.contact_label -->Get In Touch<!-- /@t:home.contact_label --></span>
-      <h2 class="section-title"><!-- @t:home.contact_title -->Book Your Ride<!-- /@t:home.contact_title --></h2>
-      <p class="section-desc" style="margin: 0 auto;"><!-- @t:home.contact_intro -->Call, WhatsApp or send us a message — we'll take care of the rest.<!-- /@t:home.contact_intro --></p>
+  <!-- Other services -->
+  <section class="section services" id="services">
+    <div class="wrap wrap-narrow">
+      <h2><!-- @t:home.services_title -->Other services<!-- /@t:home.services_title --></h2>
+      <div class="svc-list">
+        <details class="svc" id="corporate">
+          <summary><!-- @t:home.corporate_title -->Business and hotel travel<!-- /@t:home.corporate_title --></summary>
+          <p><!-- @t:home.corporate_intro -->Client pickups, staff runs, hotel guests, clinic appointments and events, with agreed prices.<!-- /@t:home.corporate_intro --></p>
+          <button type="button" class="btn btn-quiet" data-service="Corporate / business"><!-- @t:home.corporate_button -->Ask us<!-- /@t:home.corporate_button --></button>
+        </details>
+        <details class="svc" id="school">
+          <summary><!-- @t:home.school_title -->School runs<!-- /@t:home.school_title --></summary>
+          <p><!-- @t:home.school_intro -->Door-to-door school transport across Dublin and Meath, for the school year or a one-off run.<!-- /@t:home.school_intro --></p>
+          <button type="button" class="btn btn-quiet" data-service="School transport"><!-- @t:home.school_button -->Ask us<!-- /@t:home.school_button --></button>
+        </details>
+<!-- @group-band -->
+<!-- /@group-band -->
+      </div>
     </div>
-    <div class="contact-methods reveal">
-      <a href="tel:{{PHONE}}" class="contact-card">
-        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-        <div class="label"><!-- @t:home.contact_call_label -->Call Us<!-- /@t:home.contact_call_label --></div>
-        <div class="value">{{PHONE_DISPLAY}}</div>
-      </a>
-      <a href="https://wa.me/{{WA_NUMBER}}?text=Hi%2C%20I%27d%20like%20to%20book%20a%20taxi" class="contact-card contact-card-wa" target="_blank" rel="noopener">
-        <svg style="fill: var(--gold); stroke: none;" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        <div class="label"><!-- @t:home.contact_wa_label -->WhatsApp<!-- /@t:home.contact_wa_label --></div>
-        <div class="value"><!-- @t:home.contact_wa_value -->Message Us<!-- /@t:home.contact_wa_value --></div>
-      </a>
-      <a href="mailto:{{EMAIL}}" class="contact-card">
-        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        <div class="label"><!-- @t:home.contact_email_label -->Email Us<!-- /@t:home.contact_email_label --></div>
-        <div class="value small">{{EMAIL}}</div>
-      </a>
-    </div>
-
-    <form class="contact-form book-form reveal" id="contact-form" novalidate>
-      <span id="booking" class="anchor"></span>
-      <div class="form-head">
-        <h3><!-- @t:home.form_heading -->Book a Taxi<!-- /@t:home.form_heading --></h3>
-        <p class="form-intro"><!-- @t:home.form_text_1 -->Tell us a little about yourself and your trip. We usually reply within the hour.<!-- /@t:home.form_text_1 --></p>
-      </div>
-
-      <div class="form-step">
-        <div class="step-title"><span class="step-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><div><h4><!-- @t:home.form_subheading_1 -->Your details<!-- /@t:home.form_subheading_1 --></h4><p><!-- @t:home.form_text_2 -->So we can reply and confirm your booking.<!-- /@t:home.form_text_2 --></p></div></div>
-        <div class="form-grid">
-          <div class="form-field"><label for="cf-first"><!-- @t:home.form_field_1 -->First Name *<!-- /@t:home.form_field_1 --></label><input id="cf-first" name="first" type="text" autocomplete="given-name" placeholder="John" required data-label="First name"></div>
-          <div class="form-field"><label for="cf-last"><!-- @t:home.form_field_2 -->Last Name *<!-- /@t:home.form_field_2 --></label><input id="cf-last" name="last" type="text" autocomplete="family-name" placeholder="Doe" required data-label="Last name"></div>
-          <div class="form-field"><label for="cf-email"><!-- @t:home.form_field_3 -->Email Address *<!-- /@t:home.form_field_3 --></label><input id="cf-email" name="email" type="email" autocomplete="email" placeholder="john@example.com" required data-label="Email"></div>
-          <div class="form-field"><label for="cf-country"><!-- @t:home.form_field_4 -->Country<!-- /@t:home.form_field_4 --></label><select id="cf-country" name="country" data-label="Country"><option>Ireland</option><option>United Kingdom</option><option>United States</option><option>Canada</option><option>Australia</option><option>Germany</option><option>France</option><option>Spain</option><option>Italy</option><option>Netherlands</option><option>Other</option></select></div>
-          <div class="form-field full"><label for="cf-phone"><!-- @t:home.form_field_5 -->Phone Number *<!-- /@t:home.form_field_5 --></label>
-            <div class="phone-row"><select name="dial" aria-label="Country code" data-label="Dial code"><option value="+353">IE +353</option><option value="+44">UK +44</option><option value="+1">US/CA +1</option><option value="+61">AU +61</option><option value="+49">DE +49</option><option value="+33">FR +33</option><option value="+34">ES +34</option><option value="+39">IT +39</option><option value="+31">NL +31</option></select><input id="cf-phone" name="phone" type="tel" autocomplete="tel-national" placeholder="87 123 4567" required data-label="Phone"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-step">
-        <div class="step-title"><span class="step-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><div><h4><!-- @t:home.form_subheading_2 -->Reason for contact<!-- /@t:home.form_subheading_2 --></h4><p><!-- @t:home.form_text_3 -->Pick what fits best and we'll only show the fields you need.<!-- /@t:home.form_text_3 --></p></div></div>
-        <div class="reason-grid" role="radiogroup" aria-label="Reason for contact">
-          <label class="reason"><input type="radio" name="reason" value="Booking" checked><span class="reason-icon"><svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6M9 16h4"/></svg></span><strong><!-- @t:home.form_strong_1 -->Booking<!-- /@t:home.form_strong_1 --></strong><small><!-- @t:home.form_small_1 -->Book a taxi, transfer or tour<!-- /@t:home.form_small_1 --></small></label>
-          <label class="reason"><input type="radio" name="reason" value="Enquiry"><span class="reason-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span><strong><!-- @t:home.form_strong_2 -->Enquiry<!-- /@t:home.form_strong_2 --></strong><small><!-- @t:home.form_small_2 -->Ask a general question<!-- /@t:home.form_small_2 --></small></label>
-          <label class="reason"><input type="radio" name="reason" value="Support"><span class="reason-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.9 4.9 4.3 4.3M14.8 14.8l4.3 4.3M14.8 9.2l4.3-4.3M4.9 19.1l4.3-4.3"/></svg></span><strong><!-- @t:home.form_strong_3 -->Support<!-- /@t:home.form_strong_3 --></strong><small><!-- @t:home.form_small_3 -->Help with an existing booking<!-- /@t:home.form_small_3 --></small></label>
-          <label class="reason"><input type="radio" name="reason" value="Other"><span class="reason-icon"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></svg></span><strong><!-- @t:home.form_strong_4 -->Other<!-- /@t:home.form_strong_4 --></strong><small><!-- @t:home.form_small_4 -->Anything else<!-- /@t:home.form_small_4 --></small></label>
-        </div>
-      </div>
-
-      <fieldset class="form-step panel" data-reason="Booking">
-        <div class="step-title"><span class="step-icon"><svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg></span><div><h4><!-- @t:home.form_booking_subheading -->Trip details<!-- /@t:home.form_booking_subheading --></h4><p><!-- @t:home.form_booking_text_1 -->Tell us where you'd like to go and when.<!-- /@t:home.form_booking_text_1 --></p></div></div>
-        <div class="form-grid three">
-          <div class="form-field"><label for="cf-service"><!-- @t:home.form_booking_field_1 -->Service *<!-- /@t:home.form_booking_field_1 --></label><select id="cf-service" name="service" required data-label="Service"><option>Local taxi</option><option>Airport transfer</option><option>Day tour</option><option>Rural pub tour</option><option>Golf trip</option><option>Multi-day tour</option><option>Point-to-point</option><option>Corporate / business</option><option>School transport</option><option>Group transport (9+)</option><option>Custom tour</option></select></div>
-          <div class="form-field"><label for="cf-date"><!-- @t:home.form_booking_field_2 -->Date *<!-- /@t:home.form_booking_field_2 --></label><input id="cf-date" name="date" type="date" required data-label="Date"></div>
-          <div class="form-field"><label for="cf-time"><!-- @t:home.form_booking_field_3 -->Pickup Time *<!-- /@t:home.form_booking_field_3 --></label><input id="cf-time" name="time" type="time" required data-label="Pickup time"></div>
-          <div class="form-field"><label for="cf-pickup"><!-- @t:home.form_booking_field_4 -->Pickup Location *<!-- /@t:home.form_booking_field_4 --></label><input id="cf-pickup" name="pickup" type="text" placeholder="Hotel, airport or address" required data-label="Pickup"></div>
-          <div class="form-field"><label for="cf-eircode"><!-- @t:home.form_booking_field_5 -->Eircode<!-- /@t:home.form_booking_field_5 --></label><input id="cf-eircode" name="eircode" type="text" placeholder="e.g. D02 X285" autocapitalize="characters" data-label="Eircode"><small class="hint"><!-- @t:home.form_booking_small_1 -->Helps your driver find you.<!-- /@t:home.form_booking_small_1 --></small></div>
-          <div class="form-field"><label for="cf-dropoff"><!-- @t:home.form_booking_field_6 -->Destination *<!-- /@t:home.form_booking_field_6 --></label><input id="cf-dropoff" name="destination" type="text" placeholder="Where are you going?" required data-label="Destination"></div>
-        </div>
-        <div class="pax-grid">
-          <div class="pax">
-            <span class="pax-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></span>
-            <span class="pax-label"><!-- @t:home.form_booking_span_1 -->Adults<!-- /@t:home.form_booking_span_1 --><small><!-- @t:home.form_booking_small_2 -->12 years and older<!-- /@t:home.form_booking_small_2 --></small></span>
-            <div class="stepper">
-              <button type="button" data-step="-1" aria-label="Fewer adults">−</button>
-              <input id="cf-adults" name="adults" type="number" value="1" min="1" max="8" readonly data-label="Adults">
-              <button type="button" data-step="1" aria-label="More adults">+</button>
-            </div>
-          </div>
-          <div class="pax">
-            <span class="pax-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01M15 9h.01"/></svg></span>
-            <span class="pax-label"><!-- @t:home.form_booking_span_2 -->Children<!-- /@t:home.form_booking_span_2 --><small><!-- @t:home.form_booking_small_3 -->Under 12 years<!-- /@t:home.form_booking_small_3 --></small></span>
-            <div class="stepper">
-              <button type="button" data-step="-1" aria-label="Fewer children">−</button>
-              <input id="cf-children" name="children" type="number" value="0" min="0" max="8" readonly data-label="Children">
-              <button type="button" data-step="1" aria-label="More children">+</button>
-            </div>
-          </div>
-        </div>
-        <p class="pax-more" hidden><!-- @t:home.form_booking_text_2 -->More than 8 of you? No problem. We can arrange extra vehicles, so add your group size in the notes below.<!-- /@t:home.form_booking_text_2 --></p>
-        <div class="form-field full"><label for="cf-message"><!-- @t:home.form_booking_field_7 -->Special Requests / Notes<!-- /@t:home.form_booking_field_7 --></label><textarea id="cf-message" name="message" placeholder="Wheelchair access, luggage, child seats, extra stops, flight number…" data-label="Notes"></textarea></div>
-      </fieldset>
-
-      <fieldset class="form-step panel" data-reason="Enquiry" disabled hidden>
-        <div class="step-title"><span class="step-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span><div><h4><!-- @t:home.form_enquiry_subheading -->Your enquiry<!-- /@t:home.form_enquiry_subheading --></h4><p><!-- @t:home.form_enquiry_text -->Give your question a short subject so we can answer quickly.<!-- /@t:home.form_enquiry_text --></p></div></div>
-        <div class="form-field full"><label for="cf-subject"><!-- @t:home.form_enquiry_field_1 -->Subject *<!-- /@t:home.form_enquiry_field_1 --></label><input id="cf-subject" name="subject" type="text" required data-label="Subject"></div>
-        <div class="form-field full"><label for="cf-enquiry"><!-- @t:home.form_enquiry_field_2 -->Message *<!-- /@t:home.form_enquiry_field_2 --></label><textarea id="cf-enquiry" name="enquiry" required data-label="Message"></textarea></div>
-      </fieldset>
-
-      <fieldset class="form-step panel" data-reason="Support" disabled hidden>
-        <div class="step-title"><span class="step-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.9 4.9 4.3 4.3M14.8 14.8l4.3 4.3M14.8 9.2l4.3-4.3M4.9 19.1l4.3-4.3"/></svg></span><div><h4><!-- @t:home.form_support_subheading -->How can we help?<!-- /@t:home.form_support_subheading --></h4><p><!-- @t:home.form_support_text -->Tell us what's wrong and we'll sort it.<!-- /@t:home.form_support_text --></p></div></div>
-        <div class="form-field full"><label for="cf-issue"><!-- @t:home.form_support_field_1 -->Issue *<!-- /@t:home.form_support_field_1 --></label><select id="cf-issue" name="issue" required data-label="Issue"><option value="">Select an issue…</option><option>Change or cancel a booking</option><option>Payment / refund</option><option>Driver / pickup problem</option><option>Lost property</option><option>Other</option></select></div>
-        <div class="form-field full"><label for="cf-desc"><!-- @t:home.form_support_field_2 -->Description *<!-- /@t:home.form_support_field_2 --></label><textarea id="cf-desc" name="description" required placeholder="Booking date, pickup and what happened" data-label="Description"></textarea></div>
-      </fieldset>
-
-      <fieldset class="form-step panel" data-reason="Other" disabled hidden>
-        <div class="step-title"><span class="step-icon"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></svg></span><div><h4><!-- @t:home.form_other_subheading -->Your message<!-- /@t:home.form_other_subheading --></h4><p><!-- @t:home.form_other_text -->Tell us what you'd like to share.<!-- /@t:home.form_other_text --></p></div></div>
-        <div class="form-field full"><label for="cf-other"><!-- @t:home.form_other_field -->Message *<!-- /@t:home.form_other_field --></label><textarea id="cf-other" name="other" required data-label="Message"></textarea></div>
-      </fieldset>
-
-      <input class="form-honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
-      <div class="form-actions">
-        <button type="submit" class="btn btn-gold btn-wide" id="cf-send"><svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg><span class="send-label"><!-- @t:home.form_send_label -->Send Booking Request<!-- /@t:home.form_send_label --></span></button>
-        <button type="button" class="btn btn-whatsapp" id="cf-wa">
-          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          <!-- @t:home.form_button -->Send on WhatsApp<!-- /@t:home.form_button -->
-        </button>
-      </div>
-      <p class="form-status" id="cf-status" role="status" aria-live="polite"></p>
-      <p class="form-legal"><!-- @t:home.form_text_4 -->By sending you agree to be contacted by BCH Taxi about your request. No payment is taken online.<!-- /@t:home.form_text_4 --></p>
-    </form>
   </section>
-
+  </main>
 
   <!-- @modal -->
-  <!-- Tour booking modal -->
-  <dialog class="tour-modal" id="tour-modal" aria-labelledby="tm-title">
-    <form class="tm-form" id="tour-form" novalidate>
-      <header class="tm-head">
-        <span class="tm-icon"><svg viewBox="0 0 24 24"><path d="M5 17h14M5 17a2 2 0 1 0 4 0M15 17a2 2 0 1 0 4 0M3 17V11l2-5h14l2 5v6"/><path d="M3 11h18"/></svg></span>
-        <div><h3 id="tm-title">Complete Your Booking</h3><p id="tm-sub">Tour</p></div>
-        <button type="button" class="tm-close" aria-label="Close" data-close>&times;</button>
-      </header>
-      <div class="tm-body">
-        <div class="tm-cols">
-          <div>
-            <h4 class="tm-section"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Contact details</h4>
-            <div class="form-field"><label for="tm-name">Full Name *</label><input id="tm-name" name="name" type="text" autocomplete="name" placeholder="John Doe" required data-label="Name"></div>
-            <div class="form-field"><label for="tm-email">Email Address *</label><input id="tm-email" name="email" type="email" autocomplete="email" placeholder="john@example.com" required data-label="Email"></div>
-            <div class="form-field"><label for="tm-country">Country</label><select id="tm-country" name="country" data-label="Country"><option>Ireland</option><option>United Kingdom</option><option>United States</option><option>Canada</option><option>Australia</option><option>Germany</option><option>France</option><option>Spain</option><option>Italy</option><option>Netherlands</option><option>Other</option></select></div>
-            <div class="form-field"><label for="tm-phone">Phone Number *</label><div class="phone-row"><select name="dial" aria-label="Country code" data-label="Dial code"><option value="+353">IE +353</option><option value="+44">UK +44</option><option value="+1">US/CA +1</option><option value="+61">AU +61</option><option value="+49">DE +49</option><option value="+33">FR +33</option><option value="+34">ES +34</option><option value="+39">IT +39</option><option value="+31">NL +31</option></select><input id="tm-phone" name="phone" type="tel" autocomplete="tel-national" placeholder="87 123 4567" required data-label="Phone"></div></div>
-          </div>
-          <div>
-            <h4 class="tm-section"><svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg> Trip details</h4>
-            <div class="form-field"><label for="tm-pickup">Pickup Location *</label><input id="tm-pickup" name="pickup" type="text" placeholder="Hotel, airport or address" required data-label="Pickup"></div>
-            <div class="form-field"><label for="tm-eircode">Pickup Eircode <em>(optional)</em></label><input id="tm-eircode" name="eircode" type="text" placeholder="e.g. D02 X285" data-label="Eircode"></div>
-            <div class="tm-two">
-              <div class="form-field"><label for="tm-date">Tour Date *</label><input id="tm-date" name="date" type="date" required data-label="Tour date"></div>
-              <div class="form-field"><label for="tm-time">Pickup Time *</label><input id="tm-time" name="time" type="time" required data-label="Pickup time"></div>
-            </div>
-          </div>
-        </div>
-        <h4 class="tm-section"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg> Passengers</h4>
-        <p class="tm-note">One price covers the whole vehicle, for up to 8 passengers.</p>
-        <div class="pax-grid">
-          <div class="pax">
-            <span class="pax-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></span>
-            <span class="pax-label">Adults<small>12 years and older</small></span>
-            <div class="stepper">
-              <button type="button" data-step="-1" aria-label="Fewer adults">−</button>
-              <input id="tm-adults" name="adults" type="number" value="1" min="1" max="8" readonly data-label="Adults">
-              <button type="button" data-step="1" aria-label="More adults">+</button>
-            </div>
-          </div>
-          <div class="pax">
-            <span class="pax-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01M15 9h.01"/></svg></span>
-            <span class="pax-label">Children<small>Under 12 years</small></span>
-            <div class="stepper">
-              <button type="button" data-step="-1" aria-label="Fewer children">−</button>
-              <input id="tm-children" name="children" type="number" value="0" min="0" max="8" readonly data-label="Children">
-              <button type="button" data-step="1" aria-label="More children">+</button>
-            </div>
-          </div>
-        </div>
-        <p class="pax-more" hidden>More than 8 of you? We can arrange extra vehicles. Add your group size in the notes and we'll quote for the whole group.</p>
-        <div class="form-field full"><label for="tm-notes">Special Requests / Notes</label><textarea id="tm-notes" name="notes" placeholder="Wheelchair access, child seats, places you'd love to stop…" data-label="Notes"></textarea></div>
-        <div class="tm-summary">
-          <div><span>Tour</span><strong id="tm-sum-tour">–</strong></div>
-          <div><span>Passengers</span><strong id="tm-sum-pax">1</strong></div>
-          <div class="tm-total"><span>Total (per vehicle)</span><strong id="tm-sum-total">€0</strong></div>
-          <p>No payment now. We'll confirm availability and the price, then you pay on the day.</p>
-        </div>
-        <input class="form-honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <div class="form-actions">
-          <button type="submit" class="btn btn-gold btn-wide" id="tm-send"><svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg><span class="send-label">Send Booking Request</span></button>
-          <button type="button" class="btn btn-whatsapp" id="tm-wa"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Book on WhatsApp</button>
-        </div>
-        <p class="form-status" id="tm-status" role="status" aria-live="polite"></p>
-      </div>
-    </form>
-  </dialog>
   <!-- /@modal -->
 
   <!-- @fab -->
-  <!-- WhatsApp FAB -->
-  <a href="https://wa.me/{{WA_NUMBER}}?text=Hi%2C%20I%27d%20like%20to%20book%20a%20taxi" class="whatsapp-fab" target="_blank" rel="noopener">
-    <span class="fab-tooltip">Chat on WhatsApp</span>
-    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-  </a>
   <!-- /@fab -->
 
   <!-- @footer -->
-  <footer class="site-footer">
-    <div class="footer-grid">
-      <div class="footer-about">
-        <a href="#" class="brand" aria-label="BCH Taxi home">
-          <span class="brand-mark" aria-hidden="true">BCH</span><span class="brand-word">BCH Taxi<small>Taxi · Airport · Tours</small></span>
-        </a>
-        <p>Taxis, Dublin Airport transfers and private tours of Ireland in our wheelchair-accessible 8-seater. Available 24/7.</p>
-        <ul class="footer-contact">
-          <li><a href="tel:{{PHONE}}"><span>Call</span>{{PHONE_DISPLAY}}</a></li>
-          <li><a href="https://wa.me/{{WA_NUMBER}}" target="_blank" rel="noopener"><span>WhatsApp</span>Message us</a></li>
-          <li><a href="mailto:{{EMAIL}}"><span>Email</span>{{EMAIL}}</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Explore</h4>
-        <ul>
-          <li><a href="#">Home</a></li>
-          <li><a href="tours.html">Day Tours</a></li>
-          <li><a href="multi-day-tours.html">Multi-Day Tours</a></li>
-          <li><a href="destinations.html">Destinations</a></li>
-          <li><a href="blog.html">Blog &amp; Travel Guides</a></li>
-          <li><a href="#faq">FAQ</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Services</h4>
-        <ul>
-          <li><a href="#services">Local Taxi</a></li>
-          <li><a href="#airport">Airport Transfers</a></li>
-          <li><a href="#corporate">Corporate &amp; Business</a></li>
-          <li><a href="#school">School Transport</a></li>
-          <li><a href="price-calculator.html">Price Calculator</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Popular Tours</h4>
-        <ul>
-          <li><a href="tours/giants-causeway.html">Giant&#x27;s Causeway</a></li>
-          <li><a href="tours/ring-of-kerry.html">Ring of Kerry</a></li>
-          <li><a href="tours/cliffs-of-moher.html">Cliffs of Moher</a></li>
-          <li><a href="tours/glendalough-wicklow.html">Glendalough &amp; Wicklow</a></li>
-          <li><a href="tours/connemara-galway.html">Connemara &amp; Galway</a></li>
-          <li><a href="tours/dingle-peninsula.html">Dingle Peninsula</a></li>
-        </ul>
-      </div>
-      <div class="footer-cta">
-        <h4>Plan a Trip</h4>
-        <p>Tell us your dates and where you'd like to go. We'll reply quickly with a fixed price.</p>
-        <a href="#booking" class="btn btn-gold">Book a Taxi</a>
-        <a href="price-calculator.html" class="btn btn-outline">Get a Quote</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2026 BCH Taxi. All rights reserved.</p>
-      <p>Wheelchair-accessible 8-seater · Dublin, Meath &amp; all of Ireland</p>
-    </div>
-  </footer>
   <!-- /@footer -->
 
   <script src="js/main.js"></script>

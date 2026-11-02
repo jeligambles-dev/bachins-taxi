@@ -54,7 +54,7 @@ POSTS = [
 <p>Once you've landed and collected your bags, give us a call or WhatsApp on <a href="tel:{{PHONE}}">{{PHONE_DISPLAY}}</a> and we'll meet you as arranged. If your flight is delayed, don't worry: let us know and we'll adjust.</p>
 
 <h2>Why a fixed fare helps</h2>
-<p>With a fixed price agreed before you travel, there are no meter surprises in traffic. See our <a href="{ROOT}index.html#airport">airport fares</a>, or ask for a quote if your area isn't listed.</p>
+<p>With a fixed price agreed before you travel, there are no meter surprises in traffic. See our <a href="{ROOT}price-calculator.html">airport fares</a>, or ask for a quote if your area isn't listed.</p>
 
 <h2>Travelling further?</h2>
 <p>We also run direct transfers from Dublin Airport to cities across Ireland, including Galway and Cork. It's often the easiest option after a long flight, especially with luggage or a group.</p>

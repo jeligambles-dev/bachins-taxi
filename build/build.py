@@ -207,38 +207,33 @@ def idx(root, anchor, is_index):
 # ── Shared chrome ────────────────────────────────────────────────────────────
 
 BRAND = ('<span class="brand-mark" aria-hidden="true">BCH</span>'
-         '<span class="brand-word">BCH Taxi<small>Taxi · Airport · Tours</small></span>')
+         '<span class="brand-word">BCH Taxi</span>')
 
 
 def nav(root, is_index=False, active=""):
     items = [
         ("Tours", f"{root}tours.html", "tours"),
-        ("Pub Tours", f"{root}pub-tours.html", "pub"),
+        ("Pub tours", f"{root}pub-tours.html", "pub"),
         ("Golf", f"{root}golf-trips.html", "golf"),
-        ("Multi-Day", f"{root}multi-day-tours.html", "multi"),
+        ("Multi-day", f"{root}multi-day-tours.html", "multi"),
         ("Prices", f"{root}price-calculator.html", "prices"),
-        ("Airport", idx(root, "airport", is_index), "airport"),
-        ("Business", idx(root, "corporate", is_index), "business"),
         ("Blog", f"{root}blog.html", "blog"),
-        ("Contact", idx(root, "contact", is_index), "contact"),
     ]
     current = ' aria-current="page"'
     lis = "\n".join(
         f'      <li><a href="{href}"{current if key == active else ""}>{label}</a></li>'
         for label, href, key in items)
     home = "#" if is_index else f"{root}index.html"
-    return f"""  <nav>
+    return f"""  <nav class="site-nav">
     <a href="{home}" class="brand" aria-label="BCH Taxi home">
       {BRAND}
     </a>
-    <ul class="nav-links">
+    <ul class="nav-links" id="nav-links">
 {lis}
-      <li class="nav-call"><a href="tel:{E(PHONE)}">Call {E(PHONE_DISPLAY)}</a></li>
-      <li><a href="{idx(root, 'booking', is_index)}" class="nav-cta">Book Taxi</a></li>
+      <li class="nav-book"><a href="{idx(root, 'booking', is_index)}" class="btn btn-primary">Book a taxi</a></li>
     </ul>
-    <div class="mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">
-      <span></span><span></span><span></span>
-    </div>
+    <a class="nav-call" href="tel:{E(PHONE)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="nav-call-short">Call</span><span class="nav-call-num">{E(PHONE_DISPLAY)}</span></a>
+    <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
   </nav>"""
 
 
@@ -256,57 +251,42 @@ def footer(root, is_index=False):
     popular += [t for t in published("day") if t not in popular]
     popular = popular[:6]
     tour_links = "\n".join(f'          <li><a href="{root}tours/{t["slug"]}.html">{E(t["name"])}</a></li>' for t in popular)
+    home = "#" if is_index else root + "index.html"
     return f"""  <footer class="site-footer">
     <div class="footer-grid">
       <div class="footer-about">
-        <a href="{'#' if is_index else root + 'index.html'}" class="brand" aria-label="BCH Taxi home">
+        <a href="{home}" class="brand" aria-label="BCH Taxi home">
           {BRAND}
         </a>
         <p>{T("footer.about")}</p>
         <ul class="footer-contact">
-          <li><a href="tel:{E(PHONE)}"><span>Call</span>{E(PHONE_DISPLAY)}</a></li>
-          <li><a href="{E(WHATSAPP)}" target="_blank" rel="noopener"><span>WhatsApp</span>Message us</a></li>
-          <li><a href="mailto:{E(EMAIL)}"><span>Email</span>{E(EMAIL)}</a></li>
+          <li><a href="tel:{E(PHONE)}">{E(PHONE_DISPLAY)}</a></li>
+          <li><a href="{E(WHATSAPP)}" target="_blank" rel="noopener">WhatsApp</a></li>
+          <li><a href="mailto:{E(EMAIL)}">{E(EMAIL)}</a></li>
         </ul>
       </div>
       <div>
-        <h4>Explore</h4>
-        <ul>
-          <li><a href="{'#' if is_index else root + 'index.html'}">Home</a></li>
-          <li><a href="{root}tours.html">Day Tours</a></li>
-          <li><a href="{root}pub-tours.html">Pub Tours</a></li>
-          <li><a href="{root}golf-trips.html">Golf Trips</a></li>
-          <li><a href="{root}multi-day-tours.html">Multi-Day Tours</a></li>
-          <li><a href="{root}destinations.html">Destinations</a></li>
-          <li><a href="{root}blog.html">Blog &amp; Travel Guides</a></li>
-          <li><a href="{idx(root, 'faq', is_index)}">FAQ</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Services</h4>
-        <ul>
-          <li><a href="{idx(root, 'services', is_index)}">Local Taxi</a></li>
-          <li><a href="{idx(root, 'airport', is_index)}">Airport Transfers</a></li>
-          <li><a href="{idx(root, 'corporate', is_index)}">Corporate &amp; Business</a></li>
-          <li><a href="{idx(root, 'school', is_index)}">School Transport</a></li>
-          <li><a href="{root}price-calculator.html">Price Calculator</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Popular Tours</h4>
+        <h4>Popular tours</h4>
         <ul>
 {tour_links}
         </ul>
       </div>
-      <div class="footer-cta">
-        <h4>{T("footer.plan_title")}</h4>
-        <p>{T("footer.plan_text")}</p>
-        <a href="{idx(root, 'booking', is_index)}" class="btn btn-gold">Book a Taxi</a>
-        <a href="{root}price-calculator.html" class="btn btn-outline">Get a Quote</a>
+      <div>
+        <h4>More</h4>
+        <ul>
+          <li><a href="{root}tours.html">All day tours</a></li>
+          <li><a href="{root}pub-tours.html">Pub tours</a></li>
+          <li><a href="{root}golf-trips.html">Golf trips</a></li>
+          <li><a href="{root}multi-day-tours.html">Multi-day tours</a></li>
+          <li><a href="{root}price-calculator.html">Price calculator</a></li>
+          <li><a href="{root}destinations.html">Destinations</a></li>
+          <li><a href="{root}blog.html">Travel guides</a></li>
+          <li><a href="{idx(root, 'faq', is_index)}">Questions</a></li>
+        </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2026 BCH Taxi. All rights reserved.</p>
+      <p>&copy; 2026 BCH Taxi</p>
       <p>{T("footer.tagline")}</p>
     </div>
   </footer>"""
@@ -332,7 +312,7 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
   <title>{E(title)}</title>
   <meta name="description" content="{E(description)}">
   <meta name="robots" content="{'noindex' if noindex else 'index, follow'}">
-  <meta name="theme-color" content="#062a1f">
+  <meta name="theme-color" content="#0E2A22">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="BCH Taxi">
   <meta property="og:locale" content="en_IE">
@@ -344,7 +324,7 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
   <link rel="apple-touch-icon" href="{photo_url('logo', root, 'images/logo.svg', absolute=False)}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{root}{asset("css/style.css")}">
   <link rel="stylesheet" href="{root}{asset("css/pages.css")}">{ld}
 </head>
@@ -369,13 +349,12 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
 """
 
 
-def page_hero(root, crumbs, label, h1, lead, extra=""):
+def page_hero(root, crumbs, h1, lead, extra=""):
     trail = " <span>/</span> ".join(
         f'<a href="{href}">{E(name)}</a>' if href else f'<span aria-current="page">{E(name)}</span>'
         for name, href in crumbs)
     return f"""    <section class="page-hero">
       <nav class="crumbs" aria-label="Breadcrumb">{trail}</nav>
-      <span class="hero-label">{label}</span>
       <h1>{h1}</h1>
       <p class="page-lead">{lead}</p>{extra}
     </section>"""
@@ -402,59 +381,53 @@ def price_html(t, note=""):
     """Price block contents: 'From €X per vehicle', or just 'Price on request'."""
     if t["price"] is None:
         return price_label(t) + (f"<span>{note}</span>" if note else "")
-    return f"<small>From</small>{price_label(t)}<span>{price_unit(t)}{' · ' + note if note else ''}</span>"
+    return f"<small>From</small>{price_label(t)}<span>{price_unit(t)}{', ' + note if note else ''}</span>"
 
 
-def tour_card(t, root, detail_link=True):
-    li = "".join(f"<li>{E(x)}</li>" for x in t["highlights"][:4])
-    extra = t["highlights"][4:]
-    more = (f'<details class="tour-more"><summary>+{len(extra)} more</summary><ul class="tour-list">'
-            + "".join(f"<li>{E(x)}</li>" for x in extra) + "</ul></details>") if extra else ""
-    badge = '<span class="tour-badge">Most Popular</span>' if t["fav"] else ""
+def tour_card(t, root):
+    """Compact card: photo (if any), name, region, duration, price and one Book button."""
     photo = tour_photo(t, root) + "\n        " if t["slug"] in TOUR_PHOTO else ""
-    details = f'<a class="tour-details" href="{root}tours/{t["slug"]}.html">View tour details →</a>' if detail_link else ""
-    return f"""      <article class="tour-card reveal{' fav' if t['fav'] else ''}">
-        {photo}{badge}
-        <span class="tour-region">{E(t['region'])}</span>
-        <h3><a href="{root}tours/{t['slug']}.html">{E(t['name'])}</a></h3>
-        <div class="tour-chips"><span>{E(t['duration'])}</span><span>Private</span><span>Up to {MAX_PASSENGERS}</span></div>
-        <p>{E(t['desc'])}</p>
-        <ul class="tour-list">{li}</ul>
-        {more}
-        {details}
+    return f"""      <article class="tour-card{' has-photo' if photo else ''}" data-kind="{t['kind']}">
+        {photo}<div class="tour-body">
+          <h3><a href="{root}tours/{t['slug']}.html">{E(t['name'])}</a></h3>
+          <p class="tour-meta">{E(t['region'])}<br>{E(t['duration'])}</p>
+          <p class="tour-desc">{E(t['desc'])}</p>
+        </div>
         <div class="tour-foot">
           <div class="tour-price">{price_html(t)}</div>
-          <button type="button" class="btn btn-gold tour-book" data-price="{price_attr(t)}" data-unit="{price_unit(t)}" data-tour="{E(t['name'])}">Book</button>
+          <button type="button" class="btn btn-quiet tour-book" data-price="{price_attr(t)}" data-unit="{price_unit(t)}" data-tour="{E(t['name'])}">Book</button>
         </div>
       </article>"""
 
 
 def multi_card(m, root):
     days = "".join(f"<li><strong>Day {i}</strong>{E(d)}</li>" for i, d in enumerate(m["plan"], 1))
-    return f"""      <article class="multi-card reveal" id="{m['slug']}">
+    return f"""      <article class="multi-card" id="{m['slug']}">
         <div class="multi-head">
-          <span class="tour-region">{m['days']} days · sample route</span>
+          <p class="tour-meta">{m['days']}-day sample route</p>
           <h3>{E(m['name'])}</h3>
           <p>{E(m['summary'])}</p>
         </div>
         <ol class="multi-days">{days}</ol>
         <div class="tour-foot">
           <div class="tour-price"><small>From</small>{eur(multi_price(m))}<span>{m['days']} days × {eur(MULTI_DAY_RATE)} per vehicle</span></div>
-          <button type="button" class="btn btn-gold tour-book" data-price="{multi_price(m)}" data-tour="{E(m['name'])} ({m['days']}-day tour)">Book</button>
+          <button type="button" class="btn btn-quiet tour-book" data-price="{multi_price(m)}" data-tour="{E(m['name'])} ({m['days']}-day tour)">Book</button>
         </div>
       </article>"""
 
 
 def cta_band(root, title_key="cta.title", text_key="cta.text"):
-    return f"""    <section class="cta-band theme-dark">
-      <div class="reveal">
-        <h2>{T(title_key)}</h2>
-        <p>{T(text_key)}</p>
-      </div>
-      <div class="cta-actions reveal">
-        <a href="{root}index.html#booking" class="btn btn-gold">Book a Taxi</a>
-        <a href="{E(WHATSAPP)}" class="btn btn-whatsapp" target="_blank" rel="noopener">WhatsApp Us</a>
-        <a href="tel:{E(PHONE)}" class="btn btn-outline">Call {E(PHONE_DISPLAY)}</a>
+    return f"""    <section class="cta-band">
+      <div class="cta-inner">
+        <div>
+          <h2>{T(title_key)}</h2>
+          <p>{T(text_key)}</p>
+        </div>
+        <div class="cta-actions">
+          <a href="{root}index.html#booking" class="btn btn-primary">Book a taxi or tour</a>
+          <a href="{E(WHATSAPP)}" class="btn btn-quiet" target="_blank" rel="noopener">WhatsApp</a>
+          <a href="tel:{E(PHONE)}" class="btn btn-quiet">Call {E(PHONE_DISPLAY)}</a>
+        </div>
       </div>
     </section>"""
 
@@ -465,30 +438,15 @@ def group_service():
 
 
 def group_band(root, is_index=False):
-    """Banner for groups bigger than one van."""
-    book = (f'<button type="button" class="btn btn-gold" data-service="{group_service()}">Get a Group Quote</button>'
+    """Groups bigger than one van: a collapsible item in the homepage "Other services" list."""
+    book = (f'<button type="button" class="btn btn-quiet" data-service="{group_service()}">Ask us</button>'
             if is_index else
-            f'<a href="{root}index.html?service={quote(group_service(), safe='()')}#booking" class="btn btn-gold">Get a Group Quote</a>')
-    points = "\n".join(f"          <li>{x}</li>" for x in T_lines("group.points"))
-    return f"""  <section class="group-band theme-teal">
-    <div class="group-inner reveal">
-      <div class="group-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>
-      </div>
-      <div class="group-text">
-        <span class="section-label">{T("group.label")}</span>
-        <h2>More than {MAX_PASSENGERS} {T("group.title_rest")}</h2>
-        <p>{T("group.text")}</p>
-        <ul class="group-points">
-{points}
-        </ul>
-      </div>
-      <div class="group-actions">
-        {book}
-        <a href="{E(WHATSAPP)}?text={quote(f"Hi BCH Taxi, I'd like a quote for a group of more than {MAX_PASSENGERS} people.")}" class="btn btn-whatsapp" target="_blank" rel="noopener">Ask on WhatsApp</a>
-      </div>
-    </div>
-  </section>"""
+            f'<a href="{root}index.html?service={quote(group_service(), safe='()')}#booking" class="btn btn-quiet">Ask us</a>')
+    return f"""        <details class="svc" id="groups">
+          <summary>More than {MAX_PASSENGERS} {T("group.title_rest")}</summary>
+          <p>{T("group.text")}</p>
+          {book}
+        </details>"""
 
 
 def count_word(n):
@@ -525,30 +483,37 @@ def build_tour_pages():
                         if t["slug"] in TOUR_PHOTO else "")
         hl = "".join(f"<li>{E(x)}</li>" for x in t["highlights"])
         inc = "".join(f"<li>{x}</li>" for x in T_lines(f"included.{kind}"))
-        calc_link = (f'\n          <a class="book-alt" href="{root}price-calculator.html?tour={t["slug"]}">Add extras in the price calculator →</a>'
+        calc_link = (f'\n          <a class="book-alt" href="{root}price-calculator.html?tour={t["slug"]}">Add extras in the price calculator</a>'
                      if kind == "day" and t["price"] is not None else "")
         also = "\n".join(tour_card(o, root) for o in others[:3])
         more = f"""
-    <section class="theme-mint">
-      <div class="reveal">
-        <span class="section-label">{T("tour.more_label")}</span>
-        <h2 class="section-title">{T("tour.more_title")}</h2>
-      </div>
-      <div class="tours-grid">
+    <section class="section section-mist">
+      <div class="wrap">
+        <h2>{T("tour.more_title")}</h2>
+        <div class="tours-grid">
 {also}
+        </div>
       </div>
     </section>
 """ if also else ""
-        body = page_hero(root, [(n, (root + h) if h else None) for n, h in crumbs], E(t["region"]),
+        body = page_hero(root, [(n, (root + h) if h else None) for n, h in crumbs],
                          E(t["name"]) + " " + suffix,
-                         E(t["desc"]),
-                         f"""
-      <div class="hero-meta">
-        <span>{E(t['duration'])}</span><span>{"Private tour" if kind == "day" else KINDS[kind]}</span><span>Up to {MAX_PASSENGERS} passengers</span><span>From Dublin: {E(t['drive'])}</span>
-      </div>""") + f"""
+                         E(t["desc"])) + f"""
 
-    <section class="theme-light tour-detail">
-      <div class="detail-grid">
+    <section class="section tour-detail">
+      <div class="wrap detail-grid">
+        <aside class="book-card">
+          <div class="tour-price">{price_html(t, f"up to {MAX_PASSENGERS} people")}</div>
+          <ul class="book-facts">
+            <li><span>Duration</span>{E(t['duration'])}</li>
+            <li><span>Drive from Dublin</span>{E(t['drive'])}</li>
+            <li><span>Group size</span>Up to {MAX_PASSENGERS} passengers</li>
+            <li><span>Pickup</span>Dublin or Meath</li>
+          </ul>
+          <button type="button" class="btn btn-primary tour-book" data-price="{price_attr(t)}" data-unit="{unit}" data-tour="{E(t['name'])}">Book this tour</button>
+          <a class="btn btn-quiet" href="{E(WHATSAPP)}?text={quote(f"Hi BCH Taxi, I'd like to ask about the {t['name']} tour.")}" target="_blank" rel="noopener">Ask on WhatsApp</a>{calc_link}
+          <p class="book-group">More than {MAX_PASSENGERS} people? <a href="{root}index.html?service={quote(group_service(), safe='()')}#booking">We can arrange extra vehicles.</a></p>
+        </aside>
         <div class="detail-main">
           {detail_photo}<h2>{T("tour.about_title")}</h2>
           <p>{E(t['intro'])}</p>
@@ -559,23 +524,9 @@ def build_tour_pages():
           <h2>{T("tour.good_title")}</h2>
           <p>{T(f"good_to_know.{kind}")}</p>
         </div>
-        <aside class="book-card">
-          <span class="tour-region">{KINDS[kind] if kind != "day" else "Private tour"}</span>
-          <div class="tour-price">{price_html(t, f"up to {MAX_PASSENGERS} people")}</div>
-          <ul class="book-facts">
-            <li><span>Duration</span>{E(t['duration'])}</li>
-            <li><span>Drive from Dublin</span>{E(t['drive'])}</li>
-            <li><span>Pickup</span>Dublin or Meath</li>
-          </ul>
-          <button type="button" class="btn btn-gold tour-book" data-price="{price_attr(t)}" data-unit="{unit}" data-tour="{E(t['name'])}">Book This Tour</button>
-          <a class="btn btn-whatsapp" href="{E(WHATSAPP)}?text={quote(f"Hi BCH Taxi, I'd like to ask about the {t['name']} tour.")}" target="_blank" rel="noopener">Ask on WhatsApp</a>{calc_link}
-          <p class="book-group">More than {MAX_PASSENGERS} people? <a href="{root}index.html?service={quote(group_service(), safe='()')}#booking">We can arrange extra vehicles.</a></p>
-        </aside>
       </div>
     </section>
 {more}
-{group_band(root)}
-
 {cta_band(root)}"""
         tour_ld = {
             "@context": "https://schema.org", "@type": "TouristTrip",
@@ -615,19 +566,18 @@ def build_kind_listing(kind, title):
     cards = "\n".join(tour_card(t, root) for t in tours) if tours else \
         f'      <p class="tours-note">{T(kind + ".empty")}</p>'
     inc = "".join(f"<li>{x}</li>" for x in T_lines(f"included.{kind}"))
-    body = page_hero(root, [("Home", "index.html"), (list_name, None)], T(kind + ".label"),
+    body = page_hero(root, [("Home", "index.html"), (list_name, None)],
                      T(kind + ".title"), T(kind + ".lead")) + f"""
 
-    <section class="theme-mint">
-      <div class="tours-grid">
+    <section class="section">
+      <div class="wrap">
+        <div class="tours-grid">
 {cards}
-      </div>
-    </section>
-
-    <section class="theme-light">
-      <div class="note-box reveal">
-        <h3>{T("tour.included_title")}</h3>
-        <ul class="check-list">{inc}</ul>
+        </div>
+        <div class="note-box">
+          <h2>{T("tour.included_title")}</h2>
+          <ul class="check-list">{inc}</ul>
+        </div>
       </div>
     </section>
 
@@ -652,30 +602,26 @@ def build_tours_hub():
     day = published("day")
     n = len(day)
     lead_count = f"{count_word(n)} full-day private tours" if n else "Full-day private tours"
-    body = page_hero(root, crumbs, T("tours.label"), T("tours.title"),
+    body = page_hero(root, crumbs, T("tours.title"),
                      f"{lead_count} {T('tours.lead')}") + f"""
 
-    <section class="theme-mint">
-      <div class="tours-grid">
+    <section class="section">
+      <div class="wrap">
+        <div class="tours-grid">
 {chr(10).join(tour_card(t, root) for t in day)}
-      </div>
-    </section>
-
-    <section class="theme-light">
-      <div class="split-promo reveal">
-        <div>
-          <span class="section-label">{T("tours.longer_label")}</span>
-          <h2 class="section-title">{T("tours.multi_title")}</h2>
-          <p class="section-desc">{T("tours.multi_before")} {eur(MULTI_DAY_RATE)} {T("tours.multi_after")}</p>
         </div>
-        <div class="promo-actions">
-          <a href="multi-day-tours.html" class="btn btn-gold">See Multi-Day Tours</a>
-          <a href="destinations.html" class="btn btn-outline-dark">Destination Guide</a>
+        <div class="split-promo">
+          <div>
+            <h2>{T("tours.multi_title")}</h2>
+            <p>{T("tours.multi_before")} {eur(MULTI_DAY_RATE)} {T("tours.multi_after")}</p>
+          </div>
+          <div class="promo-actions">
+            <a href="multi-day-tours.html" class="btn btn-quiet">See multi-day tours</a>
+            <a href="destinations.html" class="link-strong">Destination guide</a>
+          </div>
         </div>
       </div>
     </section>
-
-{group_band(root)}
 
 {cta_band(root)}"""
     return {"tours.html": page(
@@ -691,19 +637,21 @@ def build_multi_day():
     root = ""
     crumbs = [("Home", "index.html"), ("Multi-Day Tours", None)]
     notes = "".join(f"\n          <li>{x}</li>" for x in T_lines("multi.notes"))
-    body = page_hero(root, crumbs, T("multi.label"), T("multi.title"),
+    body = page_hero(root, crumbs, T("multi.title"),
                      f"{T('multi.lead_before')} {eur(MULTI_DAY_RATE)} {T('multi.lead_after')}") + f"""
 
-    <section class="theme-mint">
-      <div class="multi-grid">
+    <section class="section">
+      <div class="wrap">
+        <div class="multi-grid">
 {chr(10).join(multi_card(m, root) for m in MULTI_DAY)}
-      </div>
-      <div class="note-box reveal">
-        <h3>{T("multi.notes_title")}</h3>
-        <ul class="check-list">
-          <li>{eur(MULTI_DAY_RATE)} {T("multi.note_rate")}</li>{notes}
-        </ul>
-        <a href="price-calculator.html" class="btn btn-gold">Price a Custom Trip</a>
+        </div>
+        <div class="note-box">
+          <h2>{T("multi.notes_title")}</h2>
+          <ul class="check-list">
+            <li>{eur(MULTI_DAY_RATE)} {T("multi.note_rate")}</li>{notes}
+          </ul>
+          <a href="price-calculator.html" class="btn btn-quiet">Price a custom trip</a>
+        </div>
       </div>
     </section>
 
@@ -727,13 +675,13 @@ def build_calculator():
         "airport": [{"area": a, "to": to, "from": fr} for a, _, to, fr in AIRPORT_FARES]
                    + [{"area": a, "to": p, "from": p} for a, p in LONG_TRANSFERS],
     }
-    tour_opts = "".join(f'<option value="{t["slug"]}">{E(t["name"])} · {eur(t["price"])}</option>' for t in calc_tours)
-    multi_opts = "".join(f'<option value="{m["slug"]}">{E(m["name"])} · {m["days"]} days</option>' for m in MULTI_DAY)
+    tour_opts = "".join(f'<option value="{t["slug"]}">{E(t["name"])} ({eur(t["price"])})</option>' for t in calc_tours)
+    multi_opts = "".join(f'<option value="{m["slug"]}">{E(m["name"])} ({m["days"]} days)</option>' for m in MULTI_DAY)
     air_opts = "".join(f'<option value="{i}">{E(a["area"])}</option>' for i, a in enumerate(data["airport"]))
     dial = re.search(r'<select name="dial".*?</select>', MODAL, re.S).group(0)
-    body = page_hero(root, crumbs, T("calc.label"), T("calc.title"), T("calc.lead")) + f"""
+    body = page_hero(root, crumbs, T("calc.title"), T("calc.lead")) + f"""
 
-    <section class="theme-light calc-section">
+    <section class="section calc-section">
       <form class="calc" id="calc-form" novalidate>
         <div class="calc-main">
           <div class="calc-row">
@@ -790,14 +738,14 @@ def build_calculator():
           <p class="calc-pp" id="calc-pp"></p>
           <div class="calc-request">
             <h4>Send me this quote</h4>
-            <div class="form-field"><label for="calc-name">Full Name *</label><input id="calc-name" name="name" type="text" autocomplete="name" required data-label="Name"></div>
-            <div class="form-field"><label for="calc-email">Email *</label><input id="calc-email" name="email" type="email" autocomplete="email" required data-label="Email"></div>
-            <div class="form-field"><label for="calc-phone">Phone *</label><div class="phone-row">{dial}<input id="calc-phone" name="phone" type="tel" autocomplete="tel-national" required data-label="Phone"></div></div>
+            <div class="form-field"><label for="calc-name">Full name</label><input id="calc-name" name="name" type="text" autocomplete="name" required data-label="Name"></div>
+            <div class="form-field"><label for="calc-email">Email</label><input id="calc-email" name="email" type="email" autocomplete="email" required data-label="Email"></div>
+            <div class="form-field"><label for="calc-phone">Phone</label><div class="phone-row">{dial}<input id="calc-phone" name="phone" type="tel" autocomplete="tel-national" required data-label="Phone"></div></div>
             <div class="form-field"><label for="calc-date">Travel date</label><input id="calc-date" name="date" type="date" data-label="Travel date"></div>
             <div class="form-field"><label for="calc-notes">Notes</label><textarea id="calc-notes" name="notes" rows="3" placeholder="Pickup area, special requests…" data-label="Notes"></textarea></div>
             <input class="form-honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
-            <button type="submit" class="btn btn-gold btn-wide" id="calc-send"><span class="send-label">Request Fixed Quote</span></button>
-            <button type="button" class="btn btn-whatsapp btn-wide" id="calc-wa">Send on WhatsApp</button>
+            <button type="submit" class="btn btn-primary btn-wide" id="calc-send"><span class="send-label">Request a fixed quote</span></button>
+            <button type="button" class="btn btn-quiet btn-wide" id="calc-wa">Send on WhatsApp</button>
             <p class="form-status" id="calc-status" role="status" aria-live="polite"></p>
             <p class="form-legal">{T("calc.legal")}</p>
           </div>
@@ -806,16 +754,15 @@ def build_calculator():
       <script id="calc-data" type="application/json">{_ld_dumps(data)}</script>
     </section>
 
-    <section class="theme-mint">
-      <div class="reveal">
-        <span class="section-label">{T("calc.how_label")}</span>
-        <h2 class="section-title">{T("calc.how_title")}</h2>
-      </div>
-      <div class="steps-grid">
-        <div class="step-card reveal"><span class="calc-num">1</span><h3>{T("calc.step1_title")}</h3><p>{T("calc.step1_text")}</p></div>
-        <div class="step-card reveal"><span class="calc-num">2</span><h3>{T("calc.step2_title")}</h3><p>{T("calc.step2_text")}</p></div>
-        <div class="step-card reveal"><span class="calc-num">3</span><h3>{T("calc.step3_title")}</h3><p>{T("calc.step3_text")}</p></div>
-        <div class="step-card reveal"><span class="calc-num">4</span><h3>{T("calc.step4_title")}</h3><p>{T("calc.step4_text")}</p></div>
+    <section class="section section-mist">
+      <div class="wrap">
+        <h2>{T("calc.how_title")}</h2>
+        <ol class="steps-list">
+          <li><strong>{T("calc.step1_title")}</strong> {T("calc.step1_text")}</li>
+          <li><strong>{T("calc.step2_title")}</strong> {T("calc.step2_text")}</li>
+          <li><strong>{T("calc.step3_title")}</strong> {T("calc.step3_text")}</li>
+          <li><strong>{T("calc.step4_title")}</strong> {T("calc.step4_text")}</li>
+        </ol>
       </div>
     </section>"""
     return {"price-calculator.html": page(
@@ -834,7 +781,7 @@ def build_destinations():
         items = [t for t in published("day") if t["area"] == area]
         if not items:
             continue
-        cards = "\n".join(f"""        <a class="dest-card reveal" href="tours/{t['slug']}.html">
+        cards = "\n".join(f"""        <a class="dest-card" href="tours/{t['slug']}.html">
           <span class="tour-region">{E(t['region'])}</span>
           <h3>{E(t['name'])}</h3>
           <p>{E(t['desc'])}</p>
@@ -846,11 +793,13 @@ def build_destinations():
 {cards}
         </div>
       </div>""")
-    body = page_hero(root, crumbs, T("dest.label"), T("dest.title"), T("dest.lead")) + f"""
+    body = page_hero(root, crumbs, T("dest.title"), T("dest.lead")) + f"""
 
-    <section class="theme-light">
+    <section class="section">
+      <div class="wrap">
 {chr(10).join(groups)}
-      <p class="tours-note">{T("dest.note_before")} <a href="index.html#booking">Ask us</a>{T("dest.note_after")}</p>
+        <p class="tours-note">{T("dest.note_before")} <a href="index.html#booking">Ask us</a>{T("dest.note_after")}</p>
+      </div>
     </section>
 
 {cta_band(root)}"""
@@ -880,16 +829,16 @@ def post_body(body, root):
 def build_blog():
     out = {}
     root = ""
-    cards = "\n".join(f"""        <a class="post-card reveal" href="blog/{p['slug']}.html">
+    cards = "\n".join(f"""        <a class="post-card" href="blog/{p['slug']}.html">
           <span class="tour-region">{E(p['topic'])}</span>
           <h3>{E(p['title'])}</h3>
           <p>{E(p['summary'])}</p>
-          <span class="post-meta">{fmt_date(p['date'])} · Read article →</span>
+          <span class="post-meta">{fmt_date(p['date'])}</span>
         </a>""" for p in POSTS)
-    body = page_hero(root, [("Home", "index.html"), ("Blog", None)], T("blog.label"), T("blog.title"), T("blog.lead")) + f"""
+    body = page_hero(root, [("Home", "index.html"), ("Blog", None)], T("blog.title"), T("blog.lead")) + f"""
 
-    <section class="theme-light">
-      <div class="post-grid">
+    <section class="section">
+      <div class="wrap post-grid">
 {cards}
       </div>
     </section>
@@ -904,25 +853,27 @@ def build_blog():
     for p in POSTS:
         root = "../"
         others = [o for o in POSTS if o["slug"] != p["slug"]][:3]
-        more = "\n".join(f"""        <a class="post-card reveal" href="{o['slug']}.html">
+        more = "\n".join(f"""        <a class="post-card" href="{o['slug']}.html">
           <span class="tour-region">{E(o['topic'])}</span>
           <h3>{E(o['title'])}</h3>
           <p>{E(o['summary'])}</p>
         </a>""" for o in others)
         body = page_hero(root, [("Home", root + "index.html"), ("Blog", root + "blog.html"), (p["title"], None)],
-                         E(p["topic"]), E(p["title"]), E(p["summary"]),
-                         f'\n      <div class="hero-meta"><span>{fmt_date(p["date"])}</span><span>BCH Taxi</span></div>') + f"""
+                         E(p["title"]), E(p["summary"]),
+                         f'\n      <p class="hero-meta">{fmt_date(p["date"])}</p>') + f"""
 
-    <section class="theme-light">
+    <section class="section">
       <article class="post-body">
 {post_body(p['body'], root)}
       </article>
     </section>
 
-    <section class="theme-mint">
-      <div class="reveal"><span class="section-label">Keep reading</span><h2 class="section-title">More travel guides</h2></div>
-      <div class="post-grid">
+    <section class="section section-mist">
+      <div class="wrap">
+        <h2>More travel guides</h2>
+        <div class="post-grid">
 {more}
+        </div>
       </div>
     </section>
 
@@ -947,18 +898,10 @@ def replace_region(s, name, content):
     return pat.sub(lambda m: m.group(1) + "\n" + content + m.group(3), s, count=1)
 
 
-def replace_inline(s, name, value):
-    """Replace a value wrapped in inline markers: <!-- @name -->value<!-- /@name -->."""
-    pat = re.compile(r"(<!-- @%s -->).*?(<!-- /@%s -->)" % (name, name), re.S)
-    if not pat.search(s):
-        raise BuildError([f"missing the @{name} marker"], "index.html template")
-    return pat.sub(lambda m: m.group(1) + value + m.group(2), s)
-
-
 def sync_faq_jsonld(s):
     """Keep the FAQ structured data in step with edited FAQ questions/answers."""
     for key, default in texts.template_texts(s).items():
-        if key.startswith("home.faq_") and texts.raw(key) != default:
+        if key.startswith(("home.faq_question_", "home.faq_answer_")) and texts.raw(key) != default:
             old = _json_inline(default)[1:-1]
             if old not in s:
                 raise BuildError([f"FAQ structured data no longer contains {key}"],
@@ -991,19 +934,10 @@ def apply_index_photos(s):
 
 def build_index(out_dir):
     s = texts.dyn_template(TEMPLATE_INDEX.read_text())
-    fares = "\n".join(
-        f'        <div class="fare-row"><span class="fare-place">{E(a)}</span><span class="fare-km">{E(km)}</span>'
-        f'<span class="fare-price"><small>To airport</small>{eur(to)}</span><span class="fare-price"><small>From airport</small>{eur(fr)}</span></div>'
-        for a, km, to, fr in AIRPORT_FARES)
     s = sync_faq_jsonld(s)
     s = replace_region(s, "nav", nav("", is_index=True))
     s = replace_region(s, "tours-grid", "\n".join(tour_card(t, "") for t in published()))
-    s = replace_region(s, "fares", fares)
     s = replace_region(s, "group-band", group_band("", is_index=True))
-    s = replace_region(s, "fare-long", "\n".join(
-        f'      <div class="fare-long-card"><span>Dublin Airport ⇄ {E(a)}</span><strong>{eur(p)}</strong></div>'
-        for a, p in LONG_TRANSFERS))
-    s = replace_inline(s, "min-fare", eur(min(to for _, _, to, _ in AIRPORT_FARES)) + "+" if AIRPORT_FARES else "Fixed")
     priced = [t["price"] for t in published("day") if t["price"] is not None]
     pattern = r"day tours from €\d+(?:,\d{3})*"
     if not re.search(pattern, s):

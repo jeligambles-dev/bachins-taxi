@@ -2,44 +2,31 @@
   <dialog class="tour-modal" id="tour-modal" aria-labelledby="tm-title">
     <form class="tm-form" id="tour-form" novalidate>
       <header class="tm-head">
-        <span class="tm-icon"><svg viewBox="0 0 24 24"><path d="M5 17h14M5 17a2 2 0 1 0 4 0M15 17a2 2 0 1 0 4 0M3 17V11l2-5h14l2 5v6"/><path d="M3 11h18"/></svg></span>
-        <div><h3 id="tm-title">Complete Your Booking</h3><p id="tm-sub">Tour</p></div>
+        <div><h3 id="tm-title">Book this tour</h3><p id="tm-sub">Tour</p></div>
         <button type="button" class="tm-close" aria-label="Close" data-close>&times;</button>
       </header>
       <div class="tm-body">
-        <div class="tm-cols">
-          <div>
-            <h4 class="tm-section"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Contact details</h4>
-            <div class="form-field"><label for="tm-name">Full Name *</label><input id="tm-name" name="name" type="text" autocomplete="name" placeholder="John Doe" required data-label="Name"></div>
-            <div class="form-field"><label for="tm-email">Email Address *</label><input id="tm-email" name="email" type="email" autocomplete="email" placeholder="john@example.com" required data-label="Email"></div>
-            <div class="form-field"><label for="tm-country">Country</label><select id="tm-country" name="country" data-label="Country"><option>Ireland</option><option>United Kingdom</option><option>United States</option><option>Canada</option><option>Australia</option><option>Germany</option><option>France</option><option>Spain</option><option>Italy</option><option>Netherlands</option><option>Other</option></select></div>
-            <div class="form-field"><label for="tm-phone">Phone Number *</label><div class="phone-row"><select name="dial" aria-label="Country code" data-label="Dial code"><option value="+353">IE +353</option><option value="+44">UK +44</option><option value="+1">US/CA +1</option><option value="+61">AU +61</option><option value="+49">DE +49</option><option value="+33">FR +33</option><option value="+34">ES +34</option><option value="+39">IT +39</option><option value="+31">NL +31</option></select><input id="tm-phone" name="phone" type="tel" autocomplete="tel-national" placeholder="87 123 4567" required data-label="Phone"></div></div>
-          </div>
-          <div>
-            <h4 class="tm-section"><svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg> Trip details</h4>
-            <div class="form-field"><label for="tm-pickup">Pickup Location *</label><input id="tm-pickup" name="pickup" type="text" placeholder="Hotel, airport or address" required data-label="Pickup"></div>
-            <div class="form-field"><label for="tm-eircode">Pickup Eircode <em>(optional)</em></label><input id="tm-eircode" name="eircode" type="text" placeholder="e.g. D02 X285" data-label="Eircode"></div>
-            <div class="tm-two">
-              <div class="form-field"><label for="tm-date">Tour Date *</label><input id="tm-date" name="date" type="date" required data-label="Tour date"></div>
-              <div class="form-field"><label for="tm-time">Pickup Time *</label><input id="tm-time" name="time" type="time" required data-label="Pickup time"></div>
-            </div>
-          </div>
+        <div class="field-row">
+          <div class="field"><label for="tm-name">Full name</label><input id="tm-name" name="name" type="text" autocomplete="name" required data-label="Name"></div>
+          <div class="field"><label for="tm-phone">Phone</label><div class="phone-row"><select name="dial" aria-label="Country code" data-label="Dial code"><option value="+353">IE +353</option><option value="+44">UK +44</option><option value="+1">US/CA +1</option><option value="+61">AU +61</option><option value="+49">DE +49</option><option value="+33">FR +33</option><option value="+34">ES +34</option><option value="+39">IT +39</option><option value="+31">NL +31</option></select><input id="tm-phone" name="phone" type="tel" autocomplete="tel-national" placeholder="87 123 4567" required data-label="Phone"></div></div>
         </div>
-        <h4 class="tm-section"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg> Passengers</h4>
-        <p class="tm-note">One price covers the whole vehicle, for up to 8 passengers.</p>
-        <div class="pax-grid">
-          <div class="pax">
-            <span class="pax-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></span>
-            <span class="pax-label">Adults<small>12 years and older</small></span>
+        <div class="field"><label for="tm-email">Email</label><input id="tm-email" name="email" type="email" autocomplete="email" required data-label="Email"></div>
+        <div class="field"><label for="tm-pickup">Pickup address</label><input id="tm-pickup" name="pickup" type="text" placeholder="Hotel or address" required data-label="Pickup"></div>
+        <div class="field-row">
+          <div class="field"><label for="tm-date">Tour date</label><input id="tm-date" name="date" type="date" required data-label="Tour date"></div>
+          <div class="field"><label for="tm-time">Pickup time</label><input id="tm-time" name="time" type="time" required data-label="Pickup time"></div>
+        </div>
+        <div class="field-row">
+          <div class="field field-pax">
+            <label for="tm-adults">Adults</label>
             <div class="stepper">
               <button type="button" data-step="-1" aria-label="Fewer adults">−</button>
               <input id="tm-adults" name="adults" type="number" value="1" min="1" max="8" readonly data-label="Adults">
               <button type="button" data-step="1" aria-label="More adults">+</button>
             </div>
           </div>
-          <div class="pax">
-            <span class="pax-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01M15 9h.01"/></svg></span>
-            <span class="pax-label">Children<small>Under 12 years</small></span>
+          <div class="field field-pax">
+            <label for="tm-children">Children under 12</label>
             <div class="stepper">
               <button type="button" data-step="-1" aria-label="Fewer children">−</button>
               <input id="tm-children" name="children" type="number" value="0" min="0" max="8" readonly data-label="Children">
@@ -48,17 +35,24 @@
           </div>
         </div>
         <p class="pax-more" hidden>More than 8 of you? We can arrange extra vehicles. Add your group size in the notes and we'll quote for the whole group.</p>
-        <div class="form-field full"><label for="tm-notes">Special Requests / Notes</label><textarea id="tm-notes" name="notes" placeholder="Wheelchair access, child seats, places you'd love to stop…" data-label="Notes"></textarea></div>
+        <details class="more-details">
+          <summary>Add notes, Eircode or country</summary>
+          <div class="field"><label for="tm-notes">Notes</label><textarea id="tm-notes" name="notes" rows="3" placeholder="Wheelchair access, child seats, places you'd love to stop" data-label="Notes"></textarea></div>
+          <div class="field-row">
+            <div class="field"><label for="tm-eircode">Eircode</label><input id="tm-eircode" name="eircode" type="text" placeholder="D02 X285" data-label="Eircode"></div>
+            <div class="field"><label for="tm-country">Country</label><select id="tm-country" name="country" data-label="Country"><option>Ireland</option><option>United Kingdom</option><option>United States</option><option>Canada</option><option>Australia</option><option>Germany</option><option>France</option><option>Spain</option><option>Italy</option><option>Netherlands</option><option>Other</option></select></div>
+          </div>
+        </details>
         <div class="tm-summary">
           <div><span>Tour</span><strong id="tm-sum-tour">–</strong></div>
           <div><span>Passengers</span><strong id="tm-sum-pax">1</strong></div>
           <div class="tm-total"><span id="tm-sum-label">Total (per vehicle)</span><strong id="tm-sum-total">–</strong></div>
-          <p>No payment now. We'll confirm availability and the price, then you pay on the day.</p>
+          <p>No payment now. We confirm availability and the price, and you pay on the day.</p>
         </div>
         <input class="form-honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <div class="form-actions">
-          <button type="submit" class="btn btn-gold btn-wide" id="tm-send"><svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg><span class="send-label">Send Booking Request</span></button>
-          <button type="button" class="btn btn-whatsapp" id="tm-wa"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Book on WhatsApp</button>
+        <div class="card-actions">
+          <button type="submit" class="btn btn-primary" id="tm-send"><span class="send-label">Send booking request</span></button>
+          <button type="button" class="btn btn-quiet btn-wa-quiet" id="tm-wa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span>WhatsApp</span></button>
         </div>
         <p class="form-status" id="tm-status" role="status" aria-live="polite"></p>
       </div>

@@ -60,7 +60,7 @@
     });
     $('calc-total').textContent = eur(total);
     $('calc-pp').textContent = total
-      ? `${pax} ${pax === 1 ? 'passenger' : 'passengers'} · about ${eur(Math.round(total / pax))} per person`
+      ? `${pax} ${pax === 1 ? 'passenger' : 'passengers'}, about ${eur(Math.round(total / pax))} per person`
       : '';
     return { items, total, pax };
   }
