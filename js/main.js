@@ -19,7 +19,7 @@ const tabs = [...document.querySelectorAll('.tour-tabs [data-kind]')];
 if (tabs.length) {
   const cards = [...document.querySelectorAll('.tours-scroll .tour-card')];
   const show = (kind) => {
-    tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.kind === kind)));
+    tabs.forEach(t => t.setAttribute('aria-pressed', String(t.dataset.kind === kind)));
     // At most six per kind here; "See all tours" leads to the full lists.
     let n = 0;
     cards.forEach(c => { c.hidden = c.dataset.kind !== kind || ++n > 6; });
