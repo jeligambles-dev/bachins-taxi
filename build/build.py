@@ -932,11 +932,54 @@ def apply_index_photos(s):
     return s
 
 
+BANDS = ("airport", "tours", "pub", "golf")
+KIND_LABEL = {"day": "Day tours", "pub": "Pub tours", "golf": "Golf trips"}
+
+
+def band_image(band):
+    """Photo for a homepage service band: images/band-<name>.jpg if that file
+    exists. Without it the band falls back to a plain Ink panel (CSS), so a
+    missing photo never breaks the page or the link check."""
+    rel = f"images/band-{band}.jpg"
+    if not (ROOT_DIR / rel).is_file():
+        return ""
+    return f'          <img class="band-img" src="{rel}" alt="" loading="lazy">'
+
+
+def area_options():
+    """Booking card: airport fare areas, each carrying its to/from fares."""
+    opts = ['                <option value="">Choose your area</option>']
+    opts += [f'                <option value="{E(a)}" data-to="{to}" data-from="{fr}">{E(a)}</option>'
+             for a, _, to, fr in AIRPORT_FARES]
+    opts += [f'                <option value="{E(a)}" data-to="{p}" data-from="{p}">{E(a)}</option>'
+             for a, p in LONG_TRANSFERS]
+    opts.append('                <option value="Somewhere else">Somewhere else</option>')
+    return "\n".join(opts)
+
+
+def tour_options():
+    """Booking card: every published tour, grouped by kind, with its price."""
+    groups = []
+    for kind in KIND_ORDER:
+        tours = published(kind)
+        if not tours:
+            continue
+        opts = "".join(
+            f'<option value="{E(t["name"])}" data-kind="{kind}" data-price="{price_attr(t)}" data-unit="{price_unit(t)}">{E(t["name"])}</option>'
+            for t in tours)
+        groups.append(f'                <optgroup label="{KIND_LABEL[kind]}">{opts}</optgroup>')
+    return "\n".join(groups)
+
+
 def build_index(out_dir):
     s = texts.dyn_template(TEMPLATE_INDEX.read_text())
     s = sync_faq_jsonld(s)
     s = replace_region(s, "nav", nav("", is_index=True))
     s = replace_region(s, "tours-grid", "\n".join(tour_card(t, "") for t in published()))
+    s = replace_region(s, "area-options", area_options())
+    s = replace_region(s, "tour-options", tour_options())
+    for band in BANDS:
+        s = replace_region(s, f"band-{band}", band_image(band))
     s = replace_region(s, "group-band", group_band("", is_index=True))
     priced = [t["price"] for t in published("day") if t["price"] is not None]
     pattern = r"day tours from €\d+(?:,\d{3})*"

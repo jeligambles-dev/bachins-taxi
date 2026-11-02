@@ -139,79 +139,149 @@
   <!-- /@nav -->
 
   <main>
-  <!-- Booking first -->
+  <!-- Hero: photo frame with the booking card -->
   <section class="hero">
-    <div class="hero-bg" aria-hidden="true"></div>
-    <div class="hero-inner">
-      <div class="hero-intro">
-        <p class="hero-display"><!-- @t:home.hero_headline -->Taxis, airport runs and private tours of Ireland<!-- /@t:home.hero_headline --></p>
-        <p class="hero-sub"><!-- @t:home.hero_sub -->Local trips, Dublin Airport at 4am or a full day at the Cliffs of Moher, in our wheelchair-accessible 8-seater.<!-- /@t:home.hero_sub --></p>
-        <ul class="hero-facts">
-          <li><!-- @t:home.hero_span_1 -->Open day and night, 24/7<!-- /@t:home.hero_span_1 --></li>
-          <li><!-- @t:home.hero_span_2 -->Room for up to 8 people<!-- /@t:home.hero_span_2 --></li>
-          <li><!-- @t:home.hero_span_3 -->Wheelchair accessible<!-- /@t:home.hero_span_3 --></li>
-        </ul>
+    <div class="hero-frame">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <div class="hero-intro">
+          <h1><!-- @t:home.hero_title -->Taxis and tours<!-- /@t:home.hero_title --> <span><!-- @t:home.hero_title_gold -->across Ireland<!-- /@t:home.hero_title_gold --></span></h1>
+          <p class="hero-sub"><!-- @t:home.hero_sub -->Fixed prices and a local driver, day or night, in a wheelchair-accessible 8-seater.<!-- /@t:home.hero_sub --></p>
+          <ul class="hero-facts">
+            <li><!-- @t:home.hero_span_1 -->Open day and night, 24/7<!-- /@t:home.hero_span_1 --></li>
+            <li><!-- @t:home.hero_span_2 -->Room for up to 8 people<!-- /@t:home.hero_span_2 --></li>
+            <li><!-- @t:home.hero_span_3 -->Wheelchair accessible<!-- /@t:home.hero_span_3 --></li>
+          </ul>
+        </div>
+
+        <form class="booking-card" id="contact-form" novalidate data-card-step="1" data-mode="taxi">
+          <span id="booking" class="anchor"></span>
+
+          <div class="step step-1">
+            <div class="card-tabs" role="group" aria-label="What would you like to book?">
+              <button type="button" data-mode="taxi" aria-pressed="true"><!-- @t:home.card_tab_taxi -->Taxi &amp; airport<!-- /@t:home.card_tab_taxi --></button>
+              <button type="button" data-mode="tours" aria-pressed="false"><!-- @t:home.card_tab_tours -->Tours<!-- /@t:home.card_tab_tours --></button>
+            </div>
+
+            <div class="field only-taxi">
+              <label for="cf-service"><!-- @t:home.quick_field_1 -->Service<!-- /@t:home.quick_field_1 --></label>
+              <select id="cf-service" name="service" required data-label="Service"><option>Airport transfer</option><option>Local taxi</option><option>Point-to-point</option><option>Day tour</option><option>Rural pub tour</option><option>Golf trip</option><option>Multi-day tour</option><option>Corporate / business</option><option>School transport</option><option>Group transport (9+)</option><option>Custom tour</option></select>
+            </div>
+            <div class="field only-airport">
+              <label for="cf-area"><!-- @t:home.card_area_label -->Your area (for the airport fare)<!-- /@t:home.card_area_label --></label>
+              <select id="cf-area" name="area" data-label="Fare area">
+<!-- @area-options -->
+<!-- /@area-options -->
+              </select>
+            </div>
+            <div class="field only-tours" hidden>
+              <label for="cf-tour"><!-- @t:home.card_tour_label -->Tour<!-- /@t:home.card_tour_label --></label>
+              <select id="cf-tour" name="tour" required data-label="Tour">
+<!-- @tour-options -->
+<!-- /@tour-options -->
+              </select>
+            </div>
+            <div class="field-row">
+              <div class="field"><label for="cf-date"><!-- @t:home.form_booking_field_2 -->Date<!-- /@t:home.form_booking_field_2 --></label><input id="cf-date" name="date" type="date" required data-label="Date"></div>
+              <div class="field"><label for="cf-time"><!-- @t:home.form_booking_field_3 -->Pickup time<!-- /@t:home.form_booking_field_3 --></label><input id="cf-time" name="time" type="time" required data-label="Pickup time"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label for="cf-pickup"><!-- @t:home.quick_field_2 -->From<!-- /@t:home.quick_field_2 --></label><input id="cf-pickup" name="pickup" type="text" placeholder="Hotel, address" autocomplete="street-address" required data-label="Pickup"></div>
+              <div class="field only-taxi"><label for="cf-dropoff"><!-- @t:home.quick_field_3 -->To<!-- /@t:home.quick_field_3 --></label><input id="cf-dropoff" name="destination" type="text" placeholder="Dublin Airport" required data-label="Destination"></div>
+            </div>
+            <div class="card-go">
+              <div class="field field-pax">
+                <label for="cf-passengers"><!-- @t:home.form_booking_span_1 -->People<!-- /@t:home.form_booking_span_1 --></label>
+                <div class="stepper">
+                  <button type="button" data-step="-1" aria-label="Fewer people">−</button>
+                  <input id="cf-passengers" name="passengers" type="number" value="2" min="1" max="8" readonly data-label="People">
+                  <button type="button" data-step="1" aria-label="More people">+</button>
+                </div>
+              </div>
+              <button type="button" class="btn btn-primary" id="cf-next"><!-- @t:home.card_next -->See price<!-- /@t:home.card_next --></button>
+            </div>
+            <p class="pax-more" hidden><!-- @t:home.form_booking_text_2 -->More than 8 of you? We can add extra vehicles. Tell us your group size in the notes.<!-- /@t:home.form_booking_text_2 --></p>
+          </div>
+
+          <div class="step step-2">
+            <button type="button" class="card-back" id="cf-back"><!-- @t:home.card_back -->Back<!-- /@t:home.card_back --></button>
+            <div class="quote" id="cf-quote" tabindex="-1" aria-live="polite">
+              <p class="quote-title" id="cf-quote-title"></p>
+              <p class="quote-price" id="cf-quote-price"></p>
+              <p class="quote-note" id="cf-quote-note"></p>
+            </div>
+            <div class="field-row field-row-contact">
+              <div class="field"><label for="cf-name"><!-- @t:home.form_field_1 -->Your name<!-- /@t:home.form_field_1 --></label><input id="cf-name" name="name" type="text" autocomplete="name" required data-label="Name"></div>
+              <div class="field"><label for="cf-phone"><!-- @t:home.form_field_5 -->Phone<!-- /@t:home.form_field_5 --></label>
+                <div class="phone-row"><select name="dial" aria-label="Country code" data-label="Dial code"><option value="+353">IE +353</option><option value="+44">UK +44</option><option value="+1">US/CA +1</option><option value="+61">AU +61</option><option value="+49">DE +49</option><option value="+33">FR +33</option><option value="+34">ES +34</option><option value="+39">IT +39</option><option value="+31">NL +31</option></select><input id="cf-phone" name="phone" type="tel" autocomplete="tel-national" placeholder="87 123 4567" required data-label="Phone"></div>
+              </div>
+            </div>
+            <div class="field"><label for="cf-email"><!-- @t:home.form_field_3 -->Email (optional)<!-- /@t:home.form_field_3 --></label><input id="cf-email" name="email" type="email" autocomplete="email" data-label="Email"></div>
+            <div class="field"><label for="cf-message"><!-- @t:home.form_booking_field_7 -->Notes (optional)<!-- /@t:home.form_booking_field_7 --></label><textarea id="cf-message" name="message" rows="2" placeholder="Flight number, luggage, child seats, wheelchair" data-label="Notes"></textarea></div>
+            <input class="form-honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <div class="card-actions">
+              <button type="submit" class="btn btn-primary" id="cf-send"><span class="send-label"><!-- @t:home.form_send_label -->Book now<!-- /@t:home.form_send_label --></span></button>
+              <button type="button" class="btn btn-quiet btn-wa-quiet" id="cf-wa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span><!-- @t:home.form_button -->WhatsApp<!-- /@t:home.form_button --></span></button>
+            </div>
+            <p class="form-status" id="cf-status" role="status" aria-live="polite"></p>
+            <p class="form-legal"><!-- @t:home.form_text_4 -->No payment online. You pay on the day.<!-- /@t:home.form_text_4 --></p>
+          </div>
+        </form>
       </div>
+    </div>
+  </section>
 
-      <form class="booking-card" id="contact-form" novalidate>
-        <span id="booking" class="anchor"></span>
-        <h1><!-- @t:home.hero_title -->Book a taxi<!-- /@t:home.hero_title --> <span><!-- @t:home.hero_title_gold -->or a private tour<!-- /@t:home.hero_title_gold --></span></h1>
-        <p class="card-sub"><!-- @t:home.quick_text -->Fixed price. We usually reply within the hour.<!-- /@t:home.quick_text --></p>
-
-        <div class="field">
-          <label for="cf-service"><!-- @t:home.quick_field_1 -->Service<!-- /@t:home.quick_field_1 --></label>
-          <select id="cf-service" name="service" required data-label="Service"><option>Local taxi</option><option>Airport transfer</option><option>Day tour</option><option>Rural pub tour</option><option>Golf trip</option><option>Multi-day tour</option><option>Point-to-point</option><option>Corporate / business</option><option>School transport</option><option>Group transport (9+)</option><option>Custom tour</option></select>
-        </div>
-        <div class="field-row">
-          <div class="field"><label for="cf-pickup"><!-- @t:home.quick_field_2 -->From<!-- /@t:home.quick_field_2 --></label><input id="cf-pickup" name="pickup" type="text" placeholder="Hotel, address" autocomplete="street-address" required data-label="Pickup"></div>
-          <div class="field"><label for="cf-dropoff"><!-- @t:home.quick_field_3 -->To<!-- /@t:home.quick_field_3 --></label><input id="cf-dropoff" name="destination" type="text" placeholder="Airport, town" required data-label="Destination"></div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label for="cf-date"><!-- @t:home.form_booking_field_2 -->Date<!-- /@t:home.form_booking_field_2 --></label><input id="cf-date" name="date" type="date" required data-label="Date"></div>
-          <div class="field"><label for="cf-time"><!-- @t:home.form_booking_field_3 -->Pickup time<!-- /@t:home.form_booking_field_3 --></label><input id="cf-time" name="time" type="time" required data-label="Pickup time"></div>
-        </div>
-        <div class="field field-pax">
-          <label for="cf-passengers"><!-- @t:home.form_booking_span_1 -->People<!-- /@t:home.form_booking_span_1 --></label>
-          <div class="stepper">
-            <button type="button" data-step="-1" aria-label="Fewer people">−</button>
-            <input id="cf-passengers" name="passengers" type="number" value="2" min="1" max="8" readonly data-label="People">
-            <button type="button" data-step="1" aria-label="More people">+</button>
+  <!-- Service bands -->
+  <section class="section bands" id="services-bands">
+    <div class="wrap">
+      <h2><!-- @t:home.bands_title -->How can we help?<!-- /@t:home.bands_title --></h2>
+      <div class="band-grid">
+        <article class="band band-airport">
+<!-- @band-airport -->
+<!-- /@band-airport -->
+          <div class="band-body">
+            <h3><!-- @t:home.band_airport_title -->Airport transfers<!-- /@t:home.band_airport_title --></h3>
+            <p><!-- @t:home.band_airport_text -->Fixed fares to and from Dublin Airport. We track your flight.<!-- /@t:home.band_airport_text --></p>
+            <button type="button" class="btn btn-primary" data-service="Airport transfer"><!-- @t:home.band_airport_button -->Book a transfer<!-- /@t:home.band_airport_button --></button>
           </div>
-        </div>
-        <p class="pax-more" hidden><!-- @t:home.form_booking_text_2 -->More than 8 of you? We can add extra vehicles. Tell us your group size in the notes.<!-- /@t:home.form_booking_text_2 --></p>
-        <div class="field-row field-row-contact">
-          <div class="field"><label for="cf-name"><!-- @t:home.form_field_1 -->Your name<!-- /@t:home.form_field_1 --></label><input id="cf-name" name="name" type="text" autocomplete="name" required data-label="Name"></div>
-          <div class="field"><label for="cf-phone"><!-- @t:home.form_field_5 -->Phone<!-- /@t:home.form_field_5 --></label>
-            <div class="phone-row"><select name="dial" aria-label="Country code" data-label="Dial code"><option value="+353">IE +353</option><option value="+44">UK +44</option><option value="+1">US/CA +1</option><option value="+61">AU +61</option><option value="+49">DE +49</option><option value="+33">FR +33</option><option value="+34">ES +34</option><option value="+39">IT +39</option><option value="+31">NL +31</option></select><input id="cf-phone" name="phone" type="tel" autocomplete="tel-national" placeholder="87 123 4567" required data-label="Phone"></div>
+        </article>
+        <article class="band band-tours">
+<!-- @band-tours -->
+<!-- /@band-tours -->
+          <div class="band-body">
+            <h3><!-- @t:home.band_tours_title -->Private day tours<!-- /@t:home.band_tours_title --></h3>
+            <p><!-- @t:home.band_tours_text -->The Cliffs of Moher, Kerry, the Causeway and more, at your own pace.<!-- /@t:home.band_tours_text --></p>
+            <a href="#tours" class="btn btn-light" data-tour-tab="day"><!-- @t:home.band_tours_button -->See day tours<!-- /@t:home.band_tours_button --></a>
           </div>
-        </div>
-
-        <input class="form-honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <div class="card-actions">
-          <button type="submit" class="btn btn-ink" id="cf-send"><span class="send-label"><!-- @t:home.form_send_label -->Get my fixed price<!-- /@t:home.form_send_label --></span></button>
-          <button type="button" class="btn btn-wa" id="cf-wa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span><!-- @t:home.form_button -->WhatsApp<!-- /@t:home.form_button --></span></button>
-        </div>
-        <details class="more-details">
-          <summary><!-- @t:home.form_more -->Add email, notes or Eircode<!-- /@t:home.form_more --></summary>
-          <div class="field"><label for="cf-email"><!-- @t:home.form_field_3 -->Email<!-- /@t:home.form_field_3 --></label><input id="cf-email" name="email" type="email" autocomplete="email" data-label="Email"></div>
-          <div class="field-row">
-            <div class="field"><label for="cf-country"><!-- @t:home.form_field_4 -->Country<!-- /@t:home.form_field_4 --></label><select id="cf-country" name="country" data-label="Country"><option>Ireland</option><option>United Kingdom</option><option>United States</option><option>Canada</option><option>Australia</option><option>Germany</option><option>France</option><option>Spain</option><option>Italy</option><option>Netherlands</option><option>Other</option></select></div>
-            <div class="field"><label for="cf-eircode"><!-- @t:home.form_booking_field_5 -->Eircode<!-- /@t:home.form_booking_field_5 --></label><input id="cf-eircode" name="eircode" type="text" placeholder="D02 X285" autocapitalize="characters" data-label="Eircode"></div>
+        </article>
+        <article class="band band-pub">
+<!-- @band-pub -->
+<!-- /@band-pub -->
+          <div class="band-body">
+            <h3><!-- @t:home.band_pub_title -->Rural pub tours<!-- /@t:home.band_pub_title --></h3>
+            <p><!-- @t:home.band_pub_text -->Country pubs and live music. Your driver gets everyone home.<!-- /@t:home.band_pub_text --></p>
+            <a href="#tours" class="btn btn-light" data-tour-tab="pub"><!-- @t:home.band_pub_button -->See pub tours<!-- /@t:home.band_pub_button --></a>
           </div>
-          <div class="field"><label for="cf-message"><!-- @t:home.form_booking_field_7 -->Notes<!-- /@t:home.form_booking_field_7 --></label><textarea id="cf-message" name="message" rows="3" placeholder="Flight number, luggage, child seats, wheelchair" data-label="Notes"></textarea></div>
-        </details>
-        <p class="form-status" id="cf-status" role="status" aria-live="polite"></p>
-        <p class="form-legal"><!-- @t:home.form_text_4 -->No payment online. You pay on the day.<!-- /@t:home.form_text_4 --></p>
-      </form>
+        </article>
+        <article class="band band-golf">
+<!-- @band-golf -->
+<!-- /@band-golf -->
+          <div class="band-body">
+            <h3><!-- @t:home.band_golf_title -->Golf trips<!-- /@t:home.band_golf_title --></h3>
+            <p><!-- @t:home.band_golf_text -->Links and parkland courses, with room for clubs and bags.<!-- /@t:home.band_golf_text --></p>
+            <a href="#tours" class="btn btn-light" data-tour-tab="golf"><!-- @t:home.band_golf_button -->See golf trips<!-- /@t:home.band_golf_button --></a>
+          </div>
+        </article>
+      </div>
     </div>
   </section>
 
   <!-- Tours -->
-  <section class="section tours" id="tours">
+  <section class="section section-mist tours" id="tours">
     <div class="wrap">
       <div class="section-head">
-        <h2><!-- @t:home.tours_title -->Private tours<!-- /@t:home.tours_title --></h2>
-        <p><!-- @t:home.tours_intro -->Pickup anywhere in Dublin or Meath. One price for the whole vehicle.<!-- /@t:home.tours_intro --></p>
+        <h2><!-- @t:home.tours_title -->Tours and prices<!-- /@t:home.tours_title --></h2>
+        <p><!-- @t:home.tours_intro -->Pickup anywhere in Dublin or Meath. One price covers the whole vehicle.<!-- /@t:home.tours_intro --></p>
       </div>
       <div class="tour-tabs" aria-label="Tour type" role="group">
         <button type="button" aria-pressed="true" data-kind="day"><!-- @t:home.tours_tab_1 -->Day tours<!-- /@t:home.tours_tab_1 --></button>
@@ -227,7 +297,7 @@
   </section>
 
   <!-- Why BCH -->
-  <section class="section section-mist why" id="about">
+  <section class="section why" id="about">
     <div class="wrap why-grid">
       <div>
         <h2><!-- @t:home.about_title -->Why travel with BCH Taxi<!-- /@t:home.about_title --></h2>
@@ -243,7 +313,7 @@
   </section>
 
   <!-- Reviews -->
-  <section class="section reviews" id="reviews">
+  <section class="section section-mist reviews" id="reviews">
     <div class="wrap">
       <h2><!-- @t:home.reviews_title -->What passengers say<!-- /@t:home.reviews_title --></h2>
       <div class="reviews-grid">
@@ -264,7 +334,7 @@
   </section>
 
   <!-- FAQ -->
-  <section class="section section-mist faq" id="faq">
+  <section class="section faq" id="faq">
     <div class="wrap wrap-narrow">
       <h2><!-- @t:home.faq_title -->Questions<!-- /@t:home.faq_title --></h2>
       <div class="faq-list">
@@ -279,7 +349,7 @@
   </section>
 
   <!-- Other services -->
-  <section class="section services" id="services">
+  <section class="section section-mist services" id="services">
     <div class="wrap wrap-narrow">
       <h2><!-- @t:home.services_title -->Other services<!-- /@t:home.services_title --></h2>
       <div class="svc-list">

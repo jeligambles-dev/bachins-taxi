@@ -65,7 +65,7 @@ def test_included_override_lines(tmp_path):
 def test_default_build_text_matches_before(tmp_path):
     build.build_site(_content(), tmp_path)
     s = (tmp_path / "index.html").read_text()
-    assert "<h1>Book a taxi <span>or a private tour</span></h1>" in s
+    assert "<h1>Taxis and tours <span>across Ireland</span></h1>" in s
     assert "How far in advance should I book?" in s
     assert "For airport transfers and early morning pickups, we recommend booking at least 24 hours in advance." in s
 

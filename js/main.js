@@ -30,6 +30,10 @@ if (tabs.length) {
     if (!cards.some(c => c.dataset.kind === t.dataset.kind)) t.hidden = true;
     t.addEventListener('click', () => show(t.dataset.kind));
   });
+  document.querySelectorAll('[data-tour-tab]').forEach(a => a.addEventListener('click', () => {
+    const t = tabs.find(x => x.dataset.kind === a.dataset.tourTab && !x.hidden);
+    if (t) show(t.dataset.kind);
+  }));
   const first = tabs.find(t => !t.hidden);
   if (first) show(first.dataset.kind);
   if (tabs.filter(t => !t.hidden).length < 2) document.querySelector('.tour-tabs').hidden = true;
@@ -150,37 +154,122 @@ document.querySelectorAll('.stepper').forEach(st => {
 
 document.querySelectorAll('[required], [type="email"]').forEach(el => el.addEventListener('input', () => el.classList.remove('invalid')));
 
+const euro = n => '€' + Number(n).toLocaleString('en-IE');
+
 if (form) {
-  // Homepage booking card.
+  // Homepage booking card: step 1 (trip) -> step 2 (instant price + contact).
   const statusEl = document.getElementById('cf-status');
   const sendBtn = document.getElementById('cf-send');
+  const step1 = form.querySelector('.step-1');
+  const tourSel = document.getElementById('cf-tour');
+  const areaSel = document.getElementById('cf-area');
+  const TOUR_SERVICE = { day: 'Day tour', pub: 'Rural pub tour', golf: 'Golf trip' };
+  const mode = () => form.dataset.mode;
+  const tourOpt = () => tourSel.selectedOptions[0];
 
-  form.addEventListener('submit', (e) => {
+  function syncCard() {
+    const tours = mode() === 'tours';
+    form.querySelectorAll('.card-tabs [data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode())));
+    form.querySelectorAll('.only-taxi').forEach(el => { el.hidden = tours; });
+    form.querySelectorAll('.only-tours').forEach(el => { el.hidden = !tours; });
+    form.querySelectorAll('.only-airport').forEach(el => { el.hidden = tours || form.service.value !== 'Airport transfer'; });
+    if (tours && tourOpt()) form.service.value = TOUR_SERVICE[tourOpt().dataset.kind] || 'Day tour';
+  }
+  function setMode(m) { form.dataset.mode = m; syncCard(); }
+  function setStep(n) {
+    form.dataset.cardStep = String(n);
+    setStatus(statusEl, '');
+  }
+  form.querySelectorAll('.card-tabs [data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+  form.service.addEventListener('change', syncCard);
+  tourSel.addEventListener('change', syncCard);
+
+  // The instant price shown at the top of step 2.
+  function quote() {
+    if (mode() === 'tours') {
+      const o = tourOpt();
+      if (!o) return { title: 'Your tour', price: '', note: "We'll confirm a fixed price within the hour." };
+      return o.dataset.price
+        ? { title: o.value, price: euro(o.dataset.price), note: 'Fixed price ' + o.dataset.unit + ', up to ' + MAX_PAX + ' people.' }
+        : { title: o.value, price: 'Price on request', note: "We'll confirm a fixed price within the hour." };
+    }
+    const a = areaSel.selectedOptions[0];
+    if (form.service.value === 'Airport transfer' && a && a.dataset.to) {
+      const to = /airport/i.test(form.destination.value), from = !to && /airport/i.test(form.pickup.value);
+      const title = 'Dublin Airport ⇄ ' + a.value;
+      if (to) return { title, price: euro(a.dataset.to), note: 'Fixed price to the airport, for the whole vehicle.' };
+      if (from) return { title, price: euro(a.dataset.from), note: 'Fixed price from the airport, for the whole vehicle.' };
+      return a.dataset.to === a.dataset.from
+        ? { title, price: euro(a.dataset.to), note: 'Fixed price each way, for the whole vehicle.' }
+        : { title, price: euro(a.dataset.to) + ' or ' + euro(a.dataset.from), note: euro(a.dataset.to) + ' to the airport, ' + euro(a.dataset.from) + ' from it. For the whole vehicle.' };
+    }
+    return { title: form.service.value, price: '', note: "We'll confirm a fixed price within the hour." };
+  }
+  const quoteText = () => { const q = quote(); return q.price ? q.price + ' (' + q.title + ')' : 'To be confirmed'; };
+  const extra = () => [
+    ...(mode() === 'tours' ? [['Service', form.service.value]] : []),
+    ['Quoted price', quoteText()],
+  ];
+
+  function stepOneValid() {
+    let first = null;
+    step1.querySelectorAll('[required]').forEach(el => {
+      const bad = !el.closest('[hidden]') && !el.checkValidity();
+      el.classList.toggle('invalid', bad);
+      if (bad && !first) first = el;
+    });
+    if (first) {
+      first.focus();
+      return false;
+    }
+    return true;
+  }
+  function goNext() {
+    if (!stepOneValid()) return;
+    const q = quote();
+    document.getElementById('cf-quote-title').textContent = q.title;
+    document.getElementById('cf-quote-price').textContent = q.price;
+    document.getElementById('cf-quote-price').hidden = !q.price;
+    document.getElementById('cf-quote-note').textContent = q.note;
+    setStep(2);
+    document.getElementById('cf-quote').focus({ preventScroll: true });
+    if (form.getBoundingClientRect().top < 0) form.scrollIntoView({ block: 'start' });
+  }
+  document.getElementById('cf-next').addEventListener('click', goNext);
+  document.getElementById('cf-back').addEventListener('click', () => { setStep(1); document.getElementById('cf-next').focus(); });
+
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    sendEmail(form, statusEl, sendBtn,
-      () => `New ${form.service.value.toLowerCase()} booking from ${form.elements.name.value.trim()}`);
+    if (form.dataset.cardStep === '1') { goNext(); return; }
+    const sent = await sendEmail(form, statusEl, sendBtn,
+      () => `New ${form.service.value.toLowerCase()} booking from ${form.elements.name.value.trim()}`, extra());
+    if (sent) syncCard();
   });
   document.getElementById('cf-wa').addEventListener('click', () => {
-    sendWhatsApp(form, statusEl, "Hi BCH Taxi, I'd like to book: " + form.service.value);
+    sendWhatsApp(form, statusEl, "Hi BCH Taxi, I'd like to book: " + form.service.value, extra());
   });
 
-  // "Ask us" buttons elsewhere on the page pick a service and jump to the card.
+  // Buttons elsewhere on the page pick a service and jump to the card.
+  function pickService(service) {
+    const kind = Object.keys(TOUR_SERVICE).find(k => TOUR_SERVICE[k] === service);
+    const opt = kind && [...tourSel.options].find(o => o.dataset.kind === kind);
+    if (opt) { tourSel.value = opt.value; setMode('tours'); }
+    else { setMode('taxi'); form.service.value = service; syncCard(); }
+    setStep(1);
+  }
   document.querySelectorAll('[data-service]').forEach(btn => {
     btn.addEventListener('click', () => {
-      form.service.value = btn.dataset.service;
+      pickService(btn.dataset.service);
       form.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
-      setTimeout(() => document.getElementById('cf-pickup').focus({ preventScroll: true }), 500);
+      setTimeout(() => document.getElementById('cf-date').focus({ preventScroll: true }), 500);
     });
   });
 
   // Prefill from links on other pages, e.g. index.html?service=School%20transport#booking
   const wanted = new URLSearchParams(location.search).get('service');
-  if (wanted && [...form.service.options].some(o => o.value === wanted)) {
-    form.service.value = wanted;
-  }
+  if (wanted && [...form.service.options].some(o => o.value === wanted)) pickService(wanted);
+  else syncCard();
 }
-
-const euro = n => '€' + Number(n).toLocaleString('en-IE');
 
 // Tour modal (on every page that has tour "Book" buttons)
 const modal = document.getElementById('tour-modal');
