@@ -256,35 +256,16 @@ def nav(root, is_index=False, active=""):
   </nav>"""
 
 
-FOOTER_FALLBACK = ("glendalough-wicklow", "connemara-galway", "dingle-peninsula")
-
-
 def footer(root, is_index=False):
-    favs = [t for t in published() if t["fav"]]
-    popular = list(favs)
-    # then the long-standing defaults, skipping any that are missing or hidden
-    for slug in FOOTER_FALLBACK:
-        t = TOUR_BY_SLUG.get(slug)
-        if t and t["published"] and t not in popular:
-            popular.append(t)
-    popular += [t for t in published("day") if t not in popular]
-    popular = popular[:6]
-    tour_links = "\n".join(f'          <li><a href="{root}tours/{t["slug"]}.html">{E(t["name"])}</a></li>' for t in popular)
     home = "#" if is_index else root + "index.html"
     return f"""  <footer class="site-footer">
+    <div class="footer-top">
+      <a href="{home}" class="brand" aria-label="BCH Taxi home">
+        {BRAND}
+      </a>
+      <p>{T("footer.about")}</p>
+    </div>
     <div class="footer-grid">
-      <div class="footer-about">
-        <a href="{home}" class="brand" aria-label="BCH Taxi home">
-          {BRAND}
-        </a>
-        <p>{T("footer.about")}</p>
-        <h4>Contact</h4>
-        <ul class="footer-contact">
-          <li><a href="tel:{E(PHONE)}">{E(PHONE_DISPLAY)}</a></li>
-          <li><a href="{E(WHATSAPP)}" target="_blank" rel="noopener">WhatsApp</a></li>
-          <li><a href="mailto:{E(EMAIL)}">{E(EMAIL)}</a></li>
-        </ul>
-      </div>
       <div>
         <h4>Personal</h4>
         <ul>
@@ -295,17 +276,11 @@ def footer(root, is_index=False):
           <li><a href="{root}multi-day-tours.html">Multi-day tours</a></li>
           <li><a href="{root}price-calculator.html">Price calculator</a></li>
         </ul>
-        <div class="footer-popular">
-          <h4>Popular tours</h4>
-          <ul>
-{tour_links}
-          </ul>
-        </div>
       </div>
       <div>
         <h4>Business</h4>
         <ul>
-          <li><a href="{root}business.html">Business accounts</a></li>
+          <li><a href="{root}business.html">Business travel</a></li>
           <li><a href="{root}partners.html">Partners</a></li>
           <li><a href="{root}fleet.html">Fleet</a></li>
         </ul>
@@ -316,6 +291,14 @@ def footer(root, is_index=False):
           <li><a href="{root}help.html">Help centre</a></li>
           <li><a href="{root}destinations.html">Destinations</a></li>
           <li><a href="{root}blog.html">Travel guides</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul class="footer-contact">
+          <li><a href="tel:{E(PHONE)}">{E(PHONE_DISPLAY)}</a></li>
+          <li><a href="{E(WHATSAPP)}" target="_blank" rel="noopener">WhatsApp</a></li>
+          <li><a href="mailto:{E(EMAIL)}">{E(EMAIL)}</a></li>
         </ul>
       </div>
     </div>
@@ -389,7 +372,7 @@ def local_photo(rel):
     return rel if rel and (ROOT_DIR / rel).is_file() else None
 
 
-def page_hero(root, crumbs, h1, lead, extra="", photo=None, split=False):
+def page_hero(root, crumbs, h1, lead, extra="", photo=None, split=False, slot_photo=None):
     """Page header. With `photo` (a site image path) it becomes a photo-led
     header: full-bleed in a rounded frame, or photo-beside-text when `split`."""
     trail = " <span>/</span> ".join(
@@ -398,7 +381,7 @@ def page_hero(root, crumbs, h1, lead, extra="", photo=None, split=False):
     text = f"""      <nav class="crumbs" aria-label="Breadcrumb">{trail}</nav>
       <h1>{h1}</h1>
       <p class="page-lead">{lead}</p>{extra}"""
-    photo = local_photo(photo)
+    photo = slot_photo or local_photo(photo)
     if not photo:
         return f"""    <section class="page-hero">
 {text}
@@ -406,7 +389,7 @@ def page_hero(root, crumbs, h1, lead, extra="", photo=None, split=False):
     kind = "split" if split else "framed"
     return f"""    <section class="page-hero page-hero-{kind}">
       <div class="page-hero-frame">
-        <img class="page-hero-img" src="{root}{photo}" alt="">
+        <img class="page-hero-img" src="{E(root + photo)}" alt="">
         <div class="page-hero-text">
 {text}
         </div>
@@ -489,18 +472,6 @@ def cta_band(root, title_key="cta.title", text_key="cta.text"):
 def group_service():
     """Booking-form service name for groups bigger than one vehicle."""
     return f"Group transport ({MAX_PASSENGERS + 1}+)"
-
-
-def group_band(root, is_index=False):
-    """Groups bigger than one van: a collapsible item in the homepage "Other services" list."""
-    book = (f'<button type="button" class="btn btn-quiet" data-service="{group_service()}">Ask us</button>'
-            if is_index else
-            f'<a href="{root}index.html?service={quote(group_service(), safe='()')}#booking" class="btn btn-quiet">Ask us</a>')
-    return f"""        <details class="svc" id="groups">
-          <summary>More than {MAX_PASSENGERS} {T("group.title_rest")}</summary>
-          <p>{T("group.text")}</p>
-          {book}
-        </details>"""
 
 
 def count_word(n):
@@ -1017,7 +988,7 @@ def build_fleet():
         f'      <p class="tours-note">{T("fleet.empty")}</p>'
     fleet_faq, fleet_ld = faq_block("fleet", 4, "fleet.faq_title")
     body = page_hero(root, [("Home", "index.html"), ("Fleet", None)],
-                     T("fleet.title"), T("fleet.lead"), photo="images/fleet-van.jpg") + f"""
+                     T("fleet.title"), T("fleet.lead"), photo="images/hero.jpg") + f"""
 
     <section class="section">
       <div class="wrap">
@@ -1082,15 +1053,23 @@ def book_link(root, service, topic=""):
     return f"{root}index.html?{q}#booking"
 
 
+SVC_ICONS = {
+    "clock": '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    "briefcase": '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>',
+    "users": '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/>',
+    "school": '<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c2 2 10 2 12 0v-5"/>',
+}
+
+
 def service_cards(root, prefix, items, button_key):
     """Photo cards with a title, one or two lines and a Book now button.
-    `items` is a list of (key, photo or None, service, extra_html). A card
-    with no photo file shows a plain dark panel."""
+    `items` is a list of (key, photo or None, service, extra_html, icon). A card
+    without a photo file is a compact icon card (no empty photo area)."""
     cards = []
-    for key, photo, service, extra in items:
+    for key, photo, service, extra, icon in items:
         img = local_photo(photo)
         media = (f'<img class="svc-img" src="{root}{img}" alt="" loading="lazy">' if img
-                 else '<div class="svc-img svc-panel" aria-hidden="true"></div>')
+                 else f'<span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24">{SVC_ICONS.get(icon, SVC_ICONS["briefcase"])}</svg></span>')
         title = texts.raw(f"{prefix}.{key}_title")
         cards.append(f"""        <article class="svc-card{'' if img else ' no-photo'}">
           {media}
@@ -1100,13 +1079,19 @@ def service_cards(root, prefix, items, button_key):
             <a class="btn btn-primary" href="{E(book_link(root, service, title))}">{T(button_key)}</a>
           </div>
         </article>""")
-    return '      <div class="svc-grid">\n' + "\n".join(cards) + "\n      </div>"
+    photo_cards = [c for c in cards if 'class="svc-img"' in c]
+    icon_cards = [c for c in cards if 'class="svc-img"' not in c]
+    out = ""
+    if photo_cards:
+        out += '      <div class="svc-grid">\n' + "\n".join(photo_cards) + "\n      </div>"
+    if icon_cards:
+        out += '\n      <div class="svc-mini-grid">\n' + "\n".join(icon_cards) + "\n      </div>"
+    return out
 
 
-def promise_row(prefix, n=3):
-    items = "".join(f'\n        <li><h3>{T(f"{prefix}.p{i}_title")}</h3><p>{T(f"{prefix}.p{i}_text")}</p></li>'
-                    for i in range(1, n + 1))
-    return f'      <ul class="promise-row">{items}\n      </ul>'
+def promise_tiles(prefix, n=3):
+    return "\n".join(f'          <div class="tile tile-promise"><h3>{T(f"{prefix}.p{i}_title")}</h3><p>{T(f"{prefix}.p{i}_text")}</p></div>'
+                     for i in range(1, n + 1))
 
 
 def faq_block(prefix, n, title_key):
@@ -1159,17 +1144,18 @@ def build_business():
     intercity = " ".join(f"{E(a)} {eur(p)}." for a, p in LONG_TRANSFERS[:3])
     intercity = (f'\n            <p class="svc-prices">From Dublin Airport: {intercity}</p>' if intercity else "")
     chauffeur = service_cards(root, "business", [
-        ("c1", "images/band-airport.jpg", "Airport transfer", ""),
-        ("c2", "images/fleet-saloon.jpg", corp, ""),
-        ("c3", "images/hero.jpg", corp, ""),
-        ("c4", None, corp, ""),
-        ("c5", "images/fleet-mpv.jpg", "Point-to-point", intercity),
+        ("c1", "images/band-airport.jpg", "Airport transfer", "", None),
+        ("c2", None, corp, "", "clock"),
+        ("c3", "images/hero.jpg", corp, "", None),
+        ("c4", "images/photo-events.jpg", corp, "", None),
+        ("c5", "images/photo-intercity.jpg", "Point-to-point", intercity, None),
     ], "business.book_button")
     crew = service_cards(root, "business", [
-        ("e1", None, corp, ""),
-        ("e2", None, corp, ""),
-        ("e3", None, corp, ""),
-        ("e4", "images/fleet-minibus.jpg", group_service(), ""),
+        ("e1", "images/photo-crew.jpg", corp, "", None),
+        ("e2", "images/photo-commute.jpg", corp, "", None),
+        ("e3", None, corp, "", "clock"),
+        ("e4", None, group_service(), "", "users"),
+        ("e5", None, "School transport", "", "school"),
     ], "business.book_button")
     options = _list(T_lines("business.special_options"))
     form = enquiry_form(
@@ -1188,22 +1174,23 @@ def build_business():
     body = page_hero(root, [("Home", "index.html"), ("Business", None)],
                      T("business.title"), T("business.lead"),
                      extra=booking_bar(root, corp, "business.bar_title", "business.bar_button"),
-                     photo="images/fleet-saloon.jpg") + f"""
+                     photo="images/photo-business.jpg") + f"""
 
     <section class="section offer">
-      <div class="wrap offer-grid">
-        <div>
+      <div class="wrap">
+        <div class="section-head">
           <h2>{T("business.offer_title")}</h2>
-          <p class="lead-soft">{T("business.offer_text")}</p>
+          <p>{T("business.offer_text")}</p>
           <ul class="jump-links">{jumps}</ul>
         </div>
-        <div class="panel">
-          <h3>{T("business.built_title")}</h3>
-          <p>{T("business.built_text")}</p>
+        <div class="bento bento-offer">
+          <div class="tile tile-lg">
+            <h3>{T("business.built_title")}</h3>
+            <p>{T("business.built_text")}</p>
+            <ul class="check-list">{_list(T_lines("business.benefits"))}</ul>
+          </div>
+{promise_tiles("business")}
         </div>
-      </div>
-      <div class="wrap">
-{promise_row("business")}
       </div>
     </section>
 
@@ -1211,13 +1198,6 @@ def build_business():
       <div class="wrap">
         <div class="section-head"><h2>{T("business.chauffeur_title")}</h2><p>{T("business.chauffeur_text")}</p></div>
 {chauffeur}
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="wrap">
-        <h2>{T("business.why_title")}</h2>
-        <ul class="check-list check-grid">{_list(T_lines("business.benefits"))}</ul>
       </div>
     </section>
 
@@ -1274,7 +1254,7 @@ def build_partners():
                 ("notes", "Notes", "textarea", False, None)])
     steps = "".join(f"\n          <li><strong>{T(f'partners.step{n}_title')}</strong> {T(f'partners.step{n}_text')}</li>"
                     for n in (1, 2, 3))
-    gets = "".join(f'\n        <li><p>{x}</p></li>' for x in T_lines("partners.gets"))
+    gets = "".join(f'\n          <div class="tile tile-promise"><h3>{x}</h3></div>' for x in T_lines("partners.gets"))
     faq, faq_ld = faq_block("partners", 3, "partners.faq_title")
     body = page_hero(root, [("Home", "index.html"), ("Partners", None)],
                      T("partners.title"), T("partners.lead"), photo="images/band-airport.jpg", split=True) + f"""
@@ -1282,8 +1262,8 @@ def build_partners():
     <section class="section">
       <div class="wrap">
         <h2>{T("partners.gets_title")}</h2>
-        <ul class="promise-row promise-plain">{gets}
-        </ul>
+        <div class="bento bento-three">{gets}
+        </div>
       </div>
     </section>
 
@@ -1355,8 +1335,10 @@ def build_help():
     hrefs = ["#faq", "#faq", "fleet.html#faq", "business.html#faq", "partners.html#faq", "#contact"]
     topics = "".join(f'<li><a href="{hrefs[i] if i < len(hrefs) else "#faq"}">{t}</a></li>'
                      for i, t in enumerate(T_lines("help.topics")))
+    # The admin's "Taxi photo" slot (our own van) leads the Help page.
+    van = SLOT_PHOTO.get("taxi") or local_photo("images/taxi.jpg")
     body = page_hero(root, [("Home", "index.html"), ("Help", None)],
-                     T("help.title"), T("help.lead"),
+                     T("help.title"), T("help.lead"), slot_photo=van, split=True,
                      extra=f'\n      <ul class="jump-links help-topics" aria-label="{T("help.topics_title")}">{topics}</ul>') + f"""
 
     <section class="section">
@@ -1410,8 +1392,9 @@ def sync_faq_jsonld(s):
 
 
 def apply_index_photos(s):
-    """Swap in uploaded hero / taxi / logo photos on index.html (no-op if unset)."""
-    hero, taxi, logo = (SLOT_PHOTO.get(k) for k in ("hero", "taxi", "logo"))
+    """Swap in uploaded hero / logo photos on index.html (no-op if unset).
+    The taxi photo slot is used by the Help page header (build_help)."""
+    hero, logo = (SLOT_PHOTO.get(k) for k in ("hero", "logo"))
     if hero:
         url = photo_url("hero", "", "")
         s = re.sub(r'<meta property="og:image" content="[^"]*">',
@@ -1420,9 +1403,6 @@ def apply_index_photos(s):
         s = s.replace('<link rel="preload" as="image" href="images/hero.jpg">',
                       f'<link rel="preload" as="image" href="{E(hero)}">')
         s = s.replace("</head>", f"  <style>.hero-bg{{background-image:url('{E(hero)}')}}</style>\n</head>", 1)
-    if taxi:
-        s = re.sub(r'<img src="images/taxi\.jpg"([^>]*?) width="899" height="658">',
-                   lambda m: f'<img src="{E(taxi)}"{m.group(1)}>', s, count=1)
     if logo:
         url = photo_url("logo", "", "")
         s = s.replace('<link rel="apple-touch-icon" href="images/logo.svg">',
@@ -1435,9 +1415,8 @@ def apply_index_photos(s):
 # (drop images/band-<name>.jpg in to replace it), else a stand-in photo.
 BANDS = {
     "airport": ("images/band-airport.jpg",),
-    "intercity": ("images/band-intercity.jpg", "images/hero.jpg"),
-    "tours": ("images/band-tours.jpg",),
-    "events": ("images/band-events.jpg", "images/band-pub.jpg"),
+    "intercity": ("images/band-intercity.jpg", "images/photo-intercity.jpg"),
+    "events": ("images/band-events.jpg", "images/photo-events.jpg"),
 }
 KIND_LABEL = {"day": "Day tours", "pub": "Pub tours", "golf": "Golf trips"}
 
@@ -1528,8 +1507,8 @@ def teaser_row(cls, photo, title_key, text_key, button_key, href):
 def teasers():
     return f"""  <section class="section teasers" id="teasers">
     <div class="wrap wrap-wide splits">
-{teaser_row("split-biz", "images/fleet-saloon.jpg", "home.biz_title", "home.biz_text", "home.biz_button", "business.html")}
-{teaser_row("split-partner", "images/band-airport.jpg", "home.partner_title", "home.partner_text", "home.partner_button", "partners.html")}
+{teaser_row("split-biz", "images/photo-business.jpg", "home.biz_title", "home.biz_text", "home.biz_button", "business.html")}
+{teaser_row("split-partner", "images/band-tours.jpg", "home.partner_title", "home.partner_text", "home.partner_button", "partners.html")}
     </div>
   </section>"""
 
@@ -1547,7 +1526,6 @@ def build_index(out_dir):
     s = replace_region(s, "tour-options", tour_options())
     for band in BANDS:
         s = replace_region(s, f"band-{band}", band_image(band))
-    s = replace_region(s, "group-band", group_band("", is_index=True))
     priced = [t["price"] for t in published("day") if t["price"] is not None]
     pattern = r"day tours from €\d+(?:,\d{3})*"
     if not re.search(pattern, s):

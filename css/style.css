@@ -9,7 +9,8 @@
   --bg-alt: #0E2A22;      /* alternate sections, footer */
   --surface: #143A2F;     /* cards */
   --surface-2: #1B4A3C;   /* hover, chips */
-  --line: #2C5446;        /* borders on dark */
+  --line: rgba(255, 255, 255, .12);  /* rules and outlines on dark */
+  --hair: rgba(255, 255, 255, .08);  /* hairline borders on tiles (no shadows) */
   /* Text on dark */
   --text: #F3F6F4;        /* 15.9:1 on --bg, 11.9:1 on --surface */
   --text-soft: #B8C7C0;   /* 10.1:1 on --bg, 7.6:1 on --surface */
@@ -32,8 +33,9 @@
   --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --gutter: 16px;
-  --radius: 16px;
-  --radius-sm: 10px;
+  --r-frame: 24px;      /* hero and page frames, closing panels */
+  --radius: 16px;       /* tiles and cards */
+  --radius-sm: 10px;    /* inputs, small panels */
   --max: 1160px;
   --nav-h: 60px;
 }
@@ -112,9 +114,16 @@ button { cursor: pointer; }
   position: sticky; top: 0; z-index: 50;
   display: flex; align-items: center; gap: 8px;
   height: var(--nav-h); padding: 0 var(--gutter);
-  background: var(--bg); border-bottom: 1px solid var(--line);
+  background: rgba(11, 31, 25, .72); border-bottom: 1px solid var(--hair);
+  isolation: isolate;
 }
-/* No backdrop-filter: it would trap the fixed full-screen phone menu inside the bar. */
+/* Glass effect on a pseudo-element: backdrop-filter on the header itself
+   would trap the fixed full-screen phone menu inside the bar. */
+.site-nav::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .site-nav { background: var(--bg); } }
 .brand { display: inline-flex; align-items: center; gap: 10px; margin-right: auto; text-decoration: none; color: var(--text); min-height: 44px; }
 .brand:hover { color: var(--text); }
 .brand-mark {
@@ -187,7 +196,7 @@ body:has(.nav-links.open) { overflow: hidden; }
 
 /* ── Hero: photo frame with the booking card ────────────────────────────── */
 .hero { padding: 8px 8px 0; }
-.hero-frame { position: relative; overflow: hidden; isolation: isolate; border-radius: 22px; background: var(--bg-alt); }
+.hero-frame { position: relative; overflow: hidden; isolation: isolate; border-radius: var(--r-frame); background: var(--bg-alt); border: 1px solid var(--hair); }
 .hero-bg {
   position: absolute; inset: 0; z-index: -1;
   background-color: var(--bg-alt);
@@ -202,7 +211,7 @@ body:has(.nav-links.open) { overflow: hidden; }
 .hero-inner { padding: 20px 12px 12px; }
 .hero-intro { padding: 0 6px; }
 .hero-intro h1 {
-  color: #fff; font-size: clamp(2rem, 1.4rem + 3vw, 3.6rem); line-height: 1.04; letter-spacing: -0.02em;
+  color: #fff; font-size: clamp(2.3rem, 1.3rem + 4.4vw, 4.6rem); line-height: .98; letter-spacing: -0.035em; font-weight: 700;
   text-wrap: balance; max-width: 14ch;
 }
 .hero-intro h1 span { display: block; }
@@ -218,8 +227,8 @@ body:has(.nav-links.open) { overflow: hidden; }
 }
 .booking-card {
   position: relative; margin-top: 14px;
-  background: var(--l-bg); border-radius: 18px; padding: 14px 14px 16px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, .35);
+  background: var(--l-bg); border-radius: var(--radius); padding: 14px 14px 16px;
+  border: 1px solid rgba(255, 255, 255, .5);
 }
 .anchor { position: absolute; top: -24px; }
 .booking-card[data-card-step="1"] .step-2,
@@ -307,7 +316,7 @@ body:has(.nav-links.open) { overflow: hidden; }
 
 @media (min-width: 900px) {
   .hero { padding: 10px 16px 0; }
-  .hero-frame { border-radius: 26px; min-height: 620px; display: flex; align-items: center; }
+  .hero-frame { min-height: 640px; display: flex; align-items: center; }
   .hero-bg { background-position: center 60%; }
   .hero-bg::after { background: linear-gradient(90deg, rgba(8, 26, 21, .86) 0%, rgba(8, 26, 21, .58) 45%, rgba(8, 26, 21, .22) 100%); }
   .hero-inner {
@@ -329,7 +338,7 @@ body:has(.nav-links.open) { overflow: hidden; }
 .band {
   position: relative; overflow: hidden; isolation: isolate;
   display: flex; flex-direction: column; justify-content: flex-end;
-  min-height: 212px; border-radius: 18px; background: var(--surface);
+  min-height: 212px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--hair);
 }
 .band-img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
 .band-pub .band-img { object-position: 50% 40%; }
@@ -349,7 +358,7 @@ body:has(.nav-links.open) { overflow: hidden; }
   .bands .wrap { padding: 0 16px; }
 
   .band-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .band { min-height: 380px; border-radius: 22px; }
+  .band { min-height: 300px; }
   .band-pub .band-img { object-position: 50% 60%; }
   .band-body { padding: 30px; }
 }
@@ -366,7 +375,7 @@ body:has(.nav-links.open) { overflow: hidden; }
 .tours-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
 .tour-card {
   display: flex; flex-direction: column;
-  background: var(--surface); border-radius: var(--radius); overflow: hidden;
+  background: var(--surface); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--hair);
 }
 .tour-card .tour-photo { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
 .tour-body { padding: 16px 16px 0; flex: 1; }
@@ -405,7 +414,7 @@ body:has(.nav-links.open) { overflow: hidden; }
 /* ── Photo splits (business, partners) ──────────────────────────────────── */
 .teasers { padding: 8px 0; }
 .splits { display: grid; gap: 8px; padding: 0 8px; }
-.split { display: grid; overflow: hidden; border-radius: 18px; background: var(--surface); }
+.split { display: grid; overflow: hidden; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--hair); }
 .split-img { width: 100%; height: 180px; object-fit: cover; }
 .split-panel { background: var(--surface-2); }
 .split-body { padding: 18px 18px 20px; }
@@ -414,13 +423,12 @@ body:has(.nav-links.open) { overflow: hidden; }
 @media (min-width: 900px) {
   .teasers { padding: 12px 0; }
   .splits { grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px; }
-  .split { grid-template-columns: 1fr 1fr; border-radius: 22px; min-height: 300px; }
+  .split { grid-template-columns: 1fr 1fr; min-height: 280px; }
   .split-img { height: 100%; }
   .split-body { align-self: center; padding: 28px; }
 }
 
 /* ── Why BCH ────────────────────────────────────────────────────────────── */
-.why-grid { display: grid; gap: 20px; align-items: center; }
 .why-list { display: grid; gap: 12px; }
 .why-list li { padding-left: 30px; position: relative; }
 .why-list li::before, .check-list li::before {
@@ -429,17 +437,13 @@ body:has(.nav-links.open) { overflow: hidden; }
 }
 .why-list strong { font-weight: 600; }
 .why-list span { color: var(--text-soft); }
-.why-grid img { border-radius: var(--radius); width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
-/* Phones: the van already leads the fleet strip above, so skip the repeat. */
-@media (max-width: 899px) { .why-grid img { display: none; } }
-@media (min-width: 900px) { .why-grid { grid-template-columns: 1.1fr 1fr; gap: 48px; } }
 
 /* ── Reviews: swipe on phones ───────────────────────────────────────────── */
 .reviews-grid {
   display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory;
   margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter) 6px; scroll-padding-left: var(--gutter);
 }
-.review { flex: 0 0 84%; scroll-snap-align: start; background: var(--surface); border-radius: var(--radius); padding: 18px; }
+.review { flex: 0 0 84%; scroll-snap-align: start; background: var(--surface); border-radius: var(--radius); padding: 18px; border: 1px solid var(--hair); }
 .review blockquote { font-size: 1.05rem; line-height: 1.5; }
 .review figcaption { margin-top: 10px; font-weight: 600; }
 .review figcaption span { font-weight: 400; color: var(--text-soft); }
@@ -448,24 +452,21 @@ body:has(.nav-links.open) { overflow: hidden; }
 }
 
 /* ── Questions and other services ───────────────────────────────────────── */
-.qa-grid { display: grid; gap: 28px; }
-@media (min-width: 900px) { .qa-grid { grid-template-columns: 1.4fr 1fr; gap: 48px; } }
-.faq-list, .svc-list { border-top: 1px solid var(--line); }
-.faq-item, .svc { border-bottom: 1px solid var(--line); }
-.faq-item summary, .svc summary {
+.faq-list { border-top: 1px solid var(--line); }
+.faq-item { border-bottom: 1px solid var(--line); }
+.faq-item summary {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   min-height: 52px; padding: 10px 0;
   font-weight: 600; cursor: pointer; list-style: none;
 }
-.faq-item summary::-webkit-details-marker, .svc summary::-webkit-details-marker { display: none; }
-.faq-item summary::after, .svc summary::after {
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
   content: ""; flex: none; width: 10px; height: 10px; margin-right: 4px;
   border-right: 2px solid var(--text); border-bottom: 2px solid var(--text);
   transform: translateY(-3px) rotate(45deg); transition: transform .2s;
 }
-.faq-item[open] summary::after, .svc[open] summary::after { transform: translateY(2px) rotate(-135deg); }
-.faq-item p, .svc p { padding-bottom: 14px; color: var(--text-soft); }
-.svc .btn { margin-bottom: 16px; min-height: 44px; }
+.faq-item[open] summary::after { transform: translateY(2px) rotate(-135deg); }
+.faq-item p { padding-bottom: 14px; color: var(--text-soft); }
 .faq-more { margin-top: 8px; }
 .faq-more a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
 
@@ -478,27 +479,24 @@ body:has(.nav-links.open) { overflow: hidden; }
 .whatsapp-fab svg { width: 28px; height: 28px; fill: #fff; }
 .whatsapp-fab.is-hidden { display: none; }
 
-/* ── Footer: dark, compact ──────────────────────────────────────────────── */
-.site-footer { background: var(--bg-alt); color: var(--text-soft); padding: 36px 0 84px; border-top: 1px solid var(--line); }
+/* ── Footer: dark, compact, four columns ────────────────────────────────── */
+.site-footer { background: var(--bg-alt); color: var(--text-soft); padding: 32px 0 84px; border-top: 1px solid var(--hair); }
 .site-footer a { color: var(--text); text-decoration: none; }
 .site-footer a:hover { text-decoration: underline; color: var(--text); }
-.footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 16px; max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
-.footer-about { grid-column: 1 / -1; }
-.site-footer .brand { margin-bottom: 8px; }
-.footer-about p { max-width: 42ch; margin-bottom: 12px; }
-.footer-contact a, .site-footer ul a { display: inline-flex; align-items: center; min-height: 40px; }
+.footer-top, .footer-grid, .footer-bottom { max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+.footer-top { display: grid; gap: 6px; margin-bottom: 20px; }
+.footer-top p { max-width: 52ch; }
+.footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 16px; }
+.site-footer ul a { display: inline-flex; align-items: center; min-height: 40px; }
 .site-footer h4 { font-family: var(--font-body); font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
-.footer-popular { display: none; }
 .footer-bottom {
-  max-width: calc(var(--max) + 2 * var(--gutter)); margin: 24px auto 0; padding: 16px var(--gutter) 0;
-  border-top: 1px solid var(--line);
+  margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--hair);
   display: flex; flex-wrap: wrap; gap: 4px 24px; font-size: .9rem;
 }
 @media (min-width: 900px) {
-  .footer-grid { grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 32px; }
-  .footer-about { grid-column: auto; }
-  .footer-popular { display: block; margin-top: 16px; }
-  .site-footer { padding: 48px 0 36px; }
+  .site-footer { padding: 44px 0 32px; }
+  .footer-top { grid-template-columns: auto 1fr; align-items: center; gap: 24px; }
+  .footer-grid { grid-template-columns: repeat(4, 1fr); gap: 32px; }
 }
 
 /* ── Tour booking modal (light island) ──────────────────────────────────── */
@@ -537,10 +535,6 @@ body.modal-open { overflow: hidden; }
 .band-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; }
 .band-link { display: inline-flex; align-items: center; min-height: 44px; color: #fff; font-weight: 600; }
 .band-link:hover { color: var(--taxi); }
-.feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.feature-grid li { background: var(--surface); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 2px; }
-.feature-grid strong { font-weight: 700; }
-.feature-grid span { color: var(--text-soft); font-size: .95rem; line-height: 1.45; }
 @media (min-width: 900px) { .bands-head { padding: 40px 16px 8px; } }
 /* Phones: title and button only, so the photo shows above the text. */
 @media (max-width: 599px) {
@@ -548,3 +542,34 @@ body.modal-open { overflow: hidden; }
   .band h3 { margin-bottom: 10px; }
   .band:has(.band-img)::before { background: linear-gradient(180deg, rgba(8, 26, 21, 0) 30%, rgba(8, 26, 21, .6) 55%, rgba(8, 26, 21, .95) 85%); }
 }
+
+/* ── Bento: service bands (3 tiles, varied sizes) ───────────────────────── */
+@media (min-width: 900px) {
+  .band-grid { grid-template-columns: 1.4fr 1fr; grid-template-rows: 1fr 1fr; gap: 12px; }
+  .band-grid > .band:first-child { grid-row: span 2; min-height: 520px; }
+  .band-grid > .band:not(:first-child) { min-height: 254px; }
+}
+
+/* ── Bento: tailored-trip features ──────────────────────────────────────── */
+.feature-bento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.feature-bento li {
+  display: flex; flex-direction: column; gap: 4px; padding: 16px;
+  background: var(--surface); border: 1px solid var(--hair); border-radius: var(--radius);
+}
+.feature-bento li:first-child { background: var(--surface-2); }
+.feature-bento li:first-child strong { font-size: 1.25rem; }
+.feature-bento strong { font-family: var(--font-display); font-weight: 700; font-size: 1.08rem; color: var(--text); }
+.feature-bento span { color: var(--text-soft); line-height: 1.45; }
+@media (min-width: 900px) {
+  .feature-bento { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 12px; }
+  .feature-bento li { padding: 22px; min-height: 150px; justify-content: flex-end; }
+}
+
+/* ── Vehicle cards: hover only lifts the image ──────────────────────────── */
+.fleet-mini .mini-img, .fleet-card .tour-photo { transition: transform .35s ease; transform-origin: 50% 100%; }
+.fleet-mini { overflow: hidden; }
+.fleet-mini:hover .mini-img, .fleet-card:hover .tour-photo { transform: scale(1.04) translateY(-3px); }
+
+/* ── Buttons: pill, clear focus ring ────────────────────────────────────── */
+.btn:focus-visible { outline: 3px solid var(--taxi); outline-offset: 3px; }
+.booking-card .btn:focus-visible, .tour-modal .btn:focus-visible { outline-color: var(--moss); }

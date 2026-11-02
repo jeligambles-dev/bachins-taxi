@@ -130,12 +130,7 @@
       <div class="hero-inner">
         <div class="hero-intro">
           <h1><!-- @t:home.hero_title -->Taxis and tours<!-- /@t:home.hero_title --> <span><!-- @t:home.hero_title_gold -->across Ireland<!-- /@t:home.hero_title_gold --></span></h1>
-          <p class="hero-sub"><!-- @t:home.hero_sub -->Fixed prices and a local driver, day or night, in a wheelchair-accessible 8-seater.<!-- /@t:home.hero_sub --></p>
-          <ul class="hero-facts">
-            <li><!-- @t:home.hero_span_1 -->Open day and night, 24/7<!-- /@t:home.hero_span_1 --></li>
-            <li><!-- @t:home.hero_span_2 -->Room for up to 8 people<!-- /@t:home.hero_span_2 --></li>
-            <li><!-- @t:home.hero_span_3 -->Wheelchair accessible<!-- /@t:home.hero_span_3 --></li>
-          </ul>
+          <p class="hero-sub"><!-- @t:home.hero_sub -->Fixed prices and a local driver, day or night. See your price before you book.<!-- /@t:home.hero_sub --></p>
         </div>
 
         <form class="booking-card" id="contact-form" novalidate data-card-step="1" data-mode="taxi">
@@ -223,7 +218,7 @@
     <div class="wrap wrap-wide">
       <div class="bands-head">
         <h2><!-- @t:home.bands_title -->Private transport across Ireland<!-- /@t:home.bands_title --></h2>
-        <p><!-- @t:home.intro_text -->One local team for taxis, airport runs, private tours and group trips, with fixed prices and a wheelchair-accessible 8-seater.<!-- /@t:home.intro_text --></p>
+        <p><!-- @t:home.intro_text -->Airport runs, door-to-door journeys anywhere in Ireland, and transport for weddings and team events.<!-- /@t:home.intro_text --></p>
       </div>
       <div class="band-grid">
         <article class="band band-airport">
@@ -244,19 +239,6 @@
             <button type="button" class="btn btn-light" data-service="Point-to-point"><!-- @t:home.band_intercity_button -->Book a transfer<!-- /@t:home.band_intercity_button --></button>
           </div>
         </article>
-        <article class="band band-tours">
-<!-- @band-tours -->
-<!-- /@band-tours -->
-          <div class="band-body">
-            <h3><!-- @t:home.band_tours_title -->Private day tours<!-- /@t:home.band_tours_title --></h3>
-            <p><!-- @t:home.band_tours_text -->The Cliffs of Moher, Kerry, the Causeway, country pubs and golf, at your own pace.<!-- /@t:home.band_tours_text --></p>
-            <div class="band-actions">
-              <a href="#tours" class="btn btn-light" data-tour-tab="day"><!-- @t:home.band_tours_button -->See day tours<!-- /@t:home.band_tours_button --></a>
-              <a href="#tours" class="band-link" data-tour-tab="pub"><!-- @t:home.band_pub_button -->Pub tours<!-- /@t:home.band_pub_button --></a>
-              <a href="#tours" class="band-link" data-tour-tab="golf"><!-- @t:home.band_golf_button -->Golf trips<!-- /@t:home.band_golf_button --></a>
-            </div>
-          </div>
-        </article>
         <article class="band band-events">
 <!-- @band-events -->
 <!-- /@band-events -->
@@ -270,23 +252,42 @@
     </div>
   </section>
 
+  <!-- Tours -->
+  <section class="section section-alt tours" id="tours">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><!-- @t:home.tours_title -->Private tours and prices<!-- /@t:home.tours_title --></h2>
+        <p><!-- @t:home.tours_intro -->Pickup anywhere in Dublin or Meath. One price covers the whole vehicle.<!-- /@t:home.tours_intro --></p>
+      </div>
+      <div class="tour-tabs" aria-label="Tour type" role="group">
+        <button type="button" aria-pressed="true" data-kind="day"><!-- @t:home.tours_tab_1 -->Day tours<!-- /@t:home.tours_tab_1 --></button>
+        <button type="button" aria-pressed="false" data-kind="pub"><!-- @t:home.tours_tab_2 -->Pub tours<!-- /@t:home.tours_tab_2 --></button>
+        <button type="button" aria-pressed="false" data-kind="golf"><!-- @t:home.tours_tab_3 -->Golf<!-- /@t:home.tours_tab_3 --></button>
+      </div>
+      <div class="tours-grid tours-scroll">
+<!-- @tours-grid -->
+<!-- /@tours-grid -->
+      </div>
+      <p class="tours-foot"><a class="link-strong" href="tours.html"><!-- @t:home.tours_all_link -->See all tours<!-- /@t:home.tours_all_link --></a> <span><!-- @t:home.tours_text -->Want a custom route or a multi-day trip?<!-- /@t:home.tours_text --> <a href="#booking"><!-- @t:home.tours_link -->Ask us for a quote.<!-- /@t:home.tours_link --></a></span></p>
+    </div>
+  </section>
+
   <!-- Fleet strip -->
 <!-- @fleet-strip -->
 <!-- /@fleet-strip -->
 
   <!-- Tailored trips -->
   <section class="section section-alt why" id="about">
-    <div class="wrap why-grid">
+    <div class="wrap">
       <div>
         <h2><!-- @t:home.about_title -->Trips shaped around you<!-- /@t:home.about_title --></h2>
-        <ul class="feature-grid">
+        <ul class="feature-bento">
           <li><strong><!-- @t:home.services_heading_1 -->Wheelchair accessible<!-- /@t:home.services_heading_1 --></strong> <span><!-- @t:home.services_text_1 -->Our 8-seater van has a built-in ramp.<!-- /@t:home.services_text_1 --></span></li>
           <li><strong><!-- @t:home.services_heading_2 -->Family friendly<!-- /@t:home.services_heading_2 --></strong> <span><!-- @t:home.services_text_2 -->Tell us about child seats when you book.<!-- /@t:home.services_text_2 --></span></li>
           <li><strong><!-- @t:home.services_heading_3 -->Flexible stops<!-- /@t:home.services_heading_3 --></strong> <span><!-- @t:home.services_text_3 -->Extra pickups and stops on the way.<!-- /@t:home.services_text_3 --></span></li>
           <li><strong><!-- @t:home.services_heading_4 -->Room for luggage<!-- /@t:home.services_heading_4 --></strong> <span><!-- @t:home.services_text_4 -->Suitcases, buggies and golf bags.<!-- /@t:home.services_text_4 --></span></li>
         </ul>
       </div>
-      <img src="images/taxi.jpg" alt="BCH Taxi wheelchair-accessible 8-seater Ford Transit Custom" loading="lazy" width="899" height="658">
     </div>
   </section>
 
@@ -315,31 +316,13 @@
     </div>
   </section>
 
-  <!-- Tours -->
-  <section class="section tours" id="tours">
-    <div class="wrap">
-      <div class="section-head">
-        <h2><!-- @t:home.tours_title -->Discover Ireland: tours and prices<!-- /@t:home.tours_title --></h2>
-        <p><!-- @t:home.tours_intro -->Pickup anywhere in Dublin or Meath. One price covers the whole vehicle.<!-- /@t:home.tours_intro --></p>
-      </div>
-      <div class="tour-tabs" aria-label="Tour type" role="group">
-        <button type="button" aria-pressed="true" data-kind="day"><!-- @t:home.tours_tab_1 -->Day tours<!-- /@t:home.tours_tab_1 --></button>
-        <button type="button" aria-pressed="false" data-kind="pub"><!-- @t:home.tours_tab_2 -->Pub tours<!-- /@t:home.tours_tab_2 --></button>
-        <button type="button" aria-pressed="false" data-kind="golf"><!-- @t:home.tours_tab_3 -->Golf<!-- /@t:home.tours_tab_3 --></button>
-      </div>
-      <div class="tours-grid tours-scroll">
-<!-- @tours-grid -->
-<!-- /@tours-grid -->
-      </div>
-      <p class="tours-foot"><a class="link-strong" href="tours.html"><!-- @t:home.tours_all_link -->See all tours<!-- /@t:home.tours_all_link --></a> <span><!-- @t:home.tours_text -->Want a custom route or a multi-day trip?<!-- /@t:home.tours_text --> <a href="#booking"><!-- @t:home.tours_link -->Ask us for a quote.<!-- /@t:home.tours_link --></a></span></p>
-    </div>
-  </section>
-
-  <!-- Questions and other services -->
-  <section class="section section-alt qa" id="faq">
-    <div class="wrap qa-grid">
+  <!-- Top questions (the full list lives in the Help centre) -->
+  <section class="section qa" id="faq">
+    <div class="wrap faq-split">
       <div>
         <h2><!-- @t:home.faq_title -->Questions<!-- /@t:home.faq_title --></h2>
+      </div>
+      <div>
         <div class="faq-list">
           <details class="faq-item"><summary><!-- @t:home.faq_question_1 -->How far in advance should I book?<!-- /@t:home.faq_question_1 --></summary><p><!-- @t:home.faq_answer_1 -->For airport transfers and early morning pickups, we recommend booking at least 24 hours in advance. For local trips, same-day bookings are usually no problem — just give us a call or WhatsApp.<!-- /@t:home.faq_answer_1 --></p></details>
           <details class="faq-item"><summary><!-- @t:home.faq_question_2 -->Is the van wheelchair accessible?<!-- /@t:home.faq_question_2 --></summary><p><!-- @t:home.faq_answer_2 -->Yes. Our Ford Transit Custom has a built-in wheelchair ramp and secure fastening points. We can accommodate wheelchair users comfortably alongside other passengers.<!-- /@t:home.faq_answer_2 --></p></details>
@@ -347,23 +330,6 @@
           <details class="faq-item"><summary><!-- @t:home.faq_question_4 -->What areas do you cover?<!-- /@t:home.faq_question_4 --></summary><p><!-- @t:home.faq_answer_4 -->We cover all of Dublin and Co. Meath, including Dublin City, Dublin Airport, Dunshaughlin, Dunboyne, Navan and Trim. Our day tours and intercity trips go anywhere in Ireland.<!-- /@t:home.faq_answer_4 --></p></details>
         </div>
         <p class="faq-more"><!-- @faq-more --><!-- /@faq-more --></p>
-      </div>
-      <div id="services">
-        <h2><!-- @t:home.services_title -->Other services<!-- /@t:home.services_title --></h2>
-        <div class="svc-list">
-          <details class="svc" id="corporate">
-            <summary><!-- @t:home.corporate_title -->Business and hotel travel<!-- /@t:home.corporate_title --></summary>
-            <p><!-- @t:home.corporate_intro -->Client pickups, staff runs, hotel guests, clinic appointments and events, with agreed prices.<!-- /@t:home.corporate_intro --></p>
-            <button type="button" class="btn btn-quiet" data-service="Corporate / business"><!-- @t:home.corporate_button -->Ask us<!-- /@t:home.corporate_button --></button>
-          </details>
-          <details class="svc" id="school">
-            <summary><!-- @t:home.school_title -->School runs<!-- /@t:home.school_title --></summary>
-            <p><!-- @t:home.school_intro -->Door-to-door school transport across Dublin and Meath, for the school year or a one-off run.<!-- /@t:home.school_intro --></p>
-            <button type="button" class="btn btn-quiet" data-service="School transport"><!-- @t:home.school_button -->Ask us<!-- /@t:home.school_button --></button>
-          </details>
-<!-- @group-band -->
-<!-- /@group-band -->
-        </div>
       </div>
     </div>
   </section>

@@ -51,9 +51,10 @@ def test_taxi_and_logo_slots(tmp_path):
     c = merge(default_content(), {"photo_slots": {"taxi": "t1", "logo": "l1"}})
     c["_photos"] = {"t1": "uploads/taxi1.jpg", "l1": "uploads/logo1.png"}
     _build_with_uploads(tmp_path, c, ["uploads/taxi1.jpg", "uploads/logo1.png"])
+    # Round 4: the taxi slot leads the Help page (the homepage no longer repeats the van).
+    h = (tmp_path / "help.html").read_text()
+    assert 'src="uploads/taxi1.jpg"' in h and 'images/taxi.jpg' not in h
     s = (tmp_path / "index.html").read_text()
-    assert '<img src="uploads/taxi1.jpg"' in s
-    assert 'images/taxi.jpg' not in s
     assert 'rel="apple-touch-icon" href="uploads/logo1.png"' in s
     assert '"logo": "' in s and "uploads/logo1.png" in s
     sub = (tmp_path / "blog.html").read_text()
@@ -82,7 +83,7 @@ def test_no_photo_unchanged(tmp_path):
     build.build_site(merge(default_content(), {}), tmp_path)
     for p in tmp_path.rglob("*.html"):
         assert "uploads/" not in p.read_text(), p
-    assert "images/taxi.jpg" in (tmp_path / "index.html").read_text()
+    assert "images/taxi.jpg" in (tmp_path / "help.html").read_text()
 
 
 def test_missing_or_invalid_photo_ids_are_unset(tmp_path):

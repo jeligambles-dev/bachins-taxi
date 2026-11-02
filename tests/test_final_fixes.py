@@ -133,14 +133,14 @@ def test_413_message_reworded(app, logged_in):
 
 # 6 ── default footer ─────────────────────────────────────────────────────────
 
-def test_default_footer_matches_original(tmp_path):
+def test_default_footer_columns(tmp_path):
+    # Round 4: the footer no longer repeats the tours list (it lives on the
+    # tours pages); it keeps four columns: Personal, Business, Company, Contact.
     _built(tmp_path)
     page = (tmp_path / "tours.html").read_text()
-    foot = page[page.index('<h4>Popular tours</h4>'):]
-    foot = foot[:foot.index("</ul>")]
-    assert re.findall(r"tours/([a-z0-9-]+)\.html", foot) == [
-        "giants-causeway", "ring-of-kerry", "cliffs-of-moher",
-        "glendalough-wicklow", "connemara-galway", "dingle-peninsula"]
+    foot = page[page.index('<footer class="site-footer">'):]
+    assert re.findall(r"<h4>([^<]+)</h4>", foot) == ["Personal", "Business", "Company", "Contact"]
+    assert not re.findall(r'href="tours/[a-z0-9-]+\.html"', foot)
 
 
 # 7 ── session fingerprint ────────────────────────────────────────────────────
