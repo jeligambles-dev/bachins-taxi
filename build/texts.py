@@ -63,8 +63,8 @@ TEXTS = {
 
     # ── Footer ───────────────────────────────────────────────────────────────
     "footer.about": ("Footer", "About paragraph",
-                     "Taxis, Dublin Airport transfers and private tours of Ireland in our wheelchair-accessible 8-seater. Available 24/7."),
-    "footer.tagline": ("Footer", "Bottom line", "Wheelchair-accessible 8-seater. Dublin, Meath and all of Ireland."),
+                     "Private transport across Ireland: taxis, Dublin Airport transfers, business travel and private tours. Executive saloons to minibuses, fixed prices, available 24/7."),
+    "footer.tagline": ("Footer", "Bottom line", "Executive saloons to minibuses. Dublin, Meath and all of Ireland."),
 
     # ── Tours page ───────────────────────────────────────────────────────────
     "tours.title": ("Tours page", "Main heading", "Private tours of Ireland"),
