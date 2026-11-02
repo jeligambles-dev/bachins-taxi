@@ -360,6 +360,7 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
 {footer(root)}
 
   {config_script(root)}
+  <script src="{root}{asset("js/places.js")}"></script>
   <script src="{root}{asset("js/main.js")}"></script>{extra_js}
 </body>
 </html>
@@ -1128,8 +1129,8 @@ def booking_bar(root, service, title_key, button_key):
         <p class="quote-bar-title">{T(title_key)}</p>
         <div class="quote-bar-fields">
           <div class="field"><label for="qb-date">Date</label><input id="qb-date" name="date" type="date"></div>
-          <div class="field"><label for="qb-from">From</label><input id="qb-from" name="pickup" type="text" placeholder="Add pickup"></div>
-          <div class="field"><label for="qb-to">To</label><input id="qb-to" name="destination" type="text" placeholder="Add drop-off"></div>
+          <div class="field"><label for="qb-from">From</label><input id="qb-from" name="pickup" type="text" placeholder="Add pickup" data-places></div>
+          <div class="field"><label for="qb-to">To</label><input id="qb-to" name="destination" type="text" placeholder="Add drop-off" data-places></div>
           <button type="submit" class="btn btn-primary"><span>{T(button_key)}</span><span class="i-arrow" aria-hidden="true"></span></button>
         </div>
       </form>"""
@@ -1436,15 +1437,13 @@ def band_image(band):
     return f'          <img class="band-img" src="{rel}" alt="" loading="lazy">'
 
 
-def area_options():
-    """Booking card: airport fare areas, each carrying its to/from fares."""
-    opts = ['                <option value="">Choose your area</option>']
-    opts += [f'                <option value="{E(a)}" data-to="{to}" data-from="{fr}">{E(a)}</option>'
-             for a, _, to, fr in AIRPORT_FARES]
-    opts += [f'                <option value="{E(a)}" data-to="{p}" data-from="{p}">{E(a)}</option>'
-             for a, p in LONG_TRANSFERS]
-    opts.append('                <option value="Somewhere else">Somewhere else</option>')
-    return "\n".join(opts)
+def fare_data():
+    """Fare table for the booking card's instant airport price (js/fares.js)."""
+    data = _ld_dumps({
+        "airport": [{"area": a, "to": to, "from": fr} for a, _, to, fr in AIRPORT_FARES],
+        "long": [{"area": a, "price": p} for a, p in LONG_TRANSFERS],
+    })
+    return f'          <script id="fare-data" type="application/json">{data}</script>'
 
 
 def tour_options():
@@ -1528,7 +1527,7 @@ def build_index(out_dir):
     s = replace_region(s, "teasers", teasers())
     s = replace_region(s, "faq-more", f'<a class="link-strong" href="help.html">{T("home.faq_all")}</a>')
     s = replace_region(s, "tours-grid", "\n".join(tour_card(t, "") for t in published()))
-    s = replace_region(s, "area-options", area_options())
+    s = replace_region(s, "fare-data", fare_data())
     s = replace_region(s, "tour-options", tour_options())
     for band in BANDS:
         s = replace_region(s, f"band-{band}", band_image(band))
@@ -1556,7 +1555,9 @@ def build_index(out_dir):
     for rel in ("css/style.css", "css/pages.css"):
         s = s.replace(f'href="{rel}">', f'href="{asset(rel)}">')
     s = s.replace('<script src="js/main.js"></script>',
-                  config_script("") + f'\n  <script src="{asset("js/main.js")}"></script>')
+                  config_script("") + f'\n  <script src="{asset("js/fares.js")}"></script>'
+                  f'\n  <script src="{asset("js/places.js")}"></script>'
+                  f'\n  <script src="{asset("js/main.js")}"></script>')
     (out_dir / "index.html").write_text(texts.replace_markers(s))
 
 

@@ -146,13 +146,6 @@
               <label for="cf-service"><!-- @t:home.quick_field_1 -->Service<!-- /@t:home.quick_field_1 --></label>
               <select id="cf-service" name="service" required data-label="Service"><option>Airport transfer</option><option>Local taxi</option><option>Point-to-point</option><option>Day tour</option><option>Rural pub tour</option><option>Golf trip</option><option>Multi-day tour</option><option>Corporate / business</option><option>School transport</option><option>Group transport (9+)</option><option>Custom tour</option></select>
             </div>
-            <div class="field only-airport">
-              <label for="cf-area"><!-- @t:home.card_area_label -->Your area (for the airport fare)<!-- /@t:home.card_area_label --></label>
-              <select id="cf-area" name="area" data-label="Fare area">
-<!-- @area-options -->
-<!-- /@area-options -->
-              </select>
-            </div>
             <div class="field only-tours" hidden>
               <label for="cf-tour"><!-- @t:home.card_tour_label -->Tour<!-- /@t:home.card_tour_label --></label>
               <select id="cf-tour" name="tour" required data-label="Tour">
@@ -168,8 +161,8 @@
               <div class="field"><label for="cf-time"><!-- @t:home.form_booking_field_3 -->Pickup time<!-- /@t:home.form_booking_field_3 --></label><input id="cf-time" name="time" type="time" required data-label="Pickup time"></div>
             </div>
             <div class="field-row">
-              <div class="field"><label for="cf-pickup"><!-- @t:home.quick_field_2 -->From<!-- /@t:home.quick_field_2 --></label><input id="cf-pickup" name="pickup" type="text" placeholder="Add pickup" autocomplete="street-address" required data-label="Pickup"></div>
-              <div class="field only-taxi"><label for="cf-dropoff"><!-- @t:home.quick_field_3 -->To<!-- /@t:home.quick_field_3 --></label><input id="cf-dropoff" name="destination" type="text" placeholder="Add drop-off" required data-label="Destination"></div>
+              <div class="field"><label for="cf-pickup"><!-- @t:home.quick_field_2 -->From<!-- /@t:home.quick_field_2 --></label><input id="cf-pickup" name="pickup" type="text" placeholder="Add pickup" data-places required data-label="Pickup"></div>
+              <div class="field only-taxi"><label for="cf-dropoff"><!-- @t:home.quick_field_3 -->To<!-- /@t:home.quick_field_3 --></label><input id="cf-dropoff" name="destination" type="text" placeholder="Add drop-off" data-places required data-label="Destination"></div>
             </div>
             <div class="card-go">
               <div class="field field-pax">
@@ -208,6 +201,8 @@
             <p class="form-status" id="cf-status" role="status" aria-live="polite"></p>
             <p class="form-legal"><!-- @t:home.form_text_4 -->No payment online. You pay on the day.<!-- /@t:home.form_text_4 --></p>
           </div>
+<!-- @fare-data -->
+<!-- /@fare-data -->
         </form>
       </div>
     </div>

@@ -164,13 +164,29 @@ document.querySelectorAll('[required], [type="email"]').forEach(el => el.addEven
 
 const euro = n => '€' + Number(n).toLocaleString('en-IE');
 
+// Google Maps pins for picked addresses, so the driver gets an exact location.
+function mapLinks(f) {
+  const out = [];
+  if (!window.BCHPlaces) return out;
+  [['pickup', 'Pickup map'], ['destination', 'Drop-off map']].forEach(([n, label]) => {
+    const el = f.querySelector(`[name="${n}"]`);
+    const url = el && !el.closest('[hidden]') ? window.BCHPlaces.mapLink(el) : '';
+    if (url) out.push([label, url]);
+  });
+  return out;
+}
+
 if (form) {
   // Homepage booking card: step 1 (trip) -> step 2 (instant price + contact).
   const statusEl = document.getElementById('cf-status');
   const sendBtn = document.getElementById('cf-send');
   const step1 = form.querySelector('.step-1');
   const tourSel = document.getElementById('cf-tour');
-  const areaSel = document.getElementById('cf-area');
+  // Fixed airport fares (owner's fare table) matched from the From / To addresses.
+  let FARES = { airport: [], long: [] };
+  try { FARES = JSON.parse(document.getElementById('fare-data').textContent); } catch (e) { /* no table: quote by hand */ }
+  const P = window.BCHPlaces, F = window.BCHFares;
+  const placeOf = (el) => (P ? P.placeOf(el) : { label: el.value.trim() });
   const TOUR_SERVICE = { day: 'Day tour', pub: 'Rural pub tour', golf: 'Golf trip' };
   const vehicleSel = document.getElementById('cf-vehicle');
   const vehicleHint = document.getElementById('cf-vehicle-hint');
@@ -185,7 +201,6 @@ if (form) {
     form.querySelectorAll('.card-tabs [data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode())));
     form.querySelectorAll('.only-taxi').forEach(el => { el.hidden = tours; });
     form.querySelectorAll('.only-tours').forEach(el => { el.hidden = !tours; });
-    form.querySelectorAll('.only-airport').forEach(el => { el.hidden = tours || form.service.value !== 'Airport transfer'; });
     if (tours && tourOpt()) form.service.value = TOUR_SERVICE[tourOpt().dataset.kind] || 'Day tour';
     // Instant price hint in step 1 (the full quote opens in step 2).
     const q = quote(), hint = document.getElementById('cf-hint');
@@ -209,7 +224,7 @@ if (form) {
   if (!tourSel.options.length) form.querySelector('.card-tabs').hidden = true;
   form.service.addEventListener('change', syncCard);
   tourSel.addEventListener('change', syncCard);
-  areaSel.addEventListener('change', syncCard);
+  form.addEventListener('placechange', syncCard);
   if (vehicleSel) vehicleSel.addEventListener('change', syncCard);
   form.addEventListener('paxchange', syncCard);
   form.pickup.addEventListener('input', syncCard);
@@ -228,15 +243,12 @@ if (form) {
         ? { title: o.value, price: euro(o.dataset.price), short: o.dataset.unit, note: 'Fixed price ' + o.dataset.unit + ', up to ' + MAX_PAX + ' people.' }
         : { title: o.value, price: 'Price on request', note: "We'll confirm a fixed price within the hour." };
     }
-    const a = areaSel.selectedOptions[0];
-    if (form.service.value === 'Airport transfer' && a && a.dataset.to) {
-      const to = /airport/i.test(form.destination.value), from = !to && /airport/i.test(form.pickup.value);
-      const title = 'Dublin Airport ⇄ ' + a.value;
-      if (to) return { title, price: euro(a.dataset.to), short: 'to the airport', note: 'Fixed price to the airport, for the whole vehicle.' };
-      if (from) return { title, price: euro(a.dataset.from), short: 'from the airport', note: 'Fixed price from the airport, for the whole vehicle.' };
-      return a.dataset.to === a.dataset.from
-        ? { title, price: euro(a.dataset.to), short: 'each way', note: 'Fixed price each way, for the whole vehicle.' }
-        : { title, price: euro(a.dataset.to) + ' or ' + euro(a.dataset.from), short: 'to or from the airport', note: euro(a.dataset.to) + ' to the airport, ' + euro(a.dataset.from) + ' from it. For the whole vehicle.' };
+    const m = F && F.matchFare(placeOf(form.pickup), placeOf(form.destination), FARES);
+    if (m) {
+      const title = 'Dublin Airport ⇄ ' + m.area;
+      return m.dir === 'to'
+        ? { title, price: euro(m.price), short: 'to the airport', note: 'Fixed price to the airport, for the whole vehicle.' }
+        : { title, price: euro(m.price), short: 'from the airport', note: 'Fixed price from the airport, for the whole vehicle.' };
     }
     return { title: form.service.value, price: '', note: "We'll confirm a fixed price within the hour." };
   }
@@ -245,6 +257,7 @@ if (form) {
     ...(mode() === 'tours' ? [['Service', form.service.value]] : []),
     ...(vehicleOpt() ? [['Vehicle', vehicleOpt().textContent]] : []),
     ['Quoted price', quoteText()],
+    ...mapLinks(form),
   ];
 
   function stepOneValid() {
@@ -312,6 +325,10 @@ if (form) {
   if (params.get('date')) form.date.value = params.get('date');
   if (params.get('pickup')) form.pickup.value = params.get('pickup');
   if (params.get('destination')) form.destination.value = params.get('destination');
+  ['pickup', 'destination'].forEach(n => ['lat', 'lon', 'city', 'district', 'county', 'postcode', 'type'].forEach(k => {
+    const h = form.querySelector(`input[type="hidden"][name="${n}_${k}"]`);
+    if (h && params.get(n + '_' + k)) h.value = params.get(n + '_' + k);
+  }));
   if (params.get('topic')) form.message.value = 'About: ' + params.get('topic');
   if (params.get('date') || params.get('pickup') || params.get('destination')) syncCard();
   form.querySelectorAll('input[type="date"], input[type="time"]').forEach(markEmpty);
@@ -365,7 +382,7 @@ if (modal) {
   modal.querySelector('[data-close]').addEventListener('click', () => modal.close());
   modal.addEventListener('click', (e) => { if (e.target === modal) modal.close(); });
 
-  const tourExtra = () => [['Tour', currentTour.name], ['Price', currentTour.price === null ? 'Price on request' : euro(currentTour.price) + ' ' + currentTour.unit]];
+  const tourExtra = () => [['Tour', currentTour.name], ['Price', currentTour.price === null ? 'Price on request' : euro(currentTour.price) + ' ' + currentTour.unit], ...mapLinks(tourForm)];
   tourForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const ok = await sendEmail(tourForm, tmStatus, document.getElementById('tm-send'),
