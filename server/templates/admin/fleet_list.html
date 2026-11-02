@@ -1,0 +1,24 @@
+{% extends "admin/base.html" %}
+{% block title %}Fleet{% endblock %}
+{% block content %}
+<h1>Fleet</h1>
+<p class="actions"><a class="btn" href="/admin/fleet/new">Add vehicle</a></p>
+{% for v in vehicles %}
+<div class="card item">
+  <div>
+    <strong>{{ v.name }}</strong>
+    {% if not v.published %}<span class="badge off">Hidden</span>{% endif %}
+    <div class="hint">{{ v.example }}{% if v.example %} · {% endif %}up to {{ v.passengers }} passengers</div>
+  </div>
+  <div class="actions">
+    <a class="btn" href="/admin/fleet/{{ v.slug }}">Edit</a>
+    <form method="post" action="/admin/fleet/{{ v.slug }}/publish">
+      <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+      <input type="hidden" name="published" value="{{ '0' if v.published else '1' }}">
+      <button type="submit" class="btn dark">{{ 'Hide' if v.published else 'Show' }}</button>
+    </form>
+  </div>
+</div>
+{% else %}<p class="hint">No vehicles yet. The Fleet page will ask visitors to get in touch.</p>
+{% endfor %}
+{% endblock %}

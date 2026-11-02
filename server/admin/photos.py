@@ -15,9 +15,10 @@ SAVED = "Saved. The site is updated."
 
 
 def used_by(view, photo_id):
-    """Labels of everything using this photo: slots, then tours (hidden ones too)."""
+    """Labels of everything using this photo: slots, tours, then vehicles (hidden ones too)."""
     out = [label for slot, label in SLOTS if view["photo_slots"].get(slot) == photo_id]
     out += [t["name"] for t in view["tours"] if t.get("photo") == photo_id]
+    out += [f"{v['name']} (vehicle)" for v in view.get("fleet", []) if v.get("photo") == photo_id]
     return out
 
 

@@ -1,0 +1,51 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit vehicle' if orig_slug else 'New vehicle' }}{% endblock %}
+{% block content %}
+<h1>{{ 'Edit vehicle' if orig_slug else 'New vehicle' }}</h1>
+{% include "admin/_errors.html" %}
+<form method="post" action="{{ '/admin/fleet/' ~ orig_slug if orig_slug else '/admin/fleet/new' }}" class="stack">
+  <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+  {% for f in o %}<input type="hidden" name="o__{{ f }}" value="{{ o[f] }}">{% endfor %}
+  <fieldset class="card">
+    <legend>Basics</legend>
+    <label for="name">Name</label>
+    <input id="name" name="name" value="{{ v.name }}" maxlength="200">
+    {% if not orig_slug %}
+    <label for="slug">Web address</label>
+    <input id="slug" name="slug" value="{{ v.slug }}" maxlength="200" autocapitalize="none" autocomplete="off">
+    <p class="hint">Used in links (for example ?vehicle=...) and for the photo file name. Leave empty to make one from the name. It can't be changed later.</p>
+    {% endif %}
+    <label class="check"><input type="checkbox" name="published" value="1"{% if v.published == '1' %} checked{% endif %}> Show on the website</label>
+    <label for="example">Example model</label>
+    <input id="example" name="example" value="{{ v.example }}" maxlength="200" placeholder="Mercedes E-Class or similar">
+    <label for="passengers">Passengers (up to)</label>
+    <input id="passengers" name="passengers" inputmode="numeric" autocomplete="off" value="{{ v.passengers }}" maxlength="200">
+    <label for="bags">Bags</label>
+    <input id="bags" name="bags" inputmode="numeric" autocomplete="off" value="{{ v.bags }}" maxlength="200">
+    <label for="price_note">Price note</label>
+    <input id="price_note" name="price_note" value="{{ v.price_note }}" maxlength="200" placeholder="Optional, e.g. Quote on request">
+  </fieldset>
+  <fieldset class="card">
+    <legend>Details</legend>
+    <label for="desc">Short description (one or two sentences)</label>
+    <textarea id="desc" name="desc" rows="4" maxlength="600">{{ v.desc }}</textarea>
+    <label for="features">Features (one per line, up to 6)</label>
+    <textarea id="features" name="features" rows="6">{{ v.features }}</textarea>
+  </fieldset>
+  <fieldset class="card">
+    <legend>Photo</legend>
+    <p class="hint">With no photo the site uses images/fleet-{{ orig_slug or 'your-address' }}.jpg if it exists, otherwise a plain panel.</p>
+    <div class="photos">
+      <label class="pick"><input type="radio" name="photo" value=""{% if not v.photo %} checked{% endif %}> <span>No photo</span></label>
+      {% if missing_photo %}<label class="pick"><input type="radio" name="photo" value="{{ missing_photo }}" checked> <span>(missing photo)</span></label>{% endif %}
+      {% for p in photos %}
+      <label class="pick"><input type="radio" name="photo" value="{{ p.id }}"{% if v.photo == p.id %} checked{% endif %}>
+        <img src="/admin/photos/{{ p.id }}/raw" alt="{{ p.original_name }}" loading="lazy" width="96" height="96"></label>
+      {% endfor %}
+    </div>
+  </fieldset>
+  <button type="submit" class="btn sticky">Save</button>
+</form>
+{% if orig_slug %}<p><a href="/admin/fleet/{{ orig_slug }}/delete">Delete this vehicle</a></p>{% endif %}
+<p><a href="/admin/fleet">Back to fleet</a></p>
+{% endblock %}
