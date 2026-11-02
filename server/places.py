@@ -1,9 +1,10 @@
 """Address search for the public booking forms, proxied to Google Places (New).
 
 The browser never sees the API key: it calls our /api/places/* endpoints,
-which validate input, rate-limit per client IP, cache autocomplete results
-and return a trimmed response. Upstream errors become a plain 502 so Google's
-error bodies (which can echo request details) never reach the client.
+which validate input, rate-limit per client IP and return a trimmed response.
+Nothing from Google is cached or stored (Google Maps Platform terms).
+Upstream errors become a plain 502 so Google's error bodies (which can echo
+request details) never reach the client.
 """
 import json
 import math
@@ -13,7 +14,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from collections import OrderedDict, defaultdict, deque
+from collections import defaultdict, deque
 from urllib.parse import urlparse
 
 from flask import Blueprint, current_app, jsonify, request
@@ -37,7 +38,7 @@ class Upstream(Exception):
     """Google could not be reached or answered with an error."""
 
 
-# ── Rate limit and cache ─────────────────────────────────────────────────────
+# ── Rate limit ───────────────────────────────────────────────────────────────
 
 class RateLimiter:
     """Sliding one-minute window per (bucket, client). In-memory and per
@@ -63,34 +64,6 @@ class RateLimiter:
     def reset(self):
         with self._lock:
             self._hits.clear()
-
-
-class TTLCache:
-    """Small LRU with a time-to-live, for autocomplete results."""
-
-    def __init__(self, size=500, ttl=600, clock=time.monotonic):
-        self.size, self.ttl, self._clock = size, ttl, clock
-        self._lock = threading.Lock()
-        self._data = OrderedDict()
-
-    def get(self, key):
-        with self._lock:
-            hit = self._data.get(key)
-            if not hit:
-                return None
-            stamp, value = hit
-            if self._clock() - stamp > self.ttl:
-                del self._data[key]
-                return None
-            self._data.move_to_end(key)
-            return value
-
-    def put(self, key, value):
-        with self._lock:
-            self._data[key] = (self._clock(), value)
-            self._data.move_to_end(key)
-            while len(self._data) > self.size:
-                self._data.popitem(last=False)
 
 
 # ── Google calls ─────────────────────────────────────────────────────────────
@@ -213,16 +186,10 @@ def autocomplete():
     key, err = _guard("autocomplete")
     if err:
         return err
-    cache = current_app.extensions["places_cache"]
-    hit = cache.get(q.lower())
-    if hit is not None:
-        return _json(hit)
     try:
-        result = google_autocomplete(key, q, session)
+        return _json(google_autocomplete(key, q, session))
     except Upstream:
         return _json({"error": "unavailable"}, 502)
-    cache.put(q.lower(), result)
-    return _json(result)
 
 
 @bp.get("/api/places/details")
@@ -243,5 +210,4 @@ def details():
 def init_app(app, api_key=None):
     app.config["GOOGLE_MAPS_API_KEY"] = api_key or ""
     app.extensions["places_limiter"] = RateLimiter({"autocomplete": 60, "details": 30})
-    app.extensions["places_cache"] = TTLCache(size=500, ttl=600)
     app.register_blueprint(bp)

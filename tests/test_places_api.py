@@ -114,12 +114,15 @@ def test_rate_limit(pclient, upstream):
     assert pclient.get(f"/api/places/details?id=ChIJplace999999&session={SESSION}").status_code == 429
 
 
-def test_cache_hits_on_repeated_query(pclient, upstream):
+def test_no_caching_of_google_results(pclient, upstream):
+    # Google Maps Platform terms: Places content is not cached or stored, so
+    # two identical queries both go to Google.
     calls, answers = upstream
-    answers.append(AC)
+    answers.extend([AC, AC])
     a = pclient.get(f"/api/places/autocomplete?q=D15 X&session={SESSION}").get_json()
-    b = pclient.get(f"/api/places/autocomplete?q=d15 x&session=otherSession99").get_json()
-    assert a == b and len(calls) == 1
+    b = pclient.get(f"/api/places/autocomplete?q=D15 X&session={SESSION}").get_json()
+    assert a == b and len(calls) == 2
+    assert "places_cache" not in pclient.application.extensions
 
 
 def test_upstream_error_is_502_without_leaking(pclient, upstream):
