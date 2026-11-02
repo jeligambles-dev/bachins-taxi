@@ -174,6 +174,10 @@ if (form) {
     form.querySelectorAll('.only-tours').forEach(el => { el.hidden = !tours; });
     form.querySelectorAll('.only-airport').forEach(el => { el.hidden = tours || form.service.value !== 'Airport transfer'; });
     if (tours && tourOpt()) form.service.value = TOUR_SERVICE[tourOpt().dataset.kind] || 'Day tour';
+    // Instant price hint in step 1 (the full quote opens in step 2).
+    const q = quote(), hint = document.getElementById('cf-hint');
+    hint.textContent = q.price ? q.price + (q.short ? ' ' + q.short : '') : '';
+    hint.hidden = !q.price;
   }
   function setMode(m) { form.dataset.mode = m; syncCard(); }
   function setStep(n) {
@@ -183,6 +187,9 @@ if (form) {
   form.querySelectorAll('.card-tabs [data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
   form.service.addEventListener('change', syncCard);
   tourSel.addEventListener('change', syncCard);
+  areaSel.addEventListener('change', syncCard);
+  form.pickup.addEventListener('input', syncCard);
+  form.destination.addEventListener('input', syncCard);
 
   // The instant price shown at the top of step 2.
   function quote() {
@@ -190,18 +197,18 @@ if (form) {
       const o = tourOpt();
       if (!o) return { title: 'Your tour', price: '', note: "We'll confirm a fixed price within the hour." };
       return o.dataset.price
-        ? { title: o.value, price: euro(o.dataset.price), note: 'Fixed price ' + o.dataset.unit + ', up to ' + MAX_PAX + ' people.' }
+        ? { title: o.value, price: euro(o.dataset.price), short: o.dataset.unit, note: 'Fixed price ' + o.dataset.unit + ', up to ' + MAX_PAX + ' people.' }
         : { title: o.value, price: 'Price on request', note: "We'll confirm a fixed price within the hour." };
     }
     const a = areaSel.selectedOptions[0];
     if (form.service.value === 'Airport transfer' && a && a.dataset.to) {
       const to = /airport/i.test(form.destination.value), from = !to && /airport/i.test(form.pickup.value);
       const title = 'Dublin Airport ⇄ ' + a.value;
-      if (to) return { title, price: euro(a.dataset.to), note: 'Fixed price to the airport, for the whole vehicle.' };
-      if (from) return { title, price: euro(a.dataset.from), note: 'Fixed price from the airport, for the whole vehicle.' };
+      if (to) return { title, price: euro(a.dataset.to), short: 'to the airport', note: 'Fixed price to the airport, for the whole vehicle.' };
+      if (from) return { title, price: euro(a.dataset.from), short: 'from the airport', note: 'Fixed price from the airport, for the whole vehicle.' };
       return a.dataset.to === a.dataset.from
-        ? { title, price: euro(a.dataset.to), note: 'Fixed price each way, for the whole vehicle.' }
-        : { title, price: euro(a.dataset.to) + ' or ' + euro(a.dataset.from), note: euro(a.dataset.to) + ' to the airport, ' + euro(a.dataset.from) + ' from it. For the whole vehicle.' };
+        ? { title, price: euro(a.dataset.to), short: 'each way', note: 'Fixed price each way, for the whole vehicle.' }
+        : { title, price: euro(a.dataset.to) + ' or ' + euro(a.dataset.from), short: 'to or from the airport', note: euro(a.dataset.to) + ' to the airport, ' + euro(a.dataset.from) + ' from it. For the whole vehicle.' };
     }
     return { title: form.service.value, price: '', note: "We'll confirm a fixed price within the hour." };
   }
