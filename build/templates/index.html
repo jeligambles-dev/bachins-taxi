@@ -112,7 +112,7 @@
   <link rel="preload" as="image" href="images/hero.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/pages.css">
 </head>
@@ -168,8 +168,8 @@
               <div class="field"><label for="cf-time"><!-- @t:home.form_booking_field_3 -->Pickup time<!-- /@t:home.form_booking_field_3 --></label><input id="cf-time" name="time" type="time" required data-label="Pickup time"></div>
             </div>
             <div class="field-row">
-              <div class="field"><label for="cf-pickup"><!-- @t:home.quick_field_2 -->From<!-- /@t:home.quick_field_2 --></label><input id="cf-pickup" name="pickup" type="text" placeholder="e.g. your hotel" autocomplete="street-address" required data-label="Pickup"></div>
-              <div class="field only-taxi"><label for="cf-dropoff"><!-- @t:home.quick_field_3 -->To<!-- /@t:home.quick_field_3 --></label><input id="cf-dropoff" name="destination" type="text" placeholder="e.g. the airport" required data-label="Destination"></div>
+              <div class="field"><label for="cf-pickup"><!-- @t:home.quick_field_2 -->From<!-- /@t:home.quick_field_2 --></label><input id="cf-pickup" name="pickup" type="text" placeholder="Add pickup" autocomplete="street-address" required data-label="Pickup"></div>
+              <div class="field only-taxi"><label for="cf-dropoff"><!-- @t:home.quick_field_3 -->To<!-- /@t:home.quick_field_3 --></label><input id="cf-dropoff" name="destination" type="text" placeholder="Add drop-off" required data-label="Destination"></div>
             </div>
             <div class="card-go">
               <div class="field field-pax">
@@ -180,7 +180,7 @@
                   <button type="button" data-step="1" aria-label="More people">+</button>
                 </div>
               </div>
-              <button type="button" class="btn btn-primary" id="cf-next"><!-- @t:home.card_next -->See price<!-- /@t:home.card_next --></button>
+              <button type="button" class="btn btn-primary" id="cf-next"><span><!-- @t:home.card_next -->See price<!-- /@t:home.card_next --></span><span class="i-arrow" aria-hidden="true"></span></button>
             </div>
             <p class="pax-more" hidden><!-- @t:home.form_booking_text_2 -->More than 8 of you? We can add extra vehicles. Tell us your group size in the notes.<!-- /@t:home.form_booking_text_2 --></p>
           </div>
@@ -202,7 +202,7 @@
             <div class="field"><label for="cf-message"><!-- @t:home.form_booking_field_7 -->Notes (optional)<!-- /@t:home.form_booking_field_7 --></label><textarea id="cf-message" name="message" rows="2" placeholder="Flight number, luggage, child seats, wheelchair" data-label="Notes"></textarea></div>
             <input class="form-honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
             <div class="card-actions">
-              <button type="submit" class="btn btn-primary" id="cf-send"><span class="send-label"><!-- @t:home.form_send_label -->Book now<!-- /@t:home.form_send_label --></span></button>
+              <button type="submit" class="btn btn-primary" id="cf-send"><span class="send-label"><!-- @t:home.form_send_label -->Book now<!-- /@t:home.form_send_label --></span><span class="i-arrow" aria-hidden="true"></span></button>
               <button type="button" class="btn btn-quiet btn-wa-quiet" id="cf-wa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span><!-- @t:home.form_button -->WhatsApp<!-- /@t:home.form_button --></span></button>
             </div>
             <p class="form-status" id="cf-status" role="status" aria-live="polite"></p>
@@ -215,7 +215,7 @@
 
   <!-- Services: large photo bands -->
   <section class="section bands" id="services-bands">
-    <div class="wrap wrap-wide">
+    <div class="wrap">
       <div class="bands-head">
         <h2><!-- @t:home.bands_title -->Private transport across Ireland<!-- /@t:home.bands_title --></h2>
         <p><!-- @t:home.intro_text -->Airport runs, door-to-door journeys anywhere in Ireland, and transport for weddings and team events.<!-- /@t:home.intro_text --></p>

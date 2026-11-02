@@ -341,7 +341,7 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
   <link rel="apple-touch-icon" href="{photo_url('logo', root, 'images/logo.svg', absolute=False)}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{root}{asset("css/style.css")}">
   <link rel="stylesheet" href="{root}{asset("css/pages.css")}">{ld}
 </head>
@@ -372,29 +372,35 @@ def local_photo(rel):
     return rel if rel and (ROOT_DIR / rel).is_file() else None
 
 
-def page_hero(root, crumbs, h1, lead, extra="", photo=None, split=False, slot_photo=None):
-    """Page header. With `photo` (a site image path) it becomes a photo-led
-    header: full-bleed in a rounded frame, or photo-beside-text when `split`."""
-    trail = " <span>/</span> ".join(
-        f'<a href="{href}">{E(name)}</a>' if href else f'<span aria-current="page">{E(name)}</span>'
-        for name, href in crumbs)
-    text = f"""      <nav class="crumbs" aria-label="Breadcrumb">{trail}</nav>
-      <h1>{h1}</h1>
+def page_hero(root, crumbs, h1, lead, extra="", photo=None, split=False, slot_photo=None,
+              overlap="", crumbs_below=False):
+    """Page header. With a photo it is a full-bleed photo header with a
+    directional gradient behind the text. `overlap` (a form bar) sits across
+    the bottom edge. Breadcrumbs only show on deep pages (`crumbs_below`),
+    as a small line under the header; the JSON-LD breadcrumb stays on every page.
+    `split` is accepted for older callers and no longer changes the layout."""
+    text = f"""      <h1>{h1}</h1>
       <p class="page-lead">{lead}</p>{extra}"""
+    below = ""
+    if crumbs_below:
+        trail = " <span>/</span> ".join(
+            f'<a href="{href}">{E(name)}</a>' if href else f'<span aria-current="page">{E(name)}</span>'
+            for name, href in crumbs)
+        below = f'\n    <nav class="crumbs crumbs-below" aria-label="Breadcrumb">{trail}</nav>'
+    over = f'\n      <div class="hero-overlap">{overlap}\n      </div>' if overlap else ""
     photo = slot_photo or local_photo(photo)
     if not photo:
         return f"""    <section class="page-hero">
 {text}
-    </section>"""
-    kind = "split" if split else "framed"
-    return f"""    <section class="page-hero page-hero-{kind}">
+    </section>{below}"""
+    return f"""    <section class="page-hero page-hero-photo{' has-overlap' if overlap else ''}">
       <div class="page-hero-frame">
         <img class="page-hero-img" src="{E(root + photo)}" alt="">
         <div class="page-hero-text">
 {text}
         </div>
-      </div>
-    </section>"""
+      </div>{over}
+    </section>{below}"""
 
 
 def breadcrumb_ld(crumbs):
@@ -523,7 +529,7 @@ def build_tour_pages():
 """ if also else ""
         body = page_hero(root, [(n, (root + h) if h else None) for n, h in crumbs],
                          E(t["name"]) + " " + suffix.lower(),
-                         E(t["desc"])) + f"""
+                         E(t["desc"]), crumbs_below=True) + f"""
 
     <section class="section tour-detail">
       <div class="wrap detail-grid">
@@ -885,7 +891,7 @@ def build_blog():
         </a>""" for o in others)
         body = page_hero(root, [("Home", root + "index.html"), ("Blog", root + "blog.html"), (p["title"], None)],
                          E(p["title"]), E(p["summary"]),
-                         f'\n      <p class="hero-meta">{fmt_date(p["date"])}</p>') + f"""
+                         f'\n      <p class="hero-meta">{fmt_date(p["date"])}</p>', crumbs_below=True) + f"""
 
     <section class="section">
       <article class="post-body">
@@ -1122,9 +1128,9 @@ def booking_bar(root, service, title_key, button_key):
         <p class="quote-bar-title">{T(title_key)}</p>
         <div class="quote-bar-fields">
           <div class="field"><label for="qb-date">Date</label><input id="qb-date" name="date" type="date"></div>
-          <div class="field"><label for="qb-from">From</label><input id="qb-from" name="pickup" type="text" placeholder="e.g. your office"></div>
-          <div class="field"><label for="qb-to">To</label><input id="qb-to" name="destination" type="text" placeholder="e.g. the airport"></div>
-          <button type="submit" class="btn btn-primary">{T(button_key)}</button>
+          <div class="field"><label for="qb-from">From</label><input id="qb-from" name="pickup" type="text" placeholder="Add pickup"></div>
+          <div class="field"><label for="qb-to">To</label><input id="qb-to" name="destination" type="text" placeholder="Add drop-off"></div>
+          <button type="submit" class="btn btn-primary"><span>{T(button_key)}</span><span class="i-arrow" aria-hidden="true"></span></button>
         </div>
       </form>"""
 
@@ -1173,7 +1179,7 @@ def build_business():
                      ("special", "business.special_title")))
     body = page_hero(root, [("Home", "index.html"), ("Business", None)],
                      T("business.title"), T("business.lead"),
-                     extra=booking_bar(root, corp, "business.bar_title", "business.bar_button"),
+                     overlap=booking_bar(root, corp, "business.bar_title", "business.bar_button"),
                      photo="images/photo-business.jpg") + f"""
 
     <section class="section offer">
@@ -1283,7 +1289,7 @@ def build_partners():
 
     <section class="section">
       <div class="wrap">
-        <div class="section-head"><h2>{T("business.fleet_title")}</h2><p>{T("business.fleet_text")}</p></div>
+        <div class="section-head"><h2>{T("fleet.title")}</h2><p>{T("business.fleet_text")}</p></div>
 {vehicle_grid(root)}
       </div>
     </section>
@@ -1506,7 +1512,7 @@ def teaser_row(cls, photo, title_key, text_key, button_key, href):
 
 def teasers():
     return f"""  <section class="section teasers" id="teasers">
-    <div class="wrap wrap-wide splits">
+    <div class="wrap splits">
 {teaser_row("split-biz", "images/photo-business.jpg", "home.biz_title", "home.biz_text", "home.biz_button", "business.html")}
 {teaser_row("split-partner", "images/band-tours.jpg", "home.partner_title", "home.partner_text", "home.partner_button", "partners.html")}
     </div>

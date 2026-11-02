@@ -48,6 +48,14 @@ const MAX_PAX = Number(CFG.maxPax) || 8;
 const form = document.getElementById('contact-form');
 const today = new Date().toISOString().slice(0, 10);
 document.querySelectorAll('input[type="date"]').forEach(el => { el.min = today; });
+// Empty date/time fields show "Add date" / "Add time" (CSS) instead of the
+// browser's dd/mm/yyyy pattern; the native pickers stay.
+function markEmpty(el) { el.classList.toggle('is-empty', !el.value); }
+document.querySelectorAll('input[type="date"], input[type="time"]').forEach(el => {
+  markEmpty(el);
+  ['input', 'change', 'blur'].forEach(ev => el.addEventListener(ev, () => markEmpty(el)));
+});
+document.addEventListener('reset', (e) => setTimeout(() => e.target.querySelectorAll('input[type="date"], input[type="time"]').forEach(markEmpty)), true);
 
 function setStatus(el, msg, cls) {
   el.textContent = msg;
@@ -306,6 +314,7 @@ if (form) {
   if (params.get('destination')) form.destination.value = params.get('destination');
   if (params.get('topic')) form.message.value = 'About: ' + params.get('topic');
   if (params.get('date') || params.get('pickup') || params.get('destination')) syncCard();
+  form.querySelectorAll('input[type="date"], input[type="time"]').forEach(markEmpty);
 }
 
 // Business and partner enquiry forms: sent like the booking forms, to the same inbox.
