@@ -8,7 +8,7 @@ from content import default_content, merge
 
 NEW = {"email": "new@x.ie", "phone": "+353861112222",
        "phone_display": "+353 86 111 2222", "whatsapp_number": "353861112222"}
-OLD = ("bachintaxi@gmail.com", "0330046", "353870330046")
+OLD = ("office@bchtaxi.ie", "0330046", "353870330046")
 
 
 def _content(texts_=None, settings=None):
