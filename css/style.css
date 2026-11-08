@@ -148,6 +148,9 @@ button { cursor: pointer; }
   background: var(--taxi); color: #0B0B0C;
   font-family: var(--font-body); font-weight: 700; font-size: .74rem; letter-spacing: .04em;
 }
+.brand-logo { display: block; height: 42px; width: auto; }
+@media (min-width: 1000px) { .brand-logo { height: 54px; } }
+.footer-top .brand-logo { height: 72px; }
 .brand-word { font-family: var(--font-body); font-weight: 600; font-size: .95rem; letter-spacing: var(--label); text-transform: uppercase; }
 .nav-call {
   display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px;

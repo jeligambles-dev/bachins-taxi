@@ -214,8 +214,9 @@ def idx(root, anchor, is_index):
 
 # ── Shared chrome ────────────────────────────────────────────────────────────
 
-BRAND = ('<span class="brand-mark" aria-hidden="true">BCH</span>'
-         '<span class="brand-word">BCH Taxi</span>')
+def brand(root):
+    """The BCH logo (transparent PNG, 2x for sharp screens)."""
+    return f'<img class="brand-logo" src="{root}images/logo.png" alt="BCH Taxi" width="498" height="192">'
 
 
 NAV_TOURS = (("Day tours", "tours.html", "tours"), ("Pub tours", "pub-tours.html", "pub"),
@@ -245,7 +246,7 @@ def nav(root, is_index=False, active=""):
     ])
     return f"""  <nav class="site-nav">
     <a href="{home}" class="brand" aria-label="BCH Taxi home">
-      {BRAND}
+      {brand(root)}
     </a>
     <ul class="nav-links" id="nav-links">
 {lis}
@@ -261,7 +262,7 @@ def footer(root, is_index=False):
     return f"""  <footer class="site-footer">
     <div class="footer-top">
       <a href="{home}" class="brand" aria-label="BCH Taxi home">
-        {BRAND}
+        {brand(root)}
       </a>
       <p>{T("footer.about")}</p>
     </div>
@@ -338,7 +339,7 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
   <meta property="og:image" content="{photo_url('hero', root, 'images/hero.jpg')}">
   <meta name="twitter:card" content="summary_large_image">{canonical}
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a0a0a'/%3E%3Ctext x='32' y='42' font-family='Georgia,serif' font-size='26' font-weight='700' fill='%23c9a84c' text-anchor='middle'%3EBCH%3C/text%3E%3C/svg%3E">
-  <link rel="apple-touch-icon" href="{photo_url('logo', root, 'images/logo.svg', absolute=False)}">
+  <link rel="apple-touch-icon" href="{photo_url('logo', root, 'images/logo-500.png', absolute=False)}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
@@ -1410,7 +1411,7 @@ def apply_index_photos(s):
         s = s.replace("</head>", f"  <style>.hero-bg{{background-image:url('{E(hero)}')}}</style>\n</head>", 1)
     if logo:
         url = photo_url("logo", "", "")
-        s = s.replace('<link rel="apple-touch-icon" href="images/logo.svg">',
+        s = s.replace('<link rel="apple-touch-icon" href="images/logo-500.png">',
                       f'<link rel="apple-touch-icon" href="{E(logo)}">')
         s = re.sub(r'"logo": "[^"]*"', lambda m: f'"logo": "{url}"', s, count=1)
     return s

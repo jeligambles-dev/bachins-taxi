@@ -170,3 +170,31 @@ def test_access_cell_ignores_negative_wheelchair_note(tmp_path):
     item = _items(_showcase(tmp_path, c))["saloon"]
     assert "Ramp" not in item
     assert "Not wheelchair accessible" in item
+
+
+# ── Logo ───────────────────────────────────────────────────────────────────
+
+def test_logo_in_header_and_footer_on_every_page(tmp_path):
+    _build(tmp_path)
+    for p in Path(tmp_path).rglob("*.html"):
+        h = p.read_text()
+        depth = len(p.relative_to(tmp_path).parts) - 1
+        src = "../" * depth + "images/logo.png"
+        nav = h[h.index('class="site-nav'):h.index("</nav>")] if 'class="site-nav' in h else ""
+        foot = h[h.index('class="site-footer'):]
+        for part, name in ((nav, "header"), (foot, "footer")):
+            assert f'<img class="brand-logo" src="{src}" alt="BCH Taxi"' in part, (p, name)
+
+
+def test_logo_files_exist_and_icon_is_500px():
+    from PIL import Image
+    root = Path(build.__file__).resolve().parent.parent / "images"
+    assert (root / "logo.png").is_file()
+    with Image.open(root / "logo-500.png") as im:
+        assert im.size == (500, 500)
+
+
+def test_apple_touch_icon_uses_square_logo(tmp_path):
+    _build(tmp_path)
+    for rel in ("index.html", "fleet.html"):
+        assert 'rel="apple-touch-icon" href="images/logo-500.png"' in (tmp_path / rel).read_text(), rel
