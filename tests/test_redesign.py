@@ -208,3 +208,10 @@ def test_brand_name_is_bch_group_everywhere(tmp_path):
     home = (tmp_path / "index.html").read_text()
     assert "<title>BCH Group |" in home and '"name": "BCH Group"' in home
     assert "&copy; 2026 BCH Group" in home
+
+
+def test_help_hero_default_photo_has_no_third_party_branding(tmp_path):
+    h = (_build(tmp_path) / "help.html").read_text()
+    hero = h[h.index('class="page-hero'):h.index("</section>", h.index('class="page-hero'))] if 'class="page-hero' in h else h
+    assert "images/photo-commute.jpg" in hero
+    assert "images/taxi.jpg" not in h

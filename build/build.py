@@ -1341,8 +1341,9 @@ def build_help():
     hrefs = ["#faq", "#faq", "fleet.html#faq", "business.html#faq", "partners.html#faq", "#contact"]
     topics = "".join(f'<li><a href="{hrefs[i] if i < len(hrefs) else "#faq"}">{t}</a></li>'
                      for i, t in enumerate(T_lines("help.topics")))
-    # The admin's "Taxi photo" slot (our own van) leads the Help page.
-    van = SLOT_PHOTO.get("taxi") or local_photo("images/taxi.jpg")
+    # The admin's "Taxi photo" slot (our own van) leads the Help page. The
+    # default is a plain Irish road: the old stock van carried another firm's branding.
+    van = SLOT_PHOTO.get("taxi") or local_photo("images/photo-commute.jpg")
     body = page_hero(root, [("Home", "index.html"), ("Help", None)],
                      T("help.title"), T("help.lead"), slot_photo=van, split=True,
                      extra=f'\n      <ul class="jump-links help-topics" aria-label="{T("help.topics_title")}">{topics}</ul>') + f"""

@@ -83,7 +83,7 @@ def test_no_photo_unchanged(tmp_path):
     build.build_site(merge(default_content(), {}), tmp_path)
     for p in tmp_path.rglob("*.html"):
         assert "uploads/" not in p.read_text(), p
-    assert "images/taxi.jpg" in (tmp_path / "help.html").read_text()
+    assert "images/photo-commute.jpg" in (tmp_path / "help.html").read_text()
 
 
 def test_missing_or_invalid_photo_ids_are_unset(tmp_path):
