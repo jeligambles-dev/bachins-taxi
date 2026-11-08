@@ -34,8 +34,8 @@
   --font-body: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --gutter: 16px;
-  --r-frame: 24px;      /* hero and page frames, closing panels */
-  --radius: 20px;       /* tiles and cards */
+  --r-frame: 12px;      /* hero and page frames, closing panels */
+  --radius: 8px;        /* tiles and cards */
   --radius-sm: 10px;    /* inputs, small panels */
   --max: 1160px;
   --nav-h: 60px;
@@ -84,16 +84,18 @@ button { cursor: pointer; }
 .wrap { width: 100%; max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
 .wrap-narrow { max-width: calc(760px + 2 * var(--gutter)); }
 .wrap-wide { max-width: calc(1280px + 2 * var(--gutter)); }
-.section { padding: 40px 0; }
-.section-alt, .section-mist { background: var(--bg-alt); }
+.section { padding: 56px 0; }
+/* No alternating backgrounds: sections are separated by space and a hairline. */
+.section-alt, .section-mist { background: var(--bg); border-top: 1px solid var(--hair); }
 .section h2 { margin-bottom: 16px; }
-.section-head { margin-bottom: 16px; }
+.section-head { margin-bottom: 24px; }
 .section-head h2 { margin-bottom: 4px; }
 .section-head p { color: var(--text-soft); }
 @media (min-width: 900px) {
   :root { --gutter: 32px; --nav-h: 68px; }
-  .section { padding: 72px 0; }
+  .section { padding: 104px 0; }
   .section h2 { margin-bottom: 22px; }
+  .section-head { margin-bottom: 40px; }
 }
 
 /* ── Buttons ────────────────────────────────────────────────────────────── */
@@ -250,7 +252,9 @@ body:has(.nav-links.open) { overflow: hidden; }
     linear-gradient(180deg, rgba(11, 11, 12, .7) 0%, rgba(11, 11, 12, .15) 22%, rgba(11, 11, 12, 0) 40%),
     linear-gradient(0deg, var(--bg) 0%, rgba(11, 11, 12, .85) 30%, rgba(11, 11, 12, .2) 60%, rgba(11, 11, 12, 0) 75%);
 }
-.hero-inner { padding: calc(var(--nav-h) + 120px) var(--gutter) 24px; }
+.hero-inner { padding: calc(var(--nav-h) + 40px) var(--gutter) 24px; }
+/* Phones: the booking card's button must fit on the first screen. */
+@media (max-width: 599px) { .hero-sub { display: none; } .hero .booking-card { margin-top: 20px; } }
 .hero-eyebrow {
   text-shadow: 0 1px 12px rgba(0, 0, 0, .6);
   font-size: .78rem; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--taxi);
@@ -524,54 +528,71 @@ input.is-empty:not(:focus)::-webkit-datetime-edit { color: transparent; }
   .hero .step-2 > .quote { grid-column: 1; grid-row: 2 / span 6; align-self: start; }
 }
 
-/* ── Service bands: full-width photos ───────────────────────────────────── */
-.bands { padding: 12px 0 8px; }
-.bands .wrap { padding: 0 8px; }
+/* ── Section heads: serif title left, grey intro right on wide screens ──── */
+@media (min-width: 900px) {
+  .section-head, .bands-head { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: end; }
+  .section-head p, .bands-head p { justify-self: end; max-width: 42ch; }
+  .section-head > :not(h2):not(p) { grid-column: 1 / -1; }
+}
+
+/* ── Service bands: three photo tiles ───────────────────────────────────── */
+.bands { padding: 48px 0 16px; }
+.bands-head { padding: 0 0 20px; }
+.bands-head h2 { margin-bottom: 6px; }
+.bands-head p { color: var(--text-soft); }
 .band-grid { display: grid; gap: 8px; }
 .band {
   position: relative; overflow: hidden; isolation: isolate;
   display: flex; flex-direction: column; justify-content: flex-end;
-  min-height: 212px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--hair);
+  min-height: 240px; border-radius: 4px; background: var(--surface);
 }
 .band-img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
 .band-pub .band-img { object-position: 50% 40%; }
 .band-golf .band-img { object-position: 50% 65%; }
 .band:has(.band-img)::before {
   content: ""; position: absolute; inset: 0; z-index: -1;
-  background: linear-gradient(180deg, rgba(11, 11, 12, .05) 0%, rgba(11, 11, 12, .55) 40%, rgba(11, 11, 12, .94) 78%);
+  background: linear-gradient(180deg, rgba(11, 11, 12, 0) 30%, rgba(11, 11, 12, .6) 58%, rgba(11, 11, 12, .95) 88%);
 }
-.band-body { padding: 18px; text-shadow: 0 1px 12px rgba(0, 0, 0, .5); }
-.band h3 { color: #fff; font-size: clamp(1.45rem, 1.2rem + 1vw, 2rem); font-weight: 700; }
-.band p { margin: 4px 0 12px; color: #fff; max-width: 36ch; }
-.band .btn { min-height: 44px; text-shadow: none; }
-.band .btn-light { color: #fff; border-color: #fff; }
+.band-body { padding: 20px; text-shadow: 0 1px 14px rgba(0, 0, 0, .55); }
+.band .btn { text-shadow: none; }
+.band h3 { color: #fff; font-family: var(--font-display); font-weight: 400; font-size: clamp(1.7rem, 1.4rem + 1vw, 2.3rem); letter-spacing: -0.01em; }
+.band p { margin: 4px 0 14px; color: rgba(255, 255, 255, .85); max-width: 36ch; }
+.band .btn { min-height: 44px; }
+.band .btn-light { color: #fff; border-color: rgba(255, 255, 255, .5); }
 .band .btn-light:hover { color: var(--bg); }
+.band-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; }
+.band-link { display: inline-flex; align-items: center; min-height: 44px; color: #fff; font-weight: 600; }
+.band-link:hover { color: var(--taxi); }
+@media (max-width: 599px) { .band p { display: none; } .band h3 { margin-bottom: 10px; } }
 @media (min-width: 900px) {
-  .bands { padding: 16px 0 8px; }
-  .bands .wrap { padding: 0 16px; }
-
-  .band-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .band { min-height: 300px; }
+  .bands { padding: 96px 0 24px; }
+  .bands-head { padding-bottom: 32px; }
+  .band-grid { grid-template-columns: 1.4fr 1fr; grid-template-rows: 1fr 1fr; gap: 12px; }
+  .band-grid > .band:first-child { grid-row: span 2; min-height: 540px; }
+  .band-grid > .band:not(:first-child) { min-height: 264px; }
   .band-pub .band-img { object-position: 50% 60%; }
-  .band-body { padding: 30px; }
+  .band-body { padding: 32px; }
 }
 
-/* ── Tour and vehicle cards ─────────────────────────────────────────────── */
-.tour-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+/* ── Tour and vehicle cards: flat, hairline, photo-led ──────────────────── */
+.tour-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
 .tour-tabs button {
   min-height: 44px; padding: 0 18px; border-radius: 999px;
-  border: 1.5px solid var(--line); background: transparent; font-weight: 600; color: var(--text);
+  border: 1px solid var(--line); background: transparent; font-weight: 500; color: var(--text-soft);
 }
-.tour-tabs button:hover { border-color: var(--text); }
+.tour-tabs button:hover { border-color: var(--text); color: var(--text); }
 .tour-tabs button[aria-pressed="true"] { background: var(--text); border-color: var(--text); color: var(--bg); }
 
 .tours-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
 .tour-card {
   display: flex; flex-direction: column;
   background: var(--surface); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--hair);
+  transition: border-color .2s;
 }
+.tour-card:hover { border-color: var(--line); }
 .tour-card .tour-photo { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
-.tour-body { padding: 16px 16px 0; flex: 1; }
+.tour-body { padding: 18px 18px 0; flex: 1; }
+.tour-card h3 { font-size: 1.15rem; }
 .tour-card h3 a { color: var(--text); text-decoration: none; }
 .tour-card h3 a:hover { text-decoration: underline; }
 .tour-meta, .tour-region { display: block; color: var(--text-soft); font-size: .92rem; line-height: 1.45; margin-top: 4px; }
@@ -579,10 +600,10 @@ input.is-empty:not(:focus)::-webkit-datetime-edit { color: transparent; }
   margin-top: 8px; color: var(--text-soft);
   display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
 }
-.tour-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 14px 16px 16px; }
-.tour-price { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; line-height: 1.1; color: var(--text); }
-.tour-price small { display: block; font-family: var(--font-body); font-weight: 500; font-size: .82rem; color: var(--text-soft); }
-.tour-price span { display: block; font-family: var(--font-body); font-weight: 500; font-size: .85rem; color: var(--text-soft); margin-top: 2px; }
+.tour-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 16px 18px 18px; margin-top: 14px; border-top: 1px solid var(--hair); }
+.tour-price { font-family: var(--font-body); font-weight: 500; font-size: 1.5rem; line-height: 1.1; color: var(--text); letter-spacing: -0.02em; }
+.tour-price small { display: block; font-family: var(--font-body); font-weight: 500; font-size: .7rem; letter-spacing: var(--label); text-transform: uppercase; color: var(--text-soft); margin-bottom: 2px; }
+.tour-price span { display: block; font-family: var(--font-body); font-weight: 400; font-size: .85rem; letter-spacing: 0; color: var(--text-soft); margin-top: 2px; }
 .tour-foot .btn { min-height: 44px; padding: 0 22px; }
 
 .tours-scroll {
@@ -594,73 +615,100 @@ input.is-empty:not(:focus)::-webkit-datetime-edit { color: transparent; }
 @media (min-width: 900px) {
   .tours-scroll { display: grid; grid-template-columns: repeat(3, 1fr); overflow: visible; margin: 0; padding: 0; gap: 16px; }
 }
-.tours-foot { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: baseline; max-width: none; }
+.tours-foot { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: baseline; max-width: none; }
 .tours-foot .link-strong { display: inline-flex; align-items: center; min-height: 44px; }
 .tours-foot span { color: var(--text-soft); }
 
 /* Seats and bags: icon + number pairs */
 .specs { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; color: var(--text-soft); font-size: .95rem; }
 .specs li { display: inline-flex; align-items: center; gap: 6px; }
-.specs svg { width: 18px; height: 18px; fill: none; stroke: var(--link); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.specs b { color: var(--text); font-weight: 700; }
+.specs svg { width: 18px; height: 18px; fill: none; stroke: var(--text-soft); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.specs b { color: var(--text); font-weight: 600; }
+
+/* Images zoom slightly on hover; nothing else moves */
+.band-img, .svc-img, .split-img, .tour-photo, .mini-img, .showcase-img { transition: transform .5s ease; }
+.band:hover .band-img, .svc-card:hover .svc-img, .split:hover .split-img, .tour-card:hover .tour-photo, .fleet-mini:hover .mini-img { transform: scale(1.03); }
+.fleet-mini { overflow: hidden; }
 
 /* ── Photo splits (business, partners) ──────────────────────────────────── */
-.teasers { padding: 8px 0; }
-.splits { display: grid; gap: 8px; padding: 0 8px; }
+.teasers { padding: 16px 0 48px; }
+.splits { display: grid; gap: 12px; padding: 0 var(--gutter); }
 .split { display: grid; overflow: hidden; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--hair); }
-.split-img { width: 100%; height: 180px; object-fit: cover; }
+.split-img { width: 100%; height: 200px; object-fit: cover; }
 .split-panel { background: var(--surface-2); }
-.split-body { padding: 18px 18px 20px; }
-.split-body h2 { font-size: clamp(1.4rem, 1.2rem + 1vw, 1.9rem); margin-bottom: 6px; }
-.split-body p { color: var(--text-soft); margin-bottom: 14px; }
+.split-body { padding: 22px 20px 24px; }
+.split-body h2 { font-size: clamp(1.8rem, 1.4rem + 1.2vw, 2.4rem); margin-bottom: 8px; }
+.split-body p { color: var(--text-soft); margin-bottom: 18px; }
 @media (min-width: 900px) {
-  .teasers { padding: 12px 0; }
-  .splits { grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px; }
-  .split { grid-template-columns: 1fr 1fr; min-height: 280px; }
+  .teasers { padding: 24px 0 96px; }
+  .splits { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .split { grid-template-columns: 1fr 1fr; min-height: 300px; }
   .split-img { height: 100%; }
-  .split-body { align-self: center; padding: 28px; }
+  .split-body { align-self: center; padding: 32px; }
 }
 
-/* ── Why BCH ────────────────────────────────────────────────────────────── */
+/* ── Checks and "why" lists ─────────────────────────────────────────────── */
 .why-list { display: grid; gap: 12px; }
 .why-list li { padding-left: 30px; position: relative; }
 .why-list li::before, .check-list li::before {
   content: ""; position: absolute; left: 0; top: .32em; width: 18px; height: 18px; border-radius: 50%;
-  background: var(--taxi) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B1F19' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12 4 4 8-8'/%3E%3C/svg%3E") center / 12px no-repeat;
+  background: var(--taxi) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B0B0C' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5 9-10'/%3E%3C/svg%3E") center / 12px no-repeat;
 }
 .why-list strong { font-weight: 600; }
 .why-list span { color: var(--text-soft); }
 
-/* ── Reviews: swipe on phones ───────────────────────────────────────────── */
-.reviews-grid {
-  display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory;
-  margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter) 6px; scroll-padding-left: var(--gutter);
+/* ── "Trips shaped around you": one row of features split by hairlines ──── */
+.feature-bento { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--hair); }
+.feature-bento li { display: flex; flex-direction: column; gap: 4px; padding: 20px 16px 20px 0; border-bottom: 1px solid var(--hair); }
+.feature-bento li:nth-child(even) { padding-left: 16px; border-left: 1px solid var(--hair); }
+.feature-bento li::before {
+  content: ""; width: 24px; height: 24px; margin-bottom: 10px; background: var(--taxi);
+  -webkit-mask: var(--fi) center / contain no-repeat; mask: var(--fi) center / contain no-repeat;
 }
-.review { flex: 0 0 84%; scroll-snap-align: start; background: var(--surface); border-radius: var(--radius); padding: 18px; border: 1px solid var(--hair); }
-.review blockquote { font-size: 1.05rem; line-height: 1.5; }
-.review figcaption { margin-top: 10px; font-weight: 600; }
-.review figcaption span { font-weight: 400; color: var(--text-soft); }
+.feature-bento li:nth-child(1) { --fi: var(--i-access); }
+.feature-bento li:nth-child(2) { --fi: var(--i-baby); }
+.feature-bento li:nth-child(3) { --fi: var(--i-route); }
+.feature-bento li:nth-child(4) { --fi: var(--i-luggage); }
+.feature-bento strong { font-family: var(--font-body); font-weight: 500; font-size: 1.08rem; color: var(--text); }
+.feature-bento span { color: var(--text-soft); line-height: 1.45; }
 @media (min-width: 900px) {
-  .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 0; padding: 0; overflow: visible; }
+  .feature-bento { grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--hair); }
+  .feature-bento li { padding: 28px 28px 32px; border-bottom: 0; }
+  .feature-bento li:first-child { padding-left: 0; }
+  .feature-bento li + li { padding-left: 28px; border-left: 1px solid var(--hair); }
 }
 
-/* ── Questions and other services ───────────────────────────────────────── */
+/* ── Reviews: serif pull quotes, no cards ───────────────────────────────── */
+.reviews-grid {
+  display: flex; gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory;
+  margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter) 6px; scroll-padding-left: var(--gutter);
+}
+.review { flex: 0 0 84%; scroll-snap-align: start; padding-top: 20px; border-top: 1px solid var(--line); }
+.review blockquote { font-family: var(--font-display); font-size: clamp(1.45rem, 1.2rem + .8vw, 1.8rem); line-height: 1.2; color: var(--text); }
+.review figcaption { margin-top: 16px; font-weight: 500; }
+.review figcaption span { font-weight: 400; color: var(--text-soft); }
+@media (min-width: 900px) {
+  .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin: 0; padding: 0; overflow: visible; }
+}
+
+/* ── Questions: hairline accordion ──────────────────────────────────────── */
 .faq-list { border-top: 1px solid var(--line); }
 .faq-item { border-bottom: 1px solid var(--line); }
 .faq-item summary {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  min-height: 52px; padding: 10px 0;
-  font-weight: 600; cursor: pointer; list-style: none;
+  min-height: 60px; padding: 14px 0;
+  font-weight: 500; font-size: 1.05rem; cursor: pointer; list-style: none;
 }
+.faq-item summary:hover { color: var(--taxi); }
 .faq-item summary::-webkit-details-marker { display: none; }
 .faq-item summary::after {
   content: ""; flex: none; width: 10px; height: 10px; margin-right: 4px;
-  border-right: 2px solid var(--text); border-bottom: 2px solid var(--text);
+  border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
   transform: translateY(-3px) rotate(45deg); transition: transform .2s;
 }
 .faq-item[open] summary::after { transform: translateY(2px) rotate(-135deg); }
-.faq-item p { padding-bottom: 14px; color: var(--text-soft); }
-.faq-more { margin-top: 8px; }
+.faq-item p { padding-bottom: 18px; color: var(--text-soft); }
+.faq-more { margin-top: 12px; }
 .faq-more a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
 
 /* ── WhatsApp shortcut ──────────────────────────────────────────────────── */
@@ -693,10 +741,19 @@ input.is-empty:not(:focus)::-webkit-datetime-edit { color: transparent; }
   .footer-grid { grid-template-columns: repeat(4, 1fr); gap: 32px; }
 }
 
-/* ── Tour booking modal (light island) ──────────────────────────────────── */
+/* Footer contact with icons */
+.footer-contact a::before {
+  content: ""; width: 18px; height: 18px; margin-right: 10px; background: var(--text-soft);
+  -webkit-mask: var(--ci) center / contain no-repeat; mask: var(--ci) center / contain no-repeat;
+}
+.footer-contact a[href^="tel:"] { --ci: var(--i-phone); }
+.footer-contact a[href*="wa.me"] { --ci: var(--i-wa); }
+.footer-contact a[href^="mailto:"] { --ci: var(--i-mail); }
+
+/* ── Tour booking modal (dark panel) ──────────────────────────────────── */
 .tour-modal {
   width: min(640px, calc(100% - 16px)); max-width: none; max-height: calc(100dvh - 16px);
-  margin: auto; padding: 0; border: 0; border-radius: 20px;
+  margin: auto; padding: 0; border: 1px solid var(--line); border-radius: 12px;
   background: var(--l-bg); color: var(--l-text); color-scheme: dark;
 }
 .tour-modal::backdrop { background: rgba(0, 0, 0, .65); }
@@ -724,99 +781,19 @@ body.modal-open { overflow: hidden; }
   .tm-head, .tm-body { padding-left: 24px; padding-right: 24px; }
 }
 
-/* ── Home: services intro, band links, tailored-trip features ───────────── */
-.bands-head { padding: 20px 8px 6px; }
-.bands-head h2 { padding: 0; margin-bottom: 6px; }
-.bands-head p { color: var(--text-soft); }
-.band-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; }
-.band-link { display: inline-flex; align-items: center; min-height: 44px; color: #fff; font-weight: 600; }
-.band-link:hover { color: var(--taxi); }
-@media (min-width: 900px) { .bands-head { padding: 40px 16px 8px; } }
-/* Phones: title and button only, so the photo shows above the text. */
-@media (max-width: 599px) {
-  .band p { display: none; }
-  .band h3 { margin-bottom: 10px; }
-  .band:has(.band-img)::before { background: linear-gradient(180deg, rgba(11, 11, 12, 0) 30%, rgba(11, 11, 12, .6) 55%, rgba(11, 11, 12, .95) 85%); }
-}
-
-/* ── Bento: service bands (3 tiles, varied sizes) ───────────────────────── */
-@media (min-width: 900px) {
-  .band-grid { grid-template-columns: 1.4fr 1fr; grid-template-rows: 1fr 1fr; gap: 12px; }
-  .band-grid > .band:first-child { grid-row: span 2; min-height: 520px; }
-  .band-grid > .band:not(:first-child) { min-height: 254px; }
-}
-
-/* ── Bento: tailored-trip features ──────────────────────────────────────── */
-.feature-bento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.feature-bento li {
-  display: flex; flex-direction: column; gap: 4px; padding: 16px;
-  background: var(--surface); border: 1px solid var(--hair); border-radius: var(--radius);
-}
-.feature-bento li:first-child { background: var(--surface-2); }
-.feature-bento li:first-child strong { font-size: 1.25rem; }
-.feature-bento strong { font-family: var(--font-display); font-weight: 700; font-size: 1.08rem; color: var(--text); }
-.feature-bento span { color: var(--text-soft); line-height: 1.45; }
-@media (min-width: 900px) {
-  .feature-bento { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 12px; }
-  .feature-bento li { padding: 22px; min-height: 150px; justify-content: flex-end; }
-}
-
-/* ── Vehicle cards: hover only lifts the image ──────────────────────────── */
-.fleet-mini .mini-img, .fleet-card .tour-photo { transition: transform .35s ease; transform-origin: 50% 100%; }
-.fleet-mini { overflow: hidden; }
-.fleet-mini:hover .mini-img, .fleet-card:hover .tour-photo { transform: scale(1.04) translateY(-3px); }
-
-/* ── Buttons: pill, clear focus ring ────────────────────────────────────── */
-.btn:focus-visible { outline: 3px solid var(--taxi); outline-offset: 3px; }
-.booking-card .btn:focus-visible, .tour-modal .btn:focus-visible { outline-color: var(--moss); }
-
-/* ── Round 5 polish ─────────────────────────────────────────────────────── */
-
-/* Images zoom slightly on hover; nothing else moves */
-.band-img, .svc-img, .split-img, .tour-photo, .mini-img { transition: transform .4s ease; }
-.band:hover .band-img, .svc-card:hover .svc-img, .split:hover .split-img, .tour-card:hover .tour-photo, .fleet-mini:hover .mini-img { transform: scale(1.03); }
-.fleet-mini:hover .mini-img, .fleet-card:hover .tour-photo { transform: scale(1.03); }
-
-/* Buttons: 48px pills, yellow primary, ghost secondary with a hairline */
+/* ── Buttons: 48px pills, yellow primary, ghost secondary, clear focus ring ─ */
 .btn { min-height: 48px; }
 .btn-quiet, .btn-light { border-color: rgba(255, 255, 255, .22); }
 .btn-quiet:hover, .btn-light:hover { border-color: var(--text); }
-
-/* Feature tiles get line icons */
-.feature-bento li::before {
-  content: ""; width: 24px; height: 24px; margin-bottom: 10px; background: var(--taxi);
-  -webkit-mask: var(--fi) center / contain no-repeat; mask: var(--fi) center / contain no-repeat;
-}
-.feature-bento li:nth-child(1) { --fi: var(--i-access); }
-.feature-bento li:nth-child(2) { --fi: var(--i-baby); }
-.feature-bento li:nth-child(3) { --fi: var(--i-route); }
-.feature-bento li:nth-child(4) { --fi: var(--i-luggage); }
-
-/* Footer contact with icons */
-.footer-contact a::before {
-  content: ""; width: 18px; height: 18px; margin-right: 10px; background: var(--text-soft);
-  -webkit-mask: var(--ci) center / contain no-repeat; mask: var(--ci) center / contain no-repeat;
-}
-.footer-contact a[href^="tel:"] { --ci: var(--i-phone); }
-.footer-contact a[href*="wa.me"] { --ci: var(--i-wa); }
-.footer-contact a[href^="mailto:"] { --ci: var(--i-mail); }
-
-/* Cards: 20px radius, hairline, no shadow */
-.tour-card, .svc-card, .split, .band, .review, .tile, .feature-bento li, .fleet-mini { border-radius: var(--radius); }
+.btn:focus-visible { outline: 3px solid var(--taxi); outline-offset: 3px; }
 .field .stepper input, .stepper input { width: 34px !important; min-height: 44px !important; flex: none; text-align: center; font-weight: 600 !important; }
 .stepper button { flex: none; }
-
-/* Bands and teaser splits share the page column so headings line up. */
-.bands .wrap, .splits { padding-left: var(--gutter); padding-right: var(--gutter); }
-.bands-head { padding: 8px 0 6px; }
-@media (min-width: 900px) { .bands-head { padding: 8px 0 10px; } .splits { padding: 0 var(--gutter); } }
 
 /* ── Address search dropdown (js/places.js) ─────────────────────────────── */
 .places-pop {
   position: absolute; z-index: 30; top: calc(100% + 4px); left: 0; right: 0;
   max-height: min(340px, 60vh); overflow-y: auto; padding: 6px;
   background: var(--surface-2); color: var(--l-text); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 16px 40px rgba(0, 0, 0, .5);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, .28);
 }
 .places-list { list-style: none; margin: 0; padding: 0; }
 .places-opt {
