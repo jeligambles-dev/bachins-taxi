@@ -27,8 +27,8 @@
 .page-hero-frame::before {
   content: ""; position: absolute; inset: 0; z-index: -1;
   background:
-    linear-gradient(0deg, rgba(4, 9, 7, .88) 0%, rgba(4, 9, 7, .45) 38%, rgba(4, 9, 7, 0) 65%),
-    linear-gradient(90deg, rgba(4, 9, 7, .45) 0%, rgba(4, 9, 7, 0) 60%);
+    linear-gradient(0deg, rgba(11, 11, 12, .88) 0%, rgba(11, 11, 12, .45) 38%, rgba(11, 11, 12, 0) 65%),
+    linear-gradient(90deg, rgba(11, 11, 12, .45) 0%, rgba(11, 11, 12, 0) 60%);
 }
 .page-hero-text { min-height: 360px; display: flex; flex-direction: column; justify-content: flex-end; padding: 28px var(--gutter) 28px; max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 auto; }
 .page-hero-photo h1 { color: #fff; }
@@ -40,8 +40,8 @@
   .page-hero-text { min-height: 500px; padding: 48px var(--gutter) 56px; }
   .page-hero-frame::before {
     background:
-      linear-gradient(90deg, rgba(4, 9, 7, .85) 0%, rgba(4, 9, 7, .5) 35%, rgba(4, 9, 7, 0) 65%),
-      linear-gradient(0deg, rgba(4, 9, 7, .6) 0%, rgba(4, 9, 7, 0) 40%);
+      linear-gradient(90deg, rgba(11, 11, 12, .85) 0%, rgba(11, 11, 12, .5) 35%, rgba(11, 11, 12, 0) 65%),
+      linear-gradient(0deg, rgba(11, 11, 12, .6) 0%, rgba(11, 11, 12, 0) 40%);
   }
   .has-overlap .page-hero-text { padding-bottom: 96px; }
   .hero-overlap { margin-top: -48px; padding: 0 var(--gutter); }
@@ -57,7 +57,7 @@
 .steps-list li::before {
   content: counter(step); position: absolute; left: 0; top: 0;
   display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
-  background: var(--taxi); color: #0B1F19; font-weight: 700; font-size: .9rem;
+  background: var(--taxi); color: #0B0B0C; font-weight: 700; font-size: .9rem;
 }
 .steps-list strong { display: block; color: var(--text); }
 .steps-3 { grid-template-columns: 1fr; }

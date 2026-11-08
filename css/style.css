@@ -1,24 +1,24 @@
-/* BCH Taxi: dark premium theme. Base, shared components and the homepage.
-   Dark Ink-green surfaces, near-white text, photos lead, taxi yellow only for
-   primary buttons and small accents. Forms sit on light "islands" so inputs
-   stay easy to read. */
+/* BCH Taxi: "dark executive" theme. Base, shared components and the homepage.
+   Near-black surfaces separated by hairlines, near-white text, serif headlines,
+   photos lead, taxi yellow only for primary buttons and small accents. */
 
 :root {
   /* Dark surfaces */
-  --bg: #08110E;          /* page */
-  --bg-alt: #0B1612;      /* alternate sections, footer */
-  --surface: #0F1C17;     /* cards */
-  --surface-2: #152721;   /* raised tiles, hover */
+  --bg: #0B0B0C;          /* page */
+  --bg-alt: #111113;      /* alternate sections, footer */
+  --surface: #141416;     /* cards, raised panels */
+  --surface-2: #1C1C1F;   /* inputs, hover */
   --line: rgba(255, 255, 255, .12);  /* rules and outlines on dark */
   --hair: rgba(255, 255, 255, .08);  /* hairline borders on tiles (no shadows) */
   /* Text on dark */
-  --text: #F5F7F6;        /* 18.5:1 on --bg, 16.9:1 on --surface */
-  --text-soft: #A9B8B1;   /* 9.4:1 on --bg, 8.6:1 on --surface */
-  --link: #8FDCC0;        /* teal-moss accent, 12.6:1 on --bg */
+  --text: #F2F2F0;        /* 18:1 on --bg */
+  --text-soft: #A3A3A0;   /* 7.9:1 on --bg, 7.3:1 on --surface */
+  --link: #E8E6DF;        /* warm light grey, underlined in text */
   /* Accents */
-  --taxi: #FFC20E;
-  --taxi-hover: #FFD447;
-  --moss: #2F6B57;
+  --taxi: #FFC72C;
+  --taxi-hover: #FFD45C;
+  --moss: #3A3A3E;  /* focus ring inside light panels (legacy name) */
+  --label: .12em;    /* letter-spacing for uppercase labels */
   --error: #FF8A80;       /* on dark */
   --wa: #25D366;
   /* Light islands (booking card, modal, form fields) */
@@ -29,7 +29,7 @@
   --l-line: #A9B9B2;
   --l-error: #B42318;
 
-  --font-display: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
   --font-body: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --gutter: 16px;
@@ -61,12 +61,12 @@ a { color: var(--link); text-decoration: none; text-underline-offset: 3px; }
 /* Underline only links inside running text; UI links stay clean. */
 p a:not(.btn), .post-body a, .check-list a { text-decoration: underline; text-decoration-thickness: 1px; }
 a:hover { color: var(--text); }
-h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; line-height: 1.08; letter-spacing: -0.03em; color: var(--text); }
-h1 { font-weight: 700; letter-spacing: -0.04em; }
-h2 { font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.6rem); }
+h1, h2, h3, h4 { font-family: var(--font-body); font-weight: 500; line-height: 1.12; letter-spacing: -0.02em; color: var(--text); }
+h1, h2 { font-family: var(--font-display); font-weight: 400; line-height: 1; letter-spacing: -0.01em; text-wrap: balance; }
+h2 { font-size: clamp(2.1rem, 1.5rem + 2vw, 3.2rem); }
 h3 { letter-spacing: -0.02em; }
 .tour-price, .quote-price, .calc-total strong, .calc-lines, .book-card .tour-price, .specs b, .tm-total strong { font-variant-numeric: tabular-nums; }
-h3 { font-size: 1.2rem; font-weight: 600; }
+h3 { font-size: 1.2rem; font-weight: 500; }
 p { max-width: 65ch; }
 ul, ol { list-style: none; }
 button, input, select, textarea { font: inherit; color: inherit; }
@@ -105,8 +105,8 @@ button { cursor: pointer; }
   transition: background-color .15s, border-color .15s, color .15s;
 }
 .btn svg { width: 20px; height: 20px; flex: none; fill: currentColor; }
-.btn-primary { background: var(--taxi); color: #0B1F19; }
-.btn-primary:hover { background: var(--taxi-hover); color: #0B1F19; }
+.btn-primary { background: var(--taxi); color: #0B0B0C; }
+.btn-primary:hover { background: var(--taxi-hover); color: #0B0B0C; }
 .btn-quiet, .btn-light { background: transparent; color: var(--text); border-color: rgba(243, 246, 244, .55); }
 .btn-quiet:hover, .btn-light:hover { background: var(--text); border-color: var(--text); color: var(--bg); }
 .btn-wa-quiet svg { fill: var(--wa); }
@@ -134,7 +134,7 @@ button { cursor: pointer; }
 .brand:hover { color: var(--text); }
 .brand-mark {
   display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px;
-  background: var(--taxi); color: #0B1F19;
+  background: var(--taxi); color: #0B0B0C;
   font-family: var(--font-display); font-weight: 700; font-size: .78rem; letter-spacing: .02em;
 }
 .brand-word { font-family: var(--font-display); font-weight: 700; font-size: 1.12rem; }
@@ -168,7 +168,7 @@ button { cursor: pointer; }
 .nav-sub a { min-height: 46px; font-family: var(--font-body); font-size: 1.05rem; font-weight: 500; color: var(--text-soft); }
 .nav-links .has-sub.in-section > a { color: var(--taxi); }
 .nav-links .nav-book { margin-top: 20px; }
-.nav-links .nav-book a { border: 0; justify-content: center; font-family: var(--font-body); font-size: 1.05rem; color: #0B1F19; }
+.nav-links .nav-book a { border: 0; justify-content: center; font-family: var(--font-body); font-size: 1.05rem; color: #0B0B0C; }
 body:has(.nav-links.open) { overflow: hidden; }
 
 @media (min-width: 1000px) {
@@ -240,7 +240,7 @@ body:has(.nav-links.open) { overflow: hidden; }
 .hero-bg::after {
   content: ""; position: absolute; inset: 0;
   background:
-    linear-gradient(180deg, rgba(4, 9, 7, .78) 0%, rgba(4, 9, 7, .35) 30%, rgba(4, 9, 7, 0) 55%),
+    linear-gradient(180deg, rgba(11, 11, 12, .78) 0%, rgba(11, 11, 12, .35) 30%, rgba(11, 11, 12, 0) 55%),
     linear-gradient(0deg, rgba(8, 17, 14, .9) 0%, rgba(8, 17, 14, 0) 30%);
 }
 .hero-inner { padding: 22px 12px 16px; }
@@ -260,7 +260,7 @@ body:has(.nav-links.open) { overflow: hidden; }
   .hero-bg { background-position: center 60%; }
   .hero-bg::after {
     background:
-      linear-gradient(90deg, rgba(4, 9, 7, .82) 0%, rgba(4, 9, 7, .5) 32%, rgba(4, 9, 7, 0) 62%),
+      linear-gradient(90deg, rgba(11, 11, 12, .82) 0%, rgba(11, 11, 12, .5) 32%, rgba(11, 11, 12, 0) 62%),
       linear-gradient(0deg, rgba(8, 17, 14, .85) 0%, rgba(8, 17, 14, 0) 35%);
   }
   .hero-inner {
@@ -474,7 +474,7 @@ input.is-empty:not(:focus)::-webkit-datetime-edit { color: transparent; }
 .band-golf .band-img { object-position: 50% 65%; }
 .band:has(.band-img)::before {
   content: ""; position: absolute; inset: 0; z-index: -1;
-  background: linear-gradient(180deg, rgba(8, 26, 21, .05) 0%, rgba(8, 26, 21, .55) 40%, rgba(8, 26, 21, .94) 78%);
+  background: linear-gradient(180deg, rgba(11, 11, 12, .05) 0%, rgba(11, 11, 12, .55) 40%, rgba(11, 11, 12, .94) 78%);
 }
 .band-body { padding: 18px; text-shadow: 0 1px 12px rgba(0, 0, 0, .5); }
 .band h3 { color: #fff; font-size: clamp(1.45rem, 1.2rem + 1vw, 2rem); font-weight: 700; }
@@ -671,7 +671,7 @@ body.modal-open { overflow: hidden; }
 @media (max-width: 599px) {
   .band p { display: none; }
   .band h3 { margin-bottom: 10px; }
-  .band:has(.band-img)::before { background: linear-gradient(180deg, rgba(8, 26, 21, 0) 30%, rgba(8, 26, 21, .6) 55%, rgba(8, 26, 21, .95) 85%); }
+  .band:has(.band-img)::before { background: linear-gradient(180deg, rgba(11, 11, 12, 0) 30%, rgba(11, 11, 12, .6) 55%, rgba(11, 11, 12, .95) 85%); }
 }
 
 /* ── Bento: service bands (3 tiles, varied sizes) ───────────────────────── */

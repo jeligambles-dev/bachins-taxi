@@ -341,7 +341,7 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
   <link rel="apple-touch-icon" href="{photo_url('logo', root, 'images/logo.svg', absolute=False)}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{root}{asset("css/style.css")}">
   <link rel="stylesheet" href="{root}{asset("css/pages.css")}">{ld}
 </head>
