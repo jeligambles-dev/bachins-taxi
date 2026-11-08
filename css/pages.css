@@ -6,14 +6,14 @@
   max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 auto;
   padding: 28px var(--gutter) 4px;
 }
-.page-hero h1 { font-size: clamp(2.4rem, 1.5rem + 3.4vw, 4.4rem); line-height: 1; letter-spacing: -0.045em; max-width: 16ch; text-wrap: balance; }
+.page-hero h1 { font-size: clamp(2.8rem, 1.8rem + 3.6vw, 5rem); line-height: .98; letter-spacing: -0.01em; max-width: 16ch; text-wrap: balance; }
 .page-lead { margin-top: 12px; font-size: 1.1rem; color: var(--text-soft); max-width: 52ch; }
 .hero-meta { margin-top: 8px; color: var(--text-soft); font-size: .95rem; }
 .page-hero + .section { padding-top: 24px; }
 @media (min-width: 900px) { .page-hero { padding-top: 56px; } .page-hero + .section { padding-top: 40px; } }
 
 /* Small breadcrumb under the header, deep pages only */
-.crumbs { font-size: .9rem; color: var(--text-soft); }
+.crumbs { font-size: .74rem; letter-spacing: var(--label); text-transform: uppercase; color: var(--text-soft); }
 .crumbs a { color: var(--text-soft); }
 .crumbs a:hover { color: var(--text); }
 .crumbs span { margin: 0 6px; }
@@ -27,21 +27,21 @@
 .page-hero-frame::before {
   content: ""; position: absolute; inset: 0; z-index: -1;
   background:
-    linear-gradient(0deg, rgba(4, 9, 7, .88) 0%, rgba(4, 9, 7, .45) 38%, rgba(4, 9, 7, 0) 65%),
-    linear-gradient(90deg, rgba(4, 9, 7, .45) 0%, rgba(4, 9, 7, 0) 60%);
+    linear-gradient(0deg, rgba(11, 11, 12, .88) 0%, rgba(11, 11, 12, .45) 38%, rgba(11, 11, 12, 0) 65%),
+    linear-gradient(90deg, rgba(11, 11, 12, .45) 0%, rgba(11, 11, 12, 0) 60%);
 }
 .page-hero-text { min-height: 360px; display: flex; flex-direction: column; justify-content: flex-end; padding: 28px var(--gutter) 28px; max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 auto; }
 .page-hero-photo h1 { color: #fff; }
 .page-hero-photo .page-lead { color: #fff; }
 .page-hero-photo + .section { padding-top: 32px; }
-.has-overlap .page-hero-text { padding-bottom: 56px; }
+.has-overlap .page-hero-text { padding-bottom: 84px; }
 .hero-overlap { position: relative; z-index: 2; max-width: calc(var(--max) + 2 * var(--gutter)); margin: -36px auto 0; padding: 0 12px; }
 @media (min-width: 900px) {
   .page-hero-text { min-height: 500px; padding: 48px var(--gutter) 56px; }
   .page-hero-frame::before {
     background:
-      linear-gradient(90deg, rgba(4, 9, 7, .85) 0%, rgba(4, 9, 7, .5) 35%, rgba(4, 9, 7, 0) 65%),
-      linear-gradient(0deg, rgba(4, 9, 7, .6) 0%, rgba(4, 9, 7, 0) 40%);
+      linear-gradient(90deg, rgba(11, 11, 12, .85) 0%, rgba(11, 11, 12, .5) 35%, rgba(11, 11, 12, 0) 65%),
+      linear-gradient(0deg, rgba(11, 11, 12, .6) 0%, rgba(11, 11, 12, 0) 40%);
   }
   .has-overlap .page-hero-text { padding-bottom: 96px; }
   .hero-overlap { margin-top: -48px; padding: 0 var(--gutter); }
@@ -57,7 +57,7 @@
 .steps-list li::before {
   content: counter(step); position: absolute; left: 0; top: 0;
   display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
-  background: var(--taxi); color: #0B1F19; font-weight: 700; font-size: .9rem;
+  background: var(--taxi); color: #0B0B0C; font-weight: 700; font-size: .9rem;
 }
 .steps-list strong { display: block; color: var(--text); }
 .steps-3 { grid-template-columns: 1fr; }
@@ -120,12 +120,25 @@
 .fleet-panel {
   display: grid; place-items: center; width: 100%; aspect-ratio: 3 / 2; padding: 16px;
   background: var(--surface-2); color: var(--text); text-align: center;
-  font-family: var(--font-display); font-weight: 700; font-size: 1.2rem;
+  font-family: var(--font-display); font-weight: 400; font-size: 1.6rem;
 }
-.fleet-card .tour-desc { display: block; -webkit-line-clamp: unset; }
-.fleet-card .check-list { margin-top: 12px; color: var(--text-soft); }
+/* Fleet page: one full-width spec sheet per vehicle, photo alternating sides */
+.fleet-sheets { display: grid; }
+.fleet-sheet { display: grid; gap: 20px; padding: 32px 0; border-top: 1px solid var(--hair); }
+.fleet-sheet:first-child { border-top: 0; padding-top: 0; }
+.fleet-sheet-media { overflow: hidden; border-radius: 4px; background: var(--surface); aspect-ratio: 16 / 10; }
+.fleet-sheet-media .tour-photo, .fleet-sheet-media .fleet-panel { width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; }
+.fleet-sheet-body h2 { font-size: clamp(2rem, 1.5rem + 1.6vw, 2.8rem); }
+.fleet-sheet-body .tour-meta { margin-top: 6px; color: var(--text-soft); }
+.fleet-sheet-body .tour-desc { margin-top: 14px; display: block; -webkit-line-clamp: unset; overflow: visible; }
+.fleet-sheet .spec-grid { max-width: 520px; }
+.fleet-sheet .check-list { margin: 0 0 24px; color: var(--text-soft); }
+@media (min-width: 900px) {
+  .fleet-sheet { grid-template-columns: 1.3fr 1fr; gap: 56px; align-items: center; padding: 64px 0; }
+  .fleet-sheet:nth-child(even) { grid-template-columns: 1fr 1.3fr; }
+  .fleet-sheet:nth-child(even) .fleet-sheet-media { order: 2; }
+}
 .fleet-note { color: var(--text-soft); font-size: .92rem; max-width: 22ch; }
-.fleet-strip { padding: 40px 0; }
 .fleet-strip-grid {
   display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory;
   margin: 0 calc(-1 * var(--gutter)); padding: 2px var(--gutter) 6px; overscroll-behavior-x: contain;
@@ -142,14 +155,12 @@
 .fleet-mini strong { padding: 12px 14px 0; font-size: 1.05rem; }
 .fleet-mini .specs { padding: 0 14px 14px; margin-top: 4px; }
 @media (min-width: 900px) {
-  .fleet-strip { padding: 64px 0; }
   .fleet-strip-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; overflow: visible; margin: 0; padding: 0; }
 }
-@media (max-width: 899px) { .fleet-strip .section-head p { display: none; } }
 
 /* ── Enquiry forms (business, partners) ─────────────────────────────────── */
 .form-lead { color: var(--text-soft); margin-bottom: 16px; }
-.enquiry { display: grid; gap: 0; max-width: 620px; padding: 8px 8px 14px; background: #fff; border-radius: 24px; }
+.enquiry { display: grid; gap: 0; max-width: 620px; padding: 8px 8px 14px; background: var(--l-bg); border: 1px solid var(--hair); border-radius: 16px; }
 .enquiry .btn { margin: 10px 6px 0; min-height: 56px; width: auto; }
 .enquiry .form-status, .enquiry .form-legal { margin-left: 12px; margin-right: 12px; }
 
@@ -204,10 +215,10 @@
 .calc-total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-weight: 600; }
 .calc-total strong { font-family: var(--font-display); font-size: 2rem; color: var(--taxi); }
 .calc-pp { color: var(--text-soft); font-size: .92rem; min-height: 1.4em; }
-.calc-request { display: grid; gap: 0; margin-top: 18px; padding: 14px 8px 14px; background: #fff; border-radius: 20px; }
+.calc-request { display: grid; gap: 0; margin-top: 18px; padding: 14px 8px 14px; background: var(--l-bg); border: 1px solid var(--hair); border-radius: 16px; }
 .calc-request h4 { margin: 0 12px 8px; color: var(--l-text); }
 .calc-request .btn { margin: 8px 6px 0; width: auto; min-height: 52px; }
-.calc-request .btn-quiet { color: var(--l-text); border-color: #C9D3CE; }
+.calc-request .btn-quiet { color: var(--l-text); border-color: rgba(255, 255, 255, .22); }
 .calc-request .form-status, .calc-request .form-legal { margin-left: 12px; margin-right: 12px; }
 .calc-request h4 { font-size: 1.1rem; }
 .form-field { display: flex; flex-direction: column; gap: 4px; }
@@ -244,23 +255,23 @@
 
 /* ── Shared page sections: quote bar, offer, promises, service cards ───── */
 .quote-bar { margin: 0; }
-.quote-bar-title { font-weight: 600; color: #fff; margin: 0 0 8px 6px; font-size: .95rem; }
+.quote-bar-title { font-weight: 500; color: var(--taxi); margin: 0 0 10px 6px; font-size: .78rem; letter-spacing: .2em; text-transform: uppercase; }
 .has-overlap .quote-bar-title { position: absolute; top: -32px; left: calc(12px + 6px); }
 .quote-bar-fields {
   display: grid; grid-template-columns: 1fr 1fr; padding: 8px;
-  background: rgba(255, 255, 255, .96); border-radius: 24px; border: 1px solid rgba(255, 255, 255, .6);
+  background: var(--l-bg); border-radius: 16px; border: 1px solid rgba(255, 255, 255, .1);
 }
-@supports (backdrop-filter: blur(1px)) { .quote-bar-fields { background: rgba(255, 255, 255, .92); backdrop-filter: blur(14px); } }
+@supports (backdrop-filter: blur(1px)) { .quote-bar-fields { background: rgba(24, 24, 27, .78); -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%); } }
 .quote-bar-fields .field:first-child { grid-column: 1 / -1; }
-.quote-bar-fields .field:nth-child(3) { border-left: 1px solid #E3E9E6; }
+.quote-bar-fields .field:nth-child(3) { border-left: 1px solid var(--l-line); }
 .quote-bar-fields .btn { grid-column: 1 / -1; min-height: 56px; margin-top: 8px; gap: 10px; font-size: 1.05rem; }
 @media (min-width: 900px) {
   .has-overlap .quote-bar-title { left: calc(var(--gutter) + 6px); }
-  .quote-bar-fields { display: flex; align-items: stretch; padding: 8px; border-radius: 999px; }
-  .quote-bar-fields .field { flex: 1 1 0; border-bottom: 0; border-radius: 999px; padding-left: 22px; }
-  .quote-bar-fields .field + .field { border-left: 1px solid #E3E9E6 !important; border-radius: 0 999px 999px 0; }
+  .quote-bar-fields { display: flex; align-items: stretch; padding: 8px; border-radius: 16px; }
+  .quote-bar-fields .field { flex: 1 1 0; border-bottom: 0; border-radius: 10px; padding-left: 18px; }
+  .quote-bar-fields .field + .field { border-left: 1px solid var(--l-line) !important; border-radius: 0; }
   .quote-bar-fields .field:first-child { flex: .8 1 0; }
-  .quote-bar-fields .btn { flex: none; margin: 0 0 0 8px; padding: 0 28px; border-radius: 999px; }
+  .quote-bar-fields .btn { flex: none; margin: 0 0 0 8px; padding: 0 28px; border-radius: 12px; }
 }
 
 .lead-soft { color: var(--text-soft); font-size: 1.08rem; }
@@ -300,8 +311,6 @@
 .faq-split { display: grid; gap: 8px; }
 @media (min-width: 900px) { .faq-split { grid-template-columns: 1fr 2fr; gap: 48px; align-items: start; } }
 .help-topics { margin-top: 18px; }
-@media (min-width: 640px) { .fleet-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1100px) { .fleet-grid { grid-template-columns: repeat(4, 1fr); } }
 
 /* ── Bento tiles (business offer, partners) ─────────────────────────────── */
 .bento { display: grid; gap: 10px; }

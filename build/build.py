@@ -341,7 +341,7 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
   <link rel="apple-touch-icon" href="{photo_url('logo', root, 'images/logo.svg', absolute=False)}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{root}{asset("css/style.css")}">
   <link rel="stylesheet" href="{root}{asset("css/pages.css")}">{ld}
 </head>
@@ -960,21 +960,19 @@ def vehicle_specs(v):
 
 
 def vehicle_card(v, root):
+    """Fleet page: one full-width spec sheet per vehicle."""
     feats = "".join(f"<li>{E(f)}</li>" for f in v["features"])
-    note = f'<p class="fleet-note">{E(v["price_note"])}</p>' if v["price_note"] else "<span></span>"
     example = f'<p class="tour-meta">{E(v["example"])}</p>' if v["example"] else ""
     desc = f'<p class="tour-desc">{E(v["desc"])}</p>' if v["desc"] else ""
-    return f"""      <article class="tour-card fleet-card" id="{E(v['slug'])}">
-        {vehicle_media(v, root)}
-        <div class="tour-body">
-          <h3>{E(v['name'])}</h3>
+    feat_list = f'<ul class="check-list">{feats}</ul>' if feats else ""
+    return f"""      <article class="fleet-sheet fleet-card" id="{E(v['slug'])}">
+        <div class="fleet-sheet-media">{vehicle_media(v, root)}</div>
+        <div class="fleet-sheet-body">
+          <h2>{E(v['name'])}</h2>
           {example}
-          {vehicle_specs(v)}
           {desc}
-          <ul class="check-list">{feats}</ul>
-        </div>
-        <div class="tour-foot">
-          {note}
+          {vehicle_spec_grid(v)}
+          {feat_list}
           <a class="btn btn-primary" href="{root}index.html?vehicle={quote(v['slug'])}#booking">{T("fleet.book_button")}</a>
         </div>
       </article>"""
@@ -999,7 +997,7 @@ def build_fleet():
 
     <section class="section">
       <div class="wrap">
-        <div class="fleet-grid tours-grid">
+        <div class="fleet-grid fleet-sheets">
 {cards}
         </div>
       </div>
@@ -1476,20 +1474,79 @@ def vehicle_field():
             <p class="card-hint" id="cf-vehicle-hint" aria-live="polite" hidden></p>"""
 
 
-def fleet_strip():
-    vehicles = fleet_published()[:4]
+def from_price(v):
+    """Lowest published tour price, only for the vehicle the fixed prices are for."""
+    if v["slug"] != VAN_SLUG:
+        return None
+    prices = [t["price"] for t in published() if t["price"] is not None]
+    return min(prices) if prices else None
+
+
+_WHEELCHAIR_YES = re.compile(r"wheelchair", re.I)
+_WHEELCHAIR_NO = re.compile(r"\b(not|no|non|without)\b", re.I)
+
+
+def vehicle_spec_grid(v):
+    """Spec sheet: passengers, suitcases, price and access (or a key feature)."""
+    cells = [("Passengers", str(v["passengers"]))]
+    if v["bags"]:
+        cells.append(("Suitcases", str(v["bags"])))
+    price = from_price(v)
+    if price is not None:
+        cells.append(("Price", "Tours from " + eur(price)))
+    elif v["price_note"]:
+        cells.append(("Price", E(v["price_note"])))
+    feats = [f for f in v["features"] if isinstance(f, str) and f.strip()]
+    if any(_WHEELCHAIR_YES.search(f) and not _WHEELCHAIR_NO.search(f) for f in feats):
+        cells.append(("Access", "Ramp"))
+    elif feats:
+        cells.append(("Includes", E(feats[0])))
+    return ('<dl class="spec-grid">' + "".join(
+        f"<div><dt>{k}</dt><dd>{val}</dd></div>" for k, val in cells) + "</dl>")
+
+
+def featured_slug(vehicles):
+    slugs = [v["slug"] for v in vehicles]
+    return VAN_SLUG if VAN_SLUG in slugs else slugs[0]
+
+
+def fleet_showcase():
+    """Homepage fleet: one featured vehicle with its spec sheet, tabs for the rest."""
+    vehicles = fleet_published()
     if not vehicles:
         return ""
-    minis = "\n".join(vehicle_mini(v, "") for v in vehicles)
+    featured = featured_slug(vehicles)
+    items = []
+    for v in vehicles:
+        cls = "showcase-item is-featured" if v["slug"] == featured else "showcase-item"
+        example = f'<p class="showcase-example">{E(v["example"])}</p>' if v["example"] else ""
+        items.append(f"""        <article class="{cls}" id="sc-{E(v['slug'])}" data-vehicle="{E(v['slug'])}">
+          <div class="showcase-media">{vehicle_media(v, "", "showcase-img")}</div>
+          <div class="showcase-body">
+            <h3>{E(v['name'])}</h3>
+            {example}
+            {vehicle_spec_grid(v)}
+            <a class="btn btn-primary" href="index.html?vehicle={quote(v['slug'])}#booking">{T("fleet.book_button")}</a>
+          </div>
+        </article>""")
+    tabs = ""
+    if len(vehicles) > 1:
+        buttons = "".join(
+            f'<button type="button" role="tab" data-vehicle="{E(v["slug"])}" aria-controls="sc-{E(v["slug"])}"'
+            f' aria-selected="{"true" if v["slug"] == featured else "false"}">'
+            f'{E(v["name"])}<small>{v["passengers"]} seats'
+            + (f' · {v["bags"]} bags' if v["bags"] else "") + "</small></button>"
+            for v in vehicles)
+        tabs = f'\n      <div class="showcase-tabs" role="tablist" aria-label="Vehicles" hidden>{buttons}</div>'
     return f"""  <section class="section fleet-strip" id="fleet-strip">
     <div class="wrap">
       <div class="section-head">
         <h2>{T("home.fleet_title")}</h2>
         <p>{T("home.fleet_intro")}</p>
       </div>
-      <div class="fleet-strip-grid">
-{minis}
-      </div>
+      <div class="showcase">
+{chr(10).join(items)}
+      </div>{tabs}
       <p class="tours-foot"><a class="link-strong" href="fleet.html">{T("home.fleet_link")}</a></p>
     </div>
   </section>"""
@@ -1523,7 +1580,7 @@ def build_index(out_dir):
     s = sync_faq_jsonld(s)
     s = replace_region(s, "nav", nav("", is_index=True, active="personal"))
     s = replace_region(s, "vehicle-field", vehicle_field())
-    s = replace_region(s, "fleet-strip", fleet_strip())
+    s = replace_region(s, "fleet-strip", fleet_showcase())
     s = replace_region(s, "teasers", teasers())
     s = replace_region(s, "faq-more", f'<a class="link-strong" href="help.html">{T("home.faq_all")}</a>')
     s = replace_region(s, "tours-grid", "\n".join(tour_card(t, "") for t in published()))

@@ -402,3 +402,35 @@ if (fab && form && 'IntersectionObserver' in window) {
     fab.classList.toggle('is-hidden', entry.isIntersecting);
   }).observe(form);
 }
+
+// Header: solid once the page scrolls (it floats over the homepage hero).
+const siteNav = document.querySelector('.site-nav');
+if (siteNav) {
+  const onScroll = () => siteNav.classList.toggle('is-top', window.scrollY <= 24);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+// Homepage fleet: tabs switch the featured vehicle (all vehicles stack without JS).
+const showcaseTabs = document.querySelector('.showcase-tabs');
+const showcase = document.querySelector('.showcase');
+if (showcaseTabs && showcase) {
+  const tabs = [...showcaseTabs.querySelectorAll('[role="tab"]')];
+  const select = (tab) => {
+    tabs.forEach(t => { const on = t === tab; t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1; });
+    showcase.querySelectorAll('.showcase-item').forEach(i => i.classList.toggle('is-featured', i.dataset.vehicle === tab.dataset.vehicle));
+  };
+  tabs.forEach((t, i) => {
+    t.tabIndex = t.getAttribute('aria-selected') === 'true' ? 0 : -1;
+    t.addEventListener('click', () => select(t));
+    t.addEventListener('keydown', (e) => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      const next = tabs[(i + d + tabs.length) % tabs.length];
+      select(next); next.focus();
+    });
+  });
+  showcaseTabs.hidden = false;
+  showcase.classList.add('js-tabs');
+}
