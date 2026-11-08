@@ -46,3 +46,106 @@ def test_hero_owner_override_wins(tmp_path):
     assert "Our own very long headline that goes on and on" in hero
     assert "Meath &amp; Dublin" in hero
     assert "Arrive the way" not in hero
+
+
+# ── Homepage fleet showcase ────────────────────────────────────────────────
+import re
+
+from content import normalize_vehicle
+
+
+def _showcase(tmp_path, content=None):
+    h = (_build(tmp_path, content) / "index.html").read_text()
+    s = h[h.index('id="fleet-strip"'):]
+    return s[:s.index("</section>")]
+
+
+def _items(sc):
+    """{slug: html} for each showcase item."""
+    parts = re.split(r'(?=<article class="showcase-item)', sc)[1:]
+    return {re.search(r'data-vehicle="([^"]+)"', p).group(1): p for p in parts}
+
+
+def _min_tour_price(content):
+    build._configure(content)
+    return min(t["price"] for t in build.published() if t["price"] is not None)
+
+
+def test_showcase_features_van(tmp_path):
+    sc = _showcase(tmp_path)
+    assert sc.count('class="showcase-item is-featured"') == 1
+    assert sc.count('<article class="showcase-item') == 4
+    assert "8-seater" in _items(sc)["van"] and "is-featured" in _items(sc)["van"]
+    tabs = sc[sc.index('class="showcase-tabs"'):]
+    assert tabs.count("data-vehicle=") == 4
+
+
+def test_showcase_van_from_price(tmp_path):
+    c = merge(default_content(), {})
+    sc = _showcase(tmp_path, c)
+    items = _items(sc)
+    assert "Tours from " + build.eur(_min_tour_price(c)) in items["van"]
+    saloon = next(v for v in c["fleet"] if v["slug"] == "saloon")
+    assert saloon["price_note"] and build.E(saloon["price_note"]) in items["saloon"]
+    assert "Tours from" not in items["saloon"]
+
+
+def test_showcase_book_link(tmp_path):
+    items = _items(_showcase(tmp_path))
+    assert len(items) == 4
+    for slug, html in items.items():
+        assert f'index.html?vehicle={slug}#booking' in html
+        assert "Book this vehicle" in html
+
+
+def test_showcase_van_hidden(tmp_path):
+    c = merge(default_content(), {})
+    for v in c["fleet"]:
+        if v["slug"] == "van":
+            v["published"] = False
+    sc = _showcase(tmp_path, c)
+    first = next(v["slug"] for v in c["fleet"] if v["published"])
+    assert "is-featured" in _items(sc)[first]
+    assert "Tours from" not in sc
+
+
+def test_showcase_single_vehicle_no_tabs(tmp_path):
+    c = merge(default_content(), {"fleet": [normalize_vehicle({"slug": "van", "name": "8-seater van", "passengers": 8})]})
+    sc = _showcase(tmp_path, c)
+    assert 'class="showcase-tabs"' not in sc and sc.count('<article class="showcase-item') == 1
+
+
+def test_showcase_empty_fleet_builds(tmp_path):
+    c = merge(default_content(), {"fleet": []})
+    h = (_build(tmp_path, c) / "index.html").read_text()
+    assert "showcase-item" not in h
+
+
+def test_showcase_no_priced_tours(tmp_path):
+    c = merge(default_content(), {})
+    for t in c["tours"]:
+        t["price"] = None
+    van = next(v for v in c["fleet"] if v["slug"] == "van")
+    van["price_note"] = "Ask for a price"
+    item = _items(_showcase(tmp_path, c))["van"]
+    assert "Tours from" not in item and "Ask for a price" in item
+
+
+def test_showcase_no_photo_panel(tmp_path):
+    c = merge(default_content(), {"fleet": [
+        normalize_vehicle({"slug": "zz-no-photo", "name": "Plain Car", "passengers": 2}),
+        normalize_vehicle({"slug": "van", "name": "8-seater van", "passengers": 8})]})
+    assert "fleet-panel" in _items(_showcase(tmp_path, c))["zz-no-photo"]
+
+
+def test_showcase_escapes_owner_text(tmp_path):
+    c = merge(default_content(), {"fleet": [
+        normalize_vehicle({"slug": "van", "name": "<script>x", "passengers": 8, "features": ["<b>f</b>"]})]})
+    sc = _showcase(tmp_path, c)
+    assert "showcase-item" in sc
+    assert "<script>x" not in sc and "&lt;script&gt;x" in sc and "<b>f</b>" not in sc
+
+
+def test_showcase_wheelchair_access_cell(tmp_path):
+    item = _items(_showcase(tmp_path))["van"]
+    assert "Ramp" in item

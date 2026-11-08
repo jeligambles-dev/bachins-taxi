@@ -125,7 +125,6 @@
 .fleet-card .tour-desc { display: block; -webkit-line-clamp: unset; }
 .fleet-card .check-list { margin-top: 12px; color: var(--text-soft); }
 .fleet-note { color: var(--text-soft); font-size: .92rem; max-width: 22ch; }
-.fleet-strip { padding: 40px 0; }
 .fleet-strip-grid {
   display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory;
   margin: 0 calc(-1 * var(--gutter)); padding: 2px var(--gutter) 6px; overscroll-behavior-x: contain;
@@ -142,10 +141,8 @@
 .fleet-mini strong { padding: 12px 14px 0; font-size: 1.05rem; }
 .fleet-mini .specs { padding: 0 14px 14px; margin-top: 4px; }
 @media (min-width: 900px) {
-  .fleet-strip { padding: 64px 0; }
   .fleet-strip-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; overflow: visible; margin: 0; padding: 0; }
 }
-@media (max-width: 899px) { .fleet-strip .section-head p { display: none; } }
 
 /* ── Enquiry forms (business, partners) ─────────────────────────────────── */
 .form-lead { color: var(--text-soft); margin-bottom: 16px; }

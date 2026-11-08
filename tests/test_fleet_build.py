@@ -122,7 +122,7 @@ def test_homepage_strip_teasers_and_four_faqs(tmp_path):
     h = read(tmp_path, "index.html")
     strip = h[h.index('id="fleet-strip"'):]
     strip = strip[:strip.index("</section>")]
-    assert strip.count('class="fleet-mini') == 4 and "fleet.html" in strip
+    assert strip.count('<article class="showcase-item') == 4 and "fleet.html" in strip
     assert 'href="business.html"' in h and 'href="partners.html"' in h
     assert h.count('<details class="faq-item">') == 4
     assert 'href="help.html"' in h[h.index('id="faq"'):]
