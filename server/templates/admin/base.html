@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>{% block title %}Admin{% endblock %} - BCH Taxi</title>
+<title>{% block title %}Admin{% endblock %} - BCH Group</title>
 <link rel="stylesheet" href="/admin/static/admin.css">
 </head>
 <body>
 {% block nav %}
 <header class="top">
   <details class="nav">
-    <summary><span class="brand">BCH Taxi admin</span><span class="menu">Menu</span></summary>
+    <summary><span class="brand">BCH Group admin</span><span class="menu">Menu</span></summary>
     <nav>
       <a href="/admin/"{% if request.path in ('/admin','/admin/') %} aria-current="page"{% endif %}>Dashboard</a>
       <a href="/admin/prices"{% if request.path.startswith('/admin/prices') %} aria-current="page"{% endif %}>Prices</a>

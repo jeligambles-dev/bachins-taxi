@@ -1,4 +1,4 @@
-# BCH Taxi website
+# BCH Group website
 
 A Flask server that builds the public site from the database and serves it, plus an owner admin at `/admin`. Hosted on Railway (Dockerfile, one gunicorn worker).
 

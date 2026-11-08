@@ -98,6 +98,6 @@
 
   $('calc-wa').addEventListener('click', () => {
     if (!hasSelection()) return;
-    sendWhatsApp(calc, statusEl, "Hi BCH Taxi, I'd like a fixed quote for:", quoteRows());
+    sendWhatsApp(calc, statusEl, "Hi BCH Group, I'd like a fixed quote for:", quoteRows());
   });
 })();

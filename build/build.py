@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the BCH Taxi site from build/data.py and build/posts.py.
+"""Generate the BCH Group site from build/data.py and build/posts.py.
 
 Usage:  python3 build/build.py [--out DIR]     (default DIR: dist/)
 
@@ -216,7 +216,7 @@ def idx(root, anchor, is_index):
 
 def brand(root):
     """The BCH logo (transparent PNG, 2x for sharp screens)."""
-    return f'<img class="brand-logo" src="{root}images/logo.png" alt="BCH Taxi" width="498" height="192">'
+    return f'<img class="brand-logo" src="{root}images/logo.png" alt="BCH Group" width="498" height="192">'
 
 
 NAV_TOURS = (("Day tours", "tours.html", "tours"), ("Pub tours", "pub-tours.html", "pub"),
@@ -245,7 +245,7 @@ def nav(root, is_index=False, active=""):
         li("Help", f"{root}help.html", "help"),
     ])
     return f"""  <nav class="site-nav">
-    <a href="{home}" class="brand" aria-label="BCH Taxi home">
+    <a href="{home}" class="brand" aria-label="BCH Group home">
       {brand(root)}
     </a>
     <ul class="nav-links" id="nav-links">
@@ -261,7 +261,7 @@ def footer(root, is_index=False):
     home = "#" if is_index else root + "index.html"
     return f"""  <footer class="site-footer">
     <div class="footer-top">
-      <a href="{home}" class="brand" aria-label="BCH Taxi home">
+      <a href="{home}" class="brand" aria-label="BCH Group home">
         {brand(root)}
       </a>
       <p>{T("footer.about")}</p>
@@ -304,7 +304,7 @@ def footer(root, is_index=False):
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2026 BCH Taxi</p>
+      <p>&copy; 2026 BCH Group</p>
       <p>{T("footer.tagline")}</p>
     </div>
   </footer>"""
@@ -332,7 +332,7 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
   <meta name="robots" content="{'noindex' if noindex else 'index, follow'}">
   <meta name="theme-color" content="#0B1F19">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="BCH Taxi">
+  <meta property="og:site_name" content="BCH Group">
   <meta property="og:locale" content="en_IE">
   <meta property="og:title" content="{E(title)}">
   <meta property="og:description" content="{E(description)}">
@@ -544,7 +544,7 @@ def build_tour_pages():
             <li><span>Pickup</span>Dublin or Meath</li>
           </ul>
           <button type="button" class="btn btn-primary tour-book" data-price="{price_attr(t)}" data-unit="{unit}" data-tour="{E(t['name'])}">Book this tour</button>
-          <a class="btn btn-quiet" href="{E(WHATSAPP)}?text={quote(f"Hi BCH Taxi, I'd like to ask about the {t['name']} tour.")}" target="_blank" rel="noopener">Ask on WhatsApp</a>{calc_link}
+          <a class="btn btn-quiet" href="{E(WHATSAPP)}?text={quote(f"Hi BCH Group, I'd like to ask about the {t['name']} tour.")}" target="_blank" rel="noopener">Ask on WhatsApp</a>{calc_link}
           <p class="book-group">More than {MAX_PASSENGERS} people? <a href="{root}index.html?service={quote(group_service(), safe='()')}#booking">We can arrange extra vehicles.</a></p>
         </aside>
         <div class="detail-main">
@@ -567,7 +567,7 @@ def build_tour_pages():
             "touristType": "Private group",
             "itinerary": {"@type": "ItemList", "itemListElement": [
                 {"@type": "ListItem", "position": i, "name": h} for i, h in enumerate(t["highlights"], 1)]},
-            "provider": {"@type": "TaxiService", "name": "BCH Taxi", "telephone": PHONE},
+            "provider": {"@type": "TaxiService", "name": "BCH Group", "telephone": PHONE},
         }
         if t["price"] is not None:
             tour_ld["offers"] = {"@type": "Offer", "price": t["price"], "priceCurrency": "EUR",
@@ -578,7 +578,7 @@ def build_tour_pages():
         title = f"{t['name']} {suffix}{origin}"
         if t["price"] is not None:
             title += f" | {price_label(t)} {unit_title}"
-        title += " | BCH Taxi"
+        title += " | BCH Group"
         if kind == "day":
             desc = f"Private {t['name']} day tour from Dublin or Meath in a wheelchair-accessible 8-seater. {t['duration']}"
         else:
@@ -622,11 +622,11 @@ def build_kind_listing(kind, title):
 
 
 def build_pub_tours():
-    return build_kind_listing("pub", "Rural Pub Tours from Dublin & Meath | BCH Taxi")
+    return build_kind_listing("pub", "Rural Pub Tours from Dublin & Meath | BCH Group")
 
 
 def build_golf_trips():
-    return build_kind_listing("golf", "Golf Trips from Dublin & Meath | BCH Taxi")
+    return build_kind_listing("golf", "Golf Trips from Dublin & Meath | BCH Group")
 
 
 def build_tours_hub():
@@ -659,7 +659,7 @@ def build_tours_hub():
 {cta_band(root)}"""
     return {"tours.html": page(
         root=root, active="tours", path="tours.html", jsonld=[breadcrumb_ld([("Home", ""), ("Tours", "tours.html")])],
-        title="Private Day Tours of Ireland from Dublin | BCH Taxi",
+        title="Private Day Tours of Ireland from Dublin | BCH Group",
         description=(f"{n} private day tours from Dublin and Meath: " if n else "Private day tours from Dublin and Meath: ")
         + (", ".join(sample_names(day)) + " and more. " if n else "")
         + f"Per-vehicle prices for up to {MAX_PASSENGERS} people.",
@@ -692,7 +692,7 @@ def build_multi_day():
     return {"multi-day-tours.html": page(
         root=root, active="multi", path="multi-day-tours.html",
         jsonld=[breadcrumb_ld([("Home", ""), ("Multi-day tours", "multi-day-tours.html")])],
-        title="Multi-Day Private Tours of Ireland | BCH Taxi",
+        title="Multi-Day Private Tours of Ireland | BCH Group",
         description=f"Private multi-day tours of Ireland with your own driver, from {eur(MULTI_DAY_RATE)} per day for up to {MAX_PASSENGERS} people. Sample routes: West Coast, Kerry, Causeway Coast and the Wild Atlantic Way.",
         body=body)}
 
@@ -801,7 +801,7 @@ def build_calculator():
     return {"price-calculator.html": page(
         root=root, active="prices", path="price-calculator.html",
         jsonld=[breadcrumb_ld([("Home", ""), ("Price calculator", "price-calculator.html")])],
-        title="Tour & Taxi Price Calculator | Instant Quote | BCH Taxi",
+        title="Tour & Taxi Price Calculator | Instant Quote | BCH Group",
         description=f"Work out the price of your Ireland day tour, multi-day trip or Dublin Airport transfer instantly. Per-vehicle prices for up to {MAX_PASSENGERS} passengers.",
         body=body, extra_js=f'\n  <script src="{root}{asset("js/calculator.js")}"></script>')}
 
@@ -839,7 +839,7 @@ def build_destinations():
     return {"destinations.html": page(
         root=root, active="tours", path="destinations.html",
         jsonld=[breadcrumb_ld([("Home", ""), ("Destinations", "destinations.html")])],
-        title="Ireland Destination Guide: Day Trips & Driving Times from Dublin | BCH Taxi",
+        title="Ireland Destination Guide: Day Trips & Driving Times from Dublin | BCH Group",
         description="Where to go in Ireland and how far it is from Dublin: "
         + ", ".join(sample_names(published("day"), 5)) + " and more, with private tour prices.",
         body=body)}
@@ -879,7 +879,7 @@ def build_blog():
 {cta_band(root)}"""
     out["blog.html"] = page(root=root, active="blog", path="blog.html",
                             jsonld=[breadcrumb_ld([("Home", ""), ("Blog", "blog.html")])],
-                            title="Ireland Travel Guides & Taxi Tips | BCH Taxi Blog",
+                            title="Ireland Travel Guides & Taxi Tips | BCH Group Blog",
                             description="Practical guides to day trips from Dublin, Dublin Airport transfers, accessible travel and planning a road trip around Ireland.",
                             body=body)
 
@@ -914,11 +914,11 @@ def build_blog():
         ld = [{
             "@context": "https://schema.org", "@type": "BlogPosting",
             "headline": p["title"], "description": p["summary"], "datePublished": p["date"],
-            "author": {"@type": "Organization", "name": "BCH Taxi"},
-            "publisher": {"@type": "Organization", "name": "BCH Taxi"},
+            "author": {"@type": "Organization", "name": "BCH Group"},
+            "publisher": {"@type": "Organization", "name": "BCH Group"},
         }, breadcrumb_ld([("Home", ""), ("Blog", "blog.html"), (p["title"], f"blog/{p['slug']}.html")])]
         out[f"blog/{p['slug']}.html"] = page(root=root, active="blog", path=f"blog/{p['slug']}.html", jsonld=ld,
-                                             title=f"{p['title']} | BCH Taxi", description=p["summary"], body=body)
+                                             title=f"{p['title']} | BCH Group", description=p["summary"], body=body)
     return out
 
 
@@ -1010,7 +1010,7 @@ def build_fleet():
     return {"fleet.html": page(
         root=root, active="fleet", path="fleet.html",
         jsonld=[breadcrumb_ld([("Home", ""), ("Fleet", "fleet.html")]), fleet_ld],
-        title="Our Fleet: Saloon, MPV, 8-Seater Van & Minibus | BCH Taxi",
+        title="Our Fleet: Saloon, MPV, 8-Seater Van & Minibus | BCH Group",
         description=texts.raw("fleet.description"), body=body)}
 
 
@@ -1241,7 +1241,7 @@ def build_business():
     return {"business.html": page(
         root=root, active="business", path="business.html",
         jsonld=[breadcrumb_ld([("Home", ""), ("Business", "business.html")]), faq_ld],
-        title="Business Travel, Chauffeur & Staff Transport | BCH Taxi",
+        title="Business Travel, Chauffeur & Staff Transport | BCH Group",
         description=texts.raw("business.description"), body=body)}
 
 
@@ -1310,7 +1310,7 @@ def build_partners():
     return {"partners.html": page(
         root=root, active="partners", path="partners.html",
         jsonld=[breadcrumb_ld([("Home", ""), ("Partners", "partners.html")]), faq_ld],
-        title="Partner With BCH Taxi | Hotels, Agents & Event Planners",
+        title="Partner With BCH Group | Hotels, Agents & Event Planners",
         description=texts.raw("partners.description"), body=body)}
 
 
@@ -1337,7 +1337,7 @@ def build_help():
     faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
         {"@type": "Question", "name": texts.raw(q),
          "acceptedAnswer": {"@type": "Answer", "text": texts.raw(a)}} for q, a in pairs]}
-    wa = f"{WHATSAPP}?text={quote('Hi BCH Taxi, I need to change a booking.')}"
+    wa = f"{WHATSAPP}?text={quote('Hi BCH Group, I need to change a booking.')}"
     hrefs = ["#faq", "#faq", "fleet.html#faq", "business.html#faq", "partners.html#faq", "#contact"]
     topics = "".join(f'<li><a href="{hrefs[i] if i < len(hrefs) else "#faq"}">{t}</a></li>'
                      for i, t in enumerate(T_lines("help.topics")))
@@ -1372,7 +1372,7 @@ def build_help():
     return {"help.html": page(
         root=root, active="help", path="help.html",
         jsonld=[breadcrumb_ld([("Home", ""), ("Help", "help.html")]), faq_ld],
-        title="Help Centre: Booking, Payment & Questions | BCH Taxi",
+        title="Help Centre: Booking, Payment & Questions | BCH Group",
         description=texts.raw("help.description"), body=body)}
 
 
@@ -1707,7 +1707,7 @@ def build_site(content, out_dir, extra_files=None):
 
 def main(argv=None):
     import argparse
-    ap = argparse.ArgumentParser(description="Build the BCH Taxi site.")
+    ap = argparse.ArgumentParser(description="Build the BCH Group site.")
     ap.add_argument("--out", default=str(ROOT_DIR / "dist"), help="output directory (default: dist/)")
     args = ap.parse_args(argv)
     out = Path(args.out)

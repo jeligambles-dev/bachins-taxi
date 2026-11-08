@@ -295,7 +295,7 @@ if (form) {
     if (sent) syncCard();
   });
   document.getElementById('cf-wa').addEventListener('click', () => {
-    sendWhatsApp(form, statusEl, "Hi BCH Taxi, I'd like to book: " + form.service.value, extra());
+    sendWhatsApp(form, statusEl, "Hi BCH Group, I'd like to book: " + form.service.value, extra());
   });
 
   // Buttons elsewhere on the page pick a service and jump to the card.
@@ -390,7 +390,7 @@ if (modal) {
     if (ok) updateSummary();
   });
   document.getElementById('tm-wa').addEventListener('click', () => {
-    sendWhatsApp(tourForm, tmStatus, "Hi BCH Taxi, I'd like to book the " + currentTour.name + ' tour.', tourExtra());
+    sendWhatsApp(tourForm, tmStatus, "Hi BCH Group, I'd like to book the " + currentTour.name + ' tour.', tourExtra());
   });
 }
 

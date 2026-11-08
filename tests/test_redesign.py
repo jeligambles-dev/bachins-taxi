@@ -183,7 +183,7 @@ def test_logo_in_header_and_footer_on_every_page(tmp_path):
         nav = h[h.index('class="site-nav'):h.index("</nav>")] if 'class="site-nav' in h else ""
         foot = h[h.index('class="site-footer'):]
         for part, name in ((nav, "header"), (foot, "footer")):
-            assert f'<img class="brand-logo" src="{src}" alt="BCH Taxi"' in part, (p, name)
+            assert f'<img class="brand-logo" src="{src}" alt="BCH Group"' in part, (p, name)
 
 
 def test_logo_files_exist_and_icon_is_500px():
@@ -198,3 +198,13 @@ def test_apple_touch_icon_uses_square_logo(tmp_path):
     _build(tmp_path)
     for rel in ("index.html", "fleet.html"):
         assert 'rel="apple-touch-icon" href="images/logo-500.png"' in (tmp_path / rel).read_text(), rel
+
+
+def test_brand_name_is_bch_group_everywhere(tmp_path):
+    _build(tmp_path)
+    for p in Path(tmp_path).rglob("*.html"):
+        h = p.read_text()
+        assert "BCH Taxi" not in h, p
+    home = (tmp_path / "index.html").read_text()
+    assert "<title>BCH Group |" in home and '"name": "BCH Group"' in home
+    assert "&copy; 2026 BCH Group" in home
