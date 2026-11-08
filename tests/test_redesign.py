@@ -161,3 +161,12 @@ def test_fleet_page_spec_sheets(tmp_path):
     assert len(parts) == n == 4
     for p in parts:
         assert 'class="spec-grid"' in p
+
+
+def test_access_cell_ignores_negative_wheelchair_note(tmp_path):
+    c = merge(default_content(), {"fleet": [normalize_vehicle(
+        {"slug": "saloon", "name": "Saloon", "passengers": 3,
+         "features": ["Not wheelchair accessible", "Air conditioning"]})]})
+    item = _items(_showcase(tmp_path, c))["saloon"]
+    assert "Ramp" not in item
+    assert "Not wheelchair accessible" in item

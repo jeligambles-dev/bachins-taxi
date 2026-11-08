@@ -1482,6 +1482,10 @@ def from_price(v):
     return min(prices) if prices else None
 
 
+_WHEELCHAIR_YES = re.compile(r"wheelchair", re.I)
+_WHEELCHAIR_NO = re.compile(r"\b(not|no|non|without)\b", re.I)
+
+
 def vehicle_spec_grid(v):
     """Spec sheet: passengers, suitcases, price and access (or a key feature)."""
     cells = [("Passengers", str(v["passengers"]))]
@@ -1493,7 +1497,7 @@ def vehicle_spec_grid(v):
     elif v["price_note"]:
         cells.append(("Price", E(v["price_note"])))
     feats = [f for f in v["features"] if isinstance(f, str) and f.strip()]
-    if any("wheelchair" in f.lower() for f in feats):
+    if any(_WHEELCHAIR_YES.search(f) and not _WHEELCHAIR_NO.search(f) for f in feats):
         cells.append(("Access", "Ramp"))
     elif feats:
         cells.append(("Includes", E(feats[0])))

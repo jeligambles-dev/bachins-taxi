@@ -136,9 +136,10 @@ button { cursor: pointer; }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .site-nav { background: var(--bg); } }
 /* Homepage: the bar floats over the hero photo until the page scrolls. */
 .home .site-nav { margin-bottom: calc(-1 * var(--nav-h)); }
-.home .site-nav:not(.is-scrolled) { background: transparent; border-bottom-color: transparent; }
-.home .site-nav:not(.is-scrolled)::before { opacity: 0; }
-.home .site-nav:not(.is-scrolled):has(.nav-links.open) { background: var(--bg); }
+/* Transparent only while JS reports the page is at the top (solid without JS). */
+.home .site-nav.is-top { background: transparent; border-bottom-color: transparent; }
+.home .site-nav.is-top::before { opacity: 0; }
+.home .site-nav.is-top:has(.nav-links.open) { background: var(--bg); }
 
 .brand { display: inline-flex; align-items: center; gap: 10px; margin-right: auto; text-decoration: none; color: var(--text); min-height: 44px; }
 .brand:hover { color: var(--text); }
@@ -497,30 +498,28 @@ input.is-empty:not(:focus)::-webkit-datetime-edit { color: transparent; }
   .hero .card-tabs { width: 300px; margin: 0 0 8px; }
   .hero .step-1 {
     display: grid; align-items: stretch;
-    grid-template-columns: 1.5fr 1.2fr 1.2fr 1fr .9fr auto;
+    grid-template-columns: 1.3fr 2.4fr 2fr auto;
     grid-template-areas:
-      "tabs tabs tabs . . ."
-      "svc  from to   date time go"
-      "veh  pax  pax  hint hint hint";
+      "tabs tabs tabs tabs"
+      "svc  ft   dt   go"
+      "veh  pax  .    .";
   }
-  .hero .step-1 > .field-row, .hero .step-1 > .card-go { display: contents; }
-  .hero .card-tabs { grid-area: tabs; }
+  /* The two field rows stay real boxes: places.js anchors its dropdown to them. */
+  .hero .step-1 > .card-go { display: contents; }
+  .hero .card-tabs { grid-area: tabs; justify-self: start; }
   .hero .step-1 > .only-taxi, .hero .step-1 > .only-tours { grid-area: svc; }
   .hero #cf-vehicle-field { grid-area: veh; }
-  .hero .step-1 .field:has(#cf-date) { grid-area: date; }
-  .hero .step-1 .field:has(#cf-time) { grid-area: time; }
-  .hero .step-1 .field:has(#cf-pickup) { grid-area: from; }
-  .hero .step-1 .field:has(#cf-dropoff) { grid-area: to; }
-  .hero .booking-card[data-mode="tours"] .step-1 .field:has(#cf-pickup) { grid-column: 2 / 4; }
+  .hero .step-1 > .field-row:has(#cf-date) { grid-area: dt; }
+  .hero .step-1 > .field-row:has(#cf-pickup) { grid-area: ft; }
+  .hero .step-1 > .field-row { border-left: 1px solid var(--l-line); }
   .hero .step-1 .field-pax { grid-area: pax; }
   .hero #cf-next { grid-area: go; align-self: stretch; min-height: 62px; margin-left: 8px; padding: 0 28px; border-radius: 12px; }
-  .hero #cf-hint, .hero #cf-vehicle-hint, .hero .pax-more { grid-area: hint; align-self: center; margin: 0 14px; }
+  /* Hints share the columns right of People, one row each, so they never overlap. */
+  .hero #cf-hint, .hero #cf-vehicle-hint, .hero .pax-more { grid-column: 3 / -1; align-self: center; margin: 6px 14px; }
   /* Segments in a row: no rounded tiles, a hairline between each one */
-  .hero .step-1 .field { border-bottom: 0; border-radius: 10px; }
-  .hero .step-1 .field:is(:has(#cf-pickup), :has(#cf-dropoff), :has(#cf-date), :has(#cf-time)),
-  .hero .step-1 > .only-taxi, .hero .step-1 > .only-tours { border-left: 1px solid var(--l-line); border-radius: 0; }
-  .hero .step-1 > .only-taxi, .hero .step-1 > .only-tours { border-left: 0; }
-  .hero .step-1 #cf-vehicle-field, .hero .step-1 .field-pax { border-top: 1px solid var(--l-line); border-radius: 0; }
+  .hero .step-1 .field { border-bottom: 0; border-radius: 0; }
+  .hero .step-1 .field > label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hero .step-1 #cf-vehicle-field, .hero .step-1 .field-pax { border-top: 1px solid var(--l-line); }
   /* Step 2: the quote on the left, contact details on the right */
   .hero .step-2 { display: grid; grid-template-columns: minmax(260px, 1fr) 2fr; column-gap: 20px; align-content: start; }
   .hero .step-2 > * { grid-column: 2; }

@@ -406,7 +406,7 @@ if (fab && form && 'IntersectionObserver' in window) {
 // Header: solid once the page scrolls (it floats over the homepage hero).
 const siteNav = document.querySelector('.site-nav');
 if (siteNav) {
-  const onScroll = () => siteNav.classList.toggle('is-scrolled', window.scrollY > 24);
+  const onScroll = () => siteNav.classList.toggle('is-top', window.scrollY <= 24);
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 }
