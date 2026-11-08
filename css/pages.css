@@ -120,10 +120,24 @@
 .fleet-panel {
   display: grid; place-items: center; width: 100%; aspect-ratio: 3 / 2; padding: 16px;
   background: var(--surface-2); color: var(--text); text-align: center;
-  font-family: var(--font-display); font-weight: 700; font-size: 1.2rem;
+  font-family: var(--font-display); font-weight: 400; font-size: 1.6rem;
 }
-.fleet-card .tour-desc { display: block; -webkit-line-clamp: unset; }
-.fleet-card .check-list { margin-top: 12px; color: var(--text-soft); }
+/* Fleet page: one full-width spec sheet per vehicle, photo alternating sides */
+.fleet-sheets { display: grid; }
+.fleet-sheet { display: grid; gap: 20px; padding: 32px 0; border-top: 1px solid var(--hair); }
+.fleet-sheet:first-child { border-top: 0; padding-top: 0; }
+.fleet-sheet-media { overflow: hidden; border-radius: 4px; background: var(--surface); aspect-ratio: 16 / 10; }
+.fleet-sheet-media .tour-photo, .fleet-sheet-media .fleet-panel { width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; }
+.fleet-sheet-body h2 { font-size: clamp(2rem, 1.5rem + 1.6vw, 2.8rem); }
+.fleet-sheet-body .tour-meta { margin-top: 6px; color: var(--text-soft); }
+.fleet-sheet-body .tour-desc { margin-top: 14px; display: block; -webkit-line-clamp: unset; overflow: visible; }
+.fleet-sheet .spec-grid { max-width: 520px; }
+.fleet-sheet .check-list { margin: 0 0 24px; color: var(--text-soft); }
+@media (min-width: 900px) {
+  .fleet-sheet { grid-template-columns: 1.3fr 1fr; gap: 56px; align-items: center; padding: 64px 0; }
+  .fleet-sheet:nth-child(even) { grid-template-columns: 1fr 1.3fr; }
+  .fleet-sheet:nth-child(even) .fleet-sheet-media { order: 2; }
+}
 .fleet-note { color: var(--text-soft); font-size: .92rem; max-width: 22ch; }
 .fleet-strip-grid {
   display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory;
@@ -297,8 +311,6 @@
 .faq-split { display: grid; gap: 8px; }
 @media (min-width: 900px) { .faq-split { grid-template-columns: 1fr 2fr; gap: 48px; align-items: start; } }
 .help-topics { margin-top: 18px; }
-@media (min-width: 640px) { .fleet-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1100px) { .fleet-grid { grid-template-columns: repeat(4, 1fr); } }
 
 /* ── Bento tiles (business offer, partners) ─────────────────────────────── */
 .bento { display: grid; gap: 10px; }

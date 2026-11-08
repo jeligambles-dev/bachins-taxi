@@ -149,3 +149,15 @@ def test_showcase_escapes_owner_text(tmp_path):
 def test_showcase_wheelchair_access_cell(tmp_path):
     item = _items(_showcase(tmp_path))["van"]
     assert "Ramp" in item
+
+
+# ── Fleet page spec sheets ─────────────────────────────────────────────────
+
+def test_fleet_page_spec_sheets(tmp_path):
+    c = merge(default_content(), {})
+    h = (_build(tmp_path, c) / "fleet.html").read_text()
+    n = len([v for v in c["fleet"] if v["published"]])
+    parts = re.split(r'(?=<article class="[^"]*fleet-sheet)', h)[1:]
+    assert len(parts) == n == 4
+    for p in parts:
+        assert 'class="spec-grid"' in p

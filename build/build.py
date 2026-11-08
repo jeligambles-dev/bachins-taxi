@@ -960,21 +960,19 @@ def vehicle_specs(v):
 
 
 def vehicle_card(v, root):
+    """Fleet page: one full-width spec sheet per vehicle."""
     feats = "".join(f"<li>{E(f)}</li>" for f in v["features"])
-    note = f'<p class="fleet-note">{E(v["price_note"])}</p>' if v["price_note"] else "<span></span>"
     example = f'<p class="tour-meta">{E(v["example"])}</p>' if v["example"] else ""
     desc = f'<p class="tour-desc">{E(v["desc"])}</p>' if v["desc"] else ""
-    return f"""      <article class="tour-card fleet-card" id="{E(v['slug'])}">
-        {vehicle_media(v, root)}
-        <div class="tour-body">
-          <h3>{E(v['name'])}</h3>
+    feat_list = f'<ul class="check-list">{feats}</ul>' if feats else ""
+    return f"""      <article class="fleet-sheet fleet-card" id="{E(v['slug'])}">
+        <div class="fleet-sheet-media">{vehicle_media(v, root)}</div>
+        <div class="fleet-sheet-body">
+          <h2>{E(v['name'])}</h2>
           {example}
-          {vehicle_specs(v)}
           {desc}
-          <ul class="check-list">{feats}</ul>
-        </div>
-        <div class="tour-foot">
-          {note}
+          {vehicle_spec_grid(v)}
+          {feat_list}
           <a class="btn btn-primary" href="{root}index.html?vehicle={quote(v['slug'])}#booking">{T("fleet.book_button")}</a>
         </div>
       </article>"""
@@ -999,7 +997,7 @@ def build_fleet():
 
     <section class="section">
       <div class="wrap">
-        <div class="fleet-grid tours-grid">
+        <div class="fleet-grid fleet-sheets">
 {cards}
         </div>
       </div>
