@@ -115,40 +115,47 @@ button { cursor: pointer; }
 .btn:disabled { opacity: .6; cursor: progress; }
 .link-strong { font-weight: 600; color: var(--link); }
 
-/* ── Header: dark, slim, sticky ─────────────────────────────────────────── */
+/* ── Header: black, slim, sticky; transparent over the homepage hero ───── */
 .site-nav {
   position: sticky; top: 0; z-index: 50;
   display: flex; align-items: center; gap: 8px;
   height: var(--nav-h); padding: 0 var(--gutter);
-  background: rgba(11, 31, 25, .72); border-bottom: 1px solid var(--hair);
-  isolation: isolate;
+  background: rgba(11, 11, 12, .82); border-bottom: 1px solid var(--hair);
+  isolation: isolate; transition: background-color .25s ease, border-color .25s ease;
 }
 /* Glass effect on a pseudo-element: backdrop-filter on the header itself
    would trap the fixed full-screen phone menu inside the bar. */
 .site-nav::before {
   content: ""; position: absolute; inset: 0; z-index: -1;
   -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%);
+  transition: opacity .25s ease;
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .site-nav { background: var(--bg); } }
+/* Homepage: the bar floats over the hero photo until the page scrolls. */
+.home .site-nav { margin-bottom: calc(-1 * var(--nav-h)); }
+.home .site-nav:not(.is-scrolled) { background: transparent; border-bottom-color: transparent; }
+.home .site-nav:not(.is-scrolled)::before { opacity: 0; }
+.home .site-nav:not(.is-scrolled):has(.nav-links.open) { background: var(--bg); }
+
 .brand { display: inline-flex; align-items: center; gap: 10px; margin-right: auto; text-decoration: none; color: var(--text); min-height: 44px; }
 .brand:hover { color: var(--text); }
 .brand-mark {
-  display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px;
+  display: grid; place-items: center; width: 36px; height: 36px; border-radius: 8px;
   background: var(--taxi); color: #0B0B0C;
-  font-family: var(--font-display); font-weight: 700; font-size: .78rem; letter-spacing: .02em;
+  font-family: var(--font-body); font-weight: 700; font-size: .74rem; letter-spacing: .04em;
 }
-.brand-word { font-family: var(--font-display); font-weight: 700; font-size: 1.12rem; }
+.brand-word { font-family: var(--font-body); font-weight: 600; font-size: .95rem; letter-spacing: var(--label); text-transform: uppercase; }
 .nav-call {
-  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px;
-  border: 1.5px solid var(--line); border-radius: 999px;
-  color: var(--text); font-weight: 600; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, .35); border-radius: 999px;
+  color: var(--text); font-weight: 500; text-decoration: none;
 }
 .nav-call:hover { border-color: var(--text); color: var(--text); }
 .nav-call svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
 .nav-call-num { display: none; }
 .nav-toggle {
   min-height: 44px; min-width: 68px; padding: 0 14px;
-  border: 0; border-radius: 999px; background: var(--surface); color: var(--text); font-weight: 600;
+  border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--text); font-weight: 500;
 }
 /* Phone: full-screen menu */
 .nav-links {
@@ -159,33 +166,32 @@ button { cursor: pointer; }
 }
 .nav-links.open { display: block; }
 .nav-links a {
-  display: flex; align-items: center; min-height: 52px;
-  color: var(--text); font-family: var(--font-display); font-size: 1.35rem; font-weight: 600;
-  text-decoration: none; border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; min-height: 54px;
+  color: var(--text); font-family: var(--font-display); font-size: 1.6rem; font-weight: 400;
+  text-decoration: none; border-bottom: 1px solid var(--hair);
 }
-.nav-links a[aria-current="page"] { color: var(--taxi); }
+.nav-links a[aria-current="page"], .nav-links .has-sub.in-section > a { color: var(--taxi); }
 .nav-sub { padding-left: 16px; }
 .nav-sub a { min-height: 46px; font-family: var(--font-body); font-size: 1.05rem; font-weight: 500; color: var(--text-soft); }
-.nav-links .has-sub.in-section > a { color: var(--taxi); }
 .nav-links .nav-book { margin-top: 20px; }
 .nav-links .nav-book a { border: 0; justify-content: center; font-family: var(--font-body); font-size: 1.05rem; color: #0B0B0C; }
 body:has(.nav-links.open) { overflow: hidden; }
 
 @media (min-width: 1000px) {
+  .site-nav { padding: 0 max(var(--gutter), calc((100% - var(--max)) / 2)); }
   .nav-toggle { display: none; }
   .nav-links {
-    display: flex; align-items: center; gap: 2px; order: 2;
-    position: static; padding: 4px; overflow: visible;
-    background: var(--bg-alt); border: 1px solid var(--line); border-radius: 999px;
+    display: flex; align-items: center; gap: 4px; order: 2;
+    position: static; padding: 0; overflow: visible; background: none;
   }
   .nav-links > li > a {
-    min-height: 40px; padding: 0 14px; border: 0; border-radius: 999px;
-    font-family: var(--font-body); font-size: .95rem; font-weight: 500;
+    min-height: 40px; padding: 0 12px; border: 0;
+    font-family: var(--font-body); font-size: .92rem; font-weight: 500; color: var(--text-soft);
   }
-  .nav-links > li > a:hover { background: var(--surface); color: var(--text); }
-  .nav-links a[aria-current="page"], .nav-links .has-sub.in-section > a { background: var(--surface); color: var(--text); }
-  .nav-links .nav-book { margin: 0 0 0 4px; }
-  .nav-links .nav-book a { min-height: 40px; padding: 0 20px; }
+  .nav-links > li > a:hover { color: var(--text); }
+  .nav-links a[aria-current="page"], .nav-links .has-sub.in-section > a { color: var(--text); box-shadow: inset 0 -2px 0 var(--taxi); }
+  .nav-links .nav-book { margin: 0 0 0 10px; }
+  .nav-links .nav-book a { min-height: 40px; padding: 0 20px; border-radius: 999px; color: #0B0B0C; box-shadow: none; }
   .has-sub { position: relative; }
   .nav-sub {
     display: none; position: absolute; top: calc(100% + 6px); left: 0; min-width: 210px; padding: 6px;
@@ -193,9 +199,9 @@ body:has(.nav-links.open) { overflow: hidden; }
   }
   .has-sub:hover > .nav-sub, .has-sub:focus-within > .nav-sub { display: block; }
   .has-sub::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 8px; }
-  .nav-sub a { min-height: 42px; padding: 0 12px; border: 0; border-radius: 8px; font-size: .95rem; color: var(--text); white-space: nowrap; }
+  .nav-sub a { min-height: 42px; padding: 0 12px; border: 0; border-radius: 6px; font-size: .95rem; color: var(--text); white-space: nowrap; box-shadow: none !important; }
   .nav-sub a:hover { background: var(--surface-2); }
-  .nav-call { order: 3; border: 0; padding: 0 4px 0 10px; font-size: .95rem; }
+  .nav-call { order: 3; margin-left: 12px; font-size: .92rem; }
   .nav-call-short { display: none; }
   .nav-call-num { display: inline; }
 }
@@ -608,23 +614,24 @@ input.is-empty:not(:focus)::-webkit-datetime-edit { color: transparent; }
 .whatsapp-fab svg { width: 28px; height: 28px; fill: #fff; }
 .whatsapp-fab.is-hidden { display: none; }
 
-/* ── Footer: dark, compact, four columns ────────────────────────────────── */
-.site-footer { background: var(--bg-alt); color: var(--text-soft); padding: 32px 0 84px; border-top: 1px solid var(--hair); }
+/* ── Footer: quiet black, hairline top, four columns ─────────────────── */
+.site-footer { background: var(--bg-alt); color: var(--text-soft); padding: 48px 0 84px; border-top: 1px solid var(--hair); }
 .site-footer a { color: var(--text); text-decoration: none; }
 .site-footer a:hover { text-decoration: underline; color: var(--text); }
 .footer-top, .footer-grid, .footer-bottom { max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
-.footer-top { display: grid; gap: 6px; margin-bottom: 20px; }
+.footer-top { display: grid; gap: 8px; margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px solid var(--hair); }
 .footer-top p { max-width: 52ch; }
-.footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 16px; }
+.footer-top .brand-word { font-family: var(--font-display); font-size: 2rem; font-weight: 400; letter-spacing: 0; text-transform: none; }
+.footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 16px; }
 .site-footer ul a { display: inline-flex; align-items: center; min-height: 40px; }
-.site-footer h4 { font-family: var(--font-body); font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.site-footer h4 { font-family: var(--font-body); font-size: .78rem; font-weight: 500; letter-spacing: var(--label); text-transform: uppercase; color: var(--text-soft); margin-bottom: 4px; }
 .footer-bottom {
-  margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--hair);
+  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--hair);
   display: flex; flex-wrap: wrap; gap: 4px 24px; font-size: .9rem;
 }
 @media (min-width: 900px) {
-  .site-footer { padding: 44px 0 32px; }
-  .footer-top { grid-template-columns: auto 1fr; align-items: center; gap: 24px; }
+  .site-footer { padding: 64px 0 36px; }
+  .footer-top { grid-template-columns: auto 1fr; align-items: center; gap: 32px; }
   .footer-grid { grid-template-columns: repeat(4, 1fr); gap: 32px; }
 }
 
@@ -706,13 +713,6 @@ body.modal-open { overflow: hidden; }
 .booking-card .btn:focus-visible, .tour-modal .btn:focus-visible { outline-color: var(--moss); }
 
 /* ── Round 5 polish ─────────────────────────────────────────────────────── */
-/* Active nav item: a subtle pill */
-@media (min-width: 1000px) {
-  .nav-links { background: rgba(255, 255, 255, .04); border-color: var(--hair); }
-  .nav-links a[aria-current="page"], .nav-links .has-sub.in-section > a { background: rgba(255, 255, 255, .09); color: var(--text); }
-  .nav-links > li > a:hover { background: rgba(255, 255, 255, .06); }
-}
-.nav-links a[aria-current="page"] { color: var(--text); }
 
 /* Images zoom slightly on hover; nothing else moves */
 .band-img, .svc-img, .split-img, .tour-photo, .mini-img { transition: transform .4s ease; }
