@@ -195,7 +195,7 @@ def config_script(root):
 
 
 def asset(rel):
-    """css/js path with a content hash, so a deploy busts the browser cache."""
+    """css/js/image path with a content hash, so a deploy busts the browser cache."""
     return f"{rel}?v={hashlib.sha256((ROOT_DIR / rel).read_bytes()).hexdigest()[:8]}"
 
 
@@ -393,7 +393,7 @@ def page(*, root, title, description, body, active="", path="", jsonld=None, ext
 def local_photo(rel):
     """A site image path if that file exists, else None (so pages never link a
     missing photo and fall back to a plain dark panel)."""
-    return rel if rel and (ROOT_DIR / rel).is_file() else None
+    return asset(rel) if rel and (ROOT_DIR / rel).is_file() else None
 
 
 def page_hero(root, crumbs, h1, lead, extra="", photo=None, split=False, slot_photo=None,
@@ -957,7 +957,7 @@ def vehicle_image(v, root):
     if not path and isinstance(v["slug"], str) and _SLUG_RE.match(v["slug"]):
         rel = f"images/fleet-{v['slug']}.jpg"
         if (ROOT_DIR / rel).is_file():
-            path = rel
+            path = asset(rel)   # hashed: a replaced photo reaches cached browsers
     return root + path if path else ""
 
 

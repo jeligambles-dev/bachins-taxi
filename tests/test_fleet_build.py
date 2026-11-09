@@ -48,7 +48,7 @@ def test_fleet_page_cards(tmp_path):
     assert "Mercedes E-Class or similar" in h
     assert "index.html?vehicle=saloon#booking" in h
     assert "Book this vehicle" in h
-    assert 'src="images/fleet-van.jpg"' in h
+    assert 'src="images/fleet-van.jpg?v=' in h
 
 
 def test_hidden_vehicle_not_listed_anywhere(tmp_path):
@@ -70,7 +70,7 @@ def test_vehicle_file_photo_used_when_present(tmp_path):
     f.write_bytes(b"\xff\xd8\xff\xd9")
     try:
         _build(tmp_path, _fleet({"slug": "zz-test-car", "name": "Test Car", "passengers": 2}))
-        assert 'src="images/fleet-zz-test-car.jpg"' in read(tmp_path, "fleet.html")
+        assert 'src="images/fleet-zz-test-car.jpg?v=' in read(tmp_path, "fleet.html")
     finally:
         f.unlink()
 

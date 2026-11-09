@@ -110,3 +110,17 @@ def test_admin_saves_company_detail_and_blank(tmp_path):
     assert filled["texts"]["company.number"] == "712345"
     cleared = _mutator({"t__company.number": ""}, defaults)(filled)
     assert "company.number" not in cleared["texts"]
+
+
+def test_site_photos_carry_content_hash(tmp_path):
+    """Replacing a photo under the same name must reach browsers that cached
+    the old one for a week: the URL changes with the file's content."""
+    import hashlib
+    out = _build(tmp_path)
+    root = Path(build.__file__).resolve().parent.parent
+    v = hashlib.sha256((root / "images/fleet-van.jpg").read_bytes()).hexdigest()[:8]
+    for page in ("index.html", "fleet.html"):
+        assert f'src="images/fleet-van.jpg?v={v}"' in (out / page).read_text(), page
+    help_h = (out / "help.html").read_text()
+    c = hashlib.sha256((root / "images/photo-commute.jpg").read_bytes()).hexdigest()[:8]
+    assert f"images/photo-commute.jpg?v={c}" in help_h
