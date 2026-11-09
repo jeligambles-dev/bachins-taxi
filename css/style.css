@@ -737,6 +737,9 @@ input.is-empty:not(:focus)::-webkit-datetime-edit { color: transparent; }
   margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--hair);
   display: flex; flex-wrap: wrap; gap: 4px 24px; font-size: .9rem;
 }
+.footer-legal a { display: inline-flex; align-items: center; min-height: 40px; }
+.footer-bottom p { display: flex; align-items: center; flex-wrap: wrap; gap: 0 8px; min-height: 40px; }
+.footer-company { flex-basis: 100%; font-size: .82rem; color: var(--text-soft); }
 @media (min-width: 900px) {
   .site-footer { padding: 64px 0 36px; }
   .footer-top { grid-template-columns: auto 1fr; align-items: center; gap: 32px; }

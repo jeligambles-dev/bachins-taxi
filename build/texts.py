@@ -325,6 +325,115 @@ TEXTS = {
 }
 
 
+# ── Company details and legal pages ──────────────────────────────────────────
+# Company details are blank until the owner fills them in; each one shows in
+# the footer (and on the legal pages) only once it is set.
+_COMPANY = "Company details (footer)"
+TEXTS.update({
+    "company.legal_name": (_COMPANY, "Registered business name (e.g. BCH Group Ltd)", ""),
+    "company.number": (_COMPANY, "CRO company number", ""),
+    "company.vat": (_COMPANY, "VAT number", ""),
+    "company.spsv": (_COMPANY, "NTA SPSV licence number", ""),
+    "company.address": (_COMPANY, "Business address", ""),
+})
+
+# Sections: (title, text). Paragraphs in a text are separated by a blank line.
+# [email] and [phone] become links to the contact details (owner text can use them too).
+LEGAL_UPDATED = "9 November 2026"
+LEGAL = {
+    "terms": ("Terms page", [
+        ("Who we are",
+         "This website is run by BCH Group (\"we\", \"us\"), a private transport company based in Ireland. "
+         "These terms apply to every trip you book with us, whether through this website, by phone, by WhatsApp or by email.\n\n"
+         "You can reach us at [email] or [phone]."),
+        ("Booking a trip",
+         "Sending a form on this website is a booking request. Your booking is confirmed only when we reply "
+         "by phone, WhatsApp or email with the time, the vehicle and the price.\n\n"
+         "Please give us correct details: pickup and drop-off addresses, times, the number of passengers and bags, "
+         "flight numbers for airport pickups, and anything we need to know about access or child seats."),
+        ("Prices and payment",
+         "Our prices are for the whole vehicle, not per person. The price we confirm is the price you pay, unless "
+         "the trip changes on the day: for example extra stops, extra time, a different route or more passengers. "
+         "Extra hours on tours are charged at the hourly rate shown on the tour page.\n\n"
+         "You pay on the day by cash or card. Business and regular customers can pay by bank transfer or on a "
+         "monthly invoice, as agreed with us."),
+        ("Changes and cancellations",
+         "To change or cancel a booking, contact us as soon as you can by phone, WhatsApp or email.\n\n"
+         "There is no charge if you cancel more than 24 hours before the pickup time. If you cancel later than that, "
+         "or nobody is at the pickup point, we may charge for the trip or for the costs we have already had."),
+        ("Airport pickups and waiting",
+         "We track your flight and adjust the pickup if it lands early or late, at no extra cost. "
+         "We agree the meeting point with you when you book.\n\n"
+         "If you are delayed for another reason, please tell us. Long waits that were not agreed may be charged."),
+        ("Passengers, luggage and safety",
+         "Everyone must wear a seat belt. Children need a suitable child seat: tell us their ages when you book and "
+         "we will confirm what we can provide.\n\n"
+         "Smoking and vaping are not allowed in our vehicles. The driver may refuse or end a trip if a passenger is "
+         "violent, abusive, or puts the driver or others at risk. Cleaning or repair costs for damage or soiling "
+         "caused by passengers may be charged.\n\n"
+         "Please keep luggage within what you told us when booking, so it fits safely in the vehicle."),
+        ("Wheelchair access",
+         "Our 8-seater van has a built-in ramp and secure fastening points. Please tell us when you book if a "
+         "passenger uses a wheelchair, so we send the right vehicle."),
+        ("Tours",
+         "Tour prices cover the vehicle and driver. Entry tickets, green fees, food and drink are not included "
+         "unless we say so when we confirm."),
+        ("Lost property",
+         "If you leave something in one of our vehicles, contact us. We will keep it safe and help you get it back."),
+        ("Delays and our responsibility",
+         "We always aim to be on time, but we are not responsible for delays caused by traffic, weather, road closures "
+         "or other events outside our control.\n\n"
+         "Nothing in these terms limits your rights under Irish consumer law."),
+        ("Complaints",
+         "If something was not right, tell us at [email] and we will look into it and reply. "
+         "Complaints about licensed small public service vehicles can also be made to the National Transport Authority "
+         "(nationaltransport.ie)."),
+        ("Law",
+         "These terms are governed by the laws of Ireland, and the Irish courts deal with any dispute. "
+         "We may update these terms; the version on this page applies to bookings made after the date shown above."),
+    ]),
+    "privacy": ("Privacy page", [
+        ("Who we are",
+         "BCH Group is responsible for the personal data you give us through this website, by phone, by WhatsApp "
+         "or by email. You can contact us about your data at [email] or [phone]."),
+        ("What we collect",
+         "When you book or send an enquiry we collect your name, phone number and email address, the pickup and "
+         "drop-off addresses, dates and times, the number of passengers and bags, flight numbers, and any notes you add.\n\n"
+         "If you tell us that a passenger uses a wheelchair or needs other help, we use that only to send the right "
+         "vehicle and driver."),
+        ("Why we use it",
+         "We use your details to answer your enquiry, arrange and carry out your trip, contact you about it, and keep "
+         "the accounting records the law requires. We do not use your details for marketing, and we never sell them."),
+        ("Who else sees it",
+         "We use a small number of services to run this website and our bookings:\n\n"
+         "FormSubmit delivers the forms on this website to our email inbox. "
+         "Address suggestions in the booking form come from Google Maps Platform or Photon (OpenStreetMap data, run by Komoot); "
+         "the text you type in an address box is sent to them to find matching places. "
+         "Fonts are loaded from Google Fonts, which sees your IP address when a page loads. "
+         "The website is hosted by Railway. "
+         "If you message us on WhatsApp, WhatsApp (Meta) handles those messages.\n\n"
+         "Your driver sees the details needed for your trip. Some of these services are based outside the European "
+         "Economic Area; they protect data with safeguards such as the EU Standard Contractual Clauses."),
+        ("How long we keep it",
+         "We keep booking and payment records for six years, as Irish tax law requires. "
+         "Enquiries that did not become a booking are deleted within 12 months."),
+        ("Cookies",
+         "This website does not use advertising or tracking cookies, and it does not use analytics. "
+         "The only cookie is in the owner's admin area, to keep the owner signed in."),
+        ("Your rights",
+         "You can ask us for a copy of your data, ask us to correct or delete it, or object to how we use it. "
+         "Email [email] and we will reply within one month.\n\n"
+         "If you are not happy with how we handle your data, you can complain to the Data Protection Commission "
+         "(dataprotection.ie)."),
+    ]),
+}
+for _page, (_group, _sections) in LEGAL.items():
+    TEXTS[f"{_page}.updated"] = (_group, "Last updated (date)", LEGAL_UPDATED)
+    for _n, (_title, _text) in enumerate(_sections, 1):
+        TEXTS[f"{_page}.s{_n}_title"] = (_group, f"Section {_n}: heading", _title)
+        TEXTS[f"{_page}.s{_n}_text"] = (_group, f"Section {_n}: text", _text)
+
+
 # ── Lookup ───────────────────────────────────────────────────────────────────
 
 def configure(overrides, max_passengers=8):

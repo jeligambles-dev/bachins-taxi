@@ -257,6 +257,27 @@ def nav(root, is_index=False, active=""):
   </nav>"""
 
 
+def company_name():
+    """The registered business name if the owner set one, else BCH Group."""
+    return texts.raw("company.legal_name").strip() or "BCH Group"
+
+
+def company_details():
+    """The company facts the owner has filled in, as display strings."""
+    parts = [("company.legal_name", "{}"), ("company.number", "Company no. {}"),
+             ("company.vat", "VAT {}"), ("company.spsv", "SPSV licence {}"),
+             ("company.address", "{}")]
+    return [fmt.format(v) for key, fmt in parts if (v := texts.raw(key).strip())]
+
+
+def company_line():
+    """Footer line with the company facts, or "" when none are set."""
+    facts = company_details()
+    if not facts:
+        return ""
+    return '\n      <p class="footer-company">' + " · ".join(E(f) for f in facts) + "</p>"
+
+
 def footer(root, is_index=False):
     home = "#" if is_index else root + "index.html"
     return f"""  <footer class="site-footer">
@@ -304,8 +325,9 @@ def footer(root, is_index=False):
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2026 BCH Group</p>
-      <p>{T("footer.tagline")}</p>
+      <p>&copy; 2026 {E(company_name())}. All rights reserved.</p>
+      <p class="footer-legal"><a href="{root}terms.html">Terms &amp; conditions</a> <span aria-hidden="true">·</span> <a href="{root}privacy.html">Privacy policy</a></p>
+      <p>{T("footer.tagline")}</p>{company_line()}
     </div>
   </footer>"""
 
@@ -1377,6 +1399,53 @@ def build_help():
         description=texts.raw("help.description"), body=body)}
 
 
+# ── Legal pages ──────────────────────────────────────────────────────────────
+
+LEGAL_PAGES = {
+    "terms": ("terms.html", "Terms &amp; conditions", "Terms & Conditions",
+              "The terms for booking a trip with BCH Group: bookings, prices, payment, cancellations and safety."),
+    "privacy": ("privacy.html", "Privacy policy", "Privacy Policy",
+                "How BCH Group uses the personal details you give us when you book or send an enquiry."),
+}
+
+
+def _contact_links(escaped):
+    """Turn [email] and [phone] in escaped legal text into contact links."""
+    return (escaped.replace("[email]", f'<a href="mailto:{E(EMAIL)}">{E(EMAIL)}</a>')
+                   .replace("[phone]", f'<a href="tel:{E(PHONE)}">{E(PHONE_DISPLAY)}</a>'))
+
+
+def _paragraphs(key):
+    return "\n".join(f"        <p>{_contact_links(texts.esc(p.strip()))}</p>"
+                     for p in re.split(r"\n\s*\n", texts.raw(key)) if p.strip())
+
+
+def build_legal():
+    out = {}
+    for slug, (path, h1, title, desc) in LEGAL_PAGES.items():
+        _, sections = texts.LEGAL[slug]
+        body_secs = "\n".join(
+            f"""      <section class="legal-section">
+        <h2>{T(f"{slug}.s{n}_title")}</h2>
+{_paragraphs(f"{slug}.s{n}_text")}
+      </section>""" for n in range(1, len(sections) + 1))
+        facts = company_details()
+        company = (f'\n      <p class="legal-company">{" · ".join(E(f) for f in facts)}</p>'
+                   if facts else "")
+        name = h1.replace("&amp;", "&")
+        body = page_hero("", [("Home", "index.html"), (name, None)], h1,
+                         f'Last updated {T(f"{slug}.updated")}') + f"""
+
+    <section class="section">
+      <div class="wrap legal">{company}
+{body_secs}
+      </div>
+    </section>"""
+        out[path] = page(root="", path=path, title=f"{title} | BCH Group", description=desc, body=body,
+                         jsonld=[breadcrumb_ld([("Home", ""), (name, path)])])
+    return out
+
+
 # ── index.html regions ───────────────────────────────────────────────────────
 
 def replace_region(s, name, content):
@@ -1671,7 +1740,7 @@ def build_site(content, out_dir, extra_files=None):
 
     pages = {}
     for builder in (build_tour_pages, build_tours_hub, build_pub_tours, build_golf_trips, build_multi_day, build_calculator, build_destinations, build_blog,
-                    build_fleet, build_business, build_partners, build_help):
+                    build_fleet, build_business, build_partners, build_help, build_legal):
         pages.update(builder())
     for rel, text in pages.items():
         target = out_dir / rel

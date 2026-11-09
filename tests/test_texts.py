@@ -53,7 +53,10 @@ def test_registry_covers_build_py_copy():
         assert key in d, key
     assert d["included.day"]["multiline"] is True
     assert d["home.hero_title"]["group"] == "Home page"
-    assert all(v["default"].strip() for v in d.values())
+    # Every default has text, except the optional company details, which stay
+    # blank (and hidden on the site) until the owner fills them in.
+    assert all(v["default"].strip() for k, v in d.items() if not k.startswith("company."))
+    assert all(not v["default"] for k, v in d.items() if k.startswith("company."))
 
 
 def test_included_override_lines(tmp_path):
