@@ -8,6 +8,7 @@ PHONE = "+353870330046"
 PHONE_DISPLAY = "+353 87 033 0046"
 EMAIL = "bachintaxi@gmail.com"  # switch to office@bchtaxi.ie in admin > Contact once the mailbox exists
 WHATSAPP = "https://wa.me/353870330046"
+FACEBOOK = "https://www.facebook.com/profile.php?id=61563981646974"
 
 # Leave empty until the site has a live domain (e.g. "https://www.bchtaxi.ie").
 # When set, the build adds canonical URLs and writes sitemap.xml.

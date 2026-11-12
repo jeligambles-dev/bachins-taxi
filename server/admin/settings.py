@@ -12,11 +12,13 @@ from .forms import publish, publisher, too_long
 _EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 _PHONE = re.compile(r"^\+?[0-9 ]{7,20}$")
 _WHATSAPP = re.compile(r"^[0-9]{7,15}$")
-FIELDS = ("phone", "phone_display", "email", "whatsapp_number")
+_FACEBOOK = re.compile(r"^https://(www\.|m\.)?facebook\.com/[^\s\"<>]+$")
+FIELDS = ("phone", "phone_display", "email", "whatsapp_number", "facebook_url")
 
 
 def _mutator(form):
     vals = {k: form.get(k, "").strip() for k in FIELDS}
+    has_fb = "facebook_url" in form   # older forms without the field keep it
 
     def mutate(view):
         # fields this tab didn't change keep their fresh value (another tab
@@ -25,6 +27,8 @@ def _mutator(form):
             orig = form.get("o__" + k)
             if orig is not None and orig.strip() == vals[k]:
                 vals[k] = (view["settings"].get(k) or "").strip()
+        if not has_fb:
+            vals["facebook_url"] = (view["settings"].get("facebook_url") or "").strip()
         errors = [e for k in FIELDS if (e := too_long(vals[k], k.replace("_", " ").capitalize()))]
         if not _PHONE.match(vals["phone"]):
             errors.append("Phone number must be 7 to 20 digits or spaces, optionally "
@@ -36,6 +40,9 @@ def _mutator(form):
         if not _WHATSAPP.match(vals["whatsapp_number"]):
             errors.append("WhatsApp number must be digits only, 7 to 15 of them "
                           "(country code, no + or spaces, e.g. 353870330046)")
+        if vals["facebook_url"] and not _FACEBOOK.match(vals["facebook_url"]):
+            errors.append("Facebook page must be a facebook.com link starting with https:// "
+                          "(e.g. https://www.facebook.com/yourpage), or empty to hide it")
         if errors:
             raise ValidationError(errors)
         out = {"settings": {**view["settings"], **vals}}

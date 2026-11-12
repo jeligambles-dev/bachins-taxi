@@ -86,6 +86,7 @@ def default_content():
             "email": data.EMAIL,
             "whatsapp_number": data.WHATSAPP.rsplit("/", 1)[-1],
             "site_url": data.SITE_URL,
+            "facebook_url": data.FACEBOOK,
             "multi_day_rate": data.MULTI_DAY_RATE,
             "extra_hour_rate": data.EXTRA_HOUR_RATE,
             "max_passengers": data.MAX_PASSENGERS,

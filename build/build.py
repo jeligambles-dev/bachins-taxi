@@ -55,7 +55,7 @@ TEMPLATE_INDEX = Path(__file__).resolve().parent / "templates" / "index.html"
 
 # Module-level context, (re)bound by build_site() via _configure(). Every
 # builder below reads these names.
-PHONE = PHONE_DISPLAY = EMAIL = WHATSAPP = SITE_URL = ""
+PHONE = PHONE_DISPLAY = EMAIL = WHATSAPP = SITE_URL = FACEBOOK = ""
 MULTI_DAY_RATE = EXTRA_HOUR_RATE = MAX_PASSENGERS = 0
 CONFIG_JS = CONFIG_VER = ""   # js/config.js text and its cache-busting hash
 TOURS = []          # every tour, published or hidden
@@ -95,7 +95,7 @@ def published(kind=None):
 
 
 def _configure(content):
-    global PHONE, PHONE_DISPLAY, EMAIL, WHATSAPP, SITE_URL
+    global PHONE, PHONE_DISPLAY, EMAIL, WHATSAPP, SITE_URL, FACEBOOK
     global MULTI_DAY_RATE, EXTRA_HOUR_RATE, MAX_PASSENGERS
     global TOURS, TOUR_BY_SLUG, MULTI_DAY, AIRPORT_FARES, LONG_TRANSFERS
     global MODAL, FAB, CONFIG_JS, CONFIG_VER, REDIRECTS, SLOT_PHOTO, TOUR_PHOTO
@@ -107,6 +107,7 @@ def _configure(content):
     EMAIL = st["email"]
     WHATSAPP = "https://wa.me/" + st["whatsapp_number"]
     SITE_URL = st["site_url"]
+    FACEBOOK = (st.get("facebook_url") or "").strip()
     MULTI_DAY_RATE = st["multi_day_rate"]
     EXTRA_HOUR_RATE = st["extra_hour_rate"]
     MAX_PASSENGERS = st["max_passengers"]
@@ -278,6 +279,14 @@ def company_line():
     return '\n      <p class="footer-company">' + " · ".join(E(f) for f in facts) + "</p>"
 
 
+def facebook_item(cls="", indent="          "):
+    """A list item linking the Facebook page, or "" when none is set."""
+    if not FACEBOOK:
+        return ""
+    c = f' class="{cls}"' if cls else ""
+    return f'\n{indent}<li><a{c} href="{E(FACEBOOK)}" target="_blank" rel="noopener">Facebook</a></li>'
+
+
 def footer(root, is_index=False):
     home = "#" if is_index else root + "index.html"
     return f"""  <footer class="site-footer">
@@ -320,7 +329,7 @@ def footer(root, is_index=False):
         <ul class="footer-contact">
           <li><a href="tel:{E(PHONE)}">{E(PHONE_DISPLAY)}</a></li>
           <li><a href="{E(WHATSAPP)}" target="_blank" rel="noopener">WhatsApp</a></li>
-          <li><a href="mailto:{E(EMAIL)}">{E(EMAIL)}</a></li>
+          <li><a href="mailto:{E(EMAIL)}">{E(EMAIL)}</a></li>{facebook_item()}
         </ul>
       </div>
     </div>
@@ -1384,7 +1393,7 @@ def build_help():
           <ul class="help-contact">
             <li><a class="btn btn-primary" href="tel:{E(PHONE)}">Call {E(PHONE_DISPLAY)}</a></li>
             <li><a class="btn btn-quiet" href="{E(WHATSAPP)}" target="_blank" rel="noopener">WhatsApp</a></li>
-            <li><a class="btn btn-quiet" href="mailto:{E(EMAIL)}">{E(EMAIL)}</a></li>
+            <li><a class="btn btn-quiet" href="mailto:{E(EMAIL)}">{E(EMAIL)}</a></li>{facebook_item("btn btn-quiet", "            ")}
           </ul>
           <h2 class="h-gap">{T("help.changes_title")}</h2>
           <p>{T("help.changes_text")}</p>
@@ -1686,6 +1695,10 @@ def build_index(out_dir):
                   config_script("") + f'\n  <script src="{asset("js/fares.js")}"></script>'
                   f'\n  <script src="{asset("js/places.js")}"></script>'
                   f'\n  <script src="{asset("js/main.js")}"></script>')
+    if FACEBOOK:   # tell search engines which Facebook page is ours
+        s = s.replace('  "@type": "TaxiService",\n  "name": "BCH Group",\n',
+                      '  "@type": "TaxiService",\n  "name": "BCH Group",\n'
+                      f'  "sameAs": [{_json_inline(FACEBOOK)}],\n', 1)
     (out_dir / "index.html").write_text(texts.replace_markers(s))
 
 
